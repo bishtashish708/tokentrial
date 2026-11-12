@@ -86,6 +86,37 @@ def test_doctor_with_fake_claude():
     assert "ready for --mode subscription" in result.output
 
 
-def test_report_stub_exits_nonzero():
-    result = runner.invoke(app, ["report"])
+def test_report_without_records_fails(tmp_path):
+    result = runner.invoke(app, ["report", "--runs", str(tmp_path)])
     assert result.exit_code == 2
+
+
+def test_report_end_to_end(tmp_path, monkeypatch):
+    monkeypatch.setenv("FAKE_SCENARIO", "solve")
+    monkeypatch.setenv("FAKE_SOLUTION", str(Path("tasks/py-ledger-parens/solution").resolve()))
+    exp = tmp_path / "exp"
+    run = runner.invoke(
+        app,
+        [
+            "run",
+            "--arm",
+            "baseline",
+            "--arm",
+            "noop",
+            "--task",
+            "py-ledger-parens",
+            "--repeats",
+            "2",
+            "--out",
+            str(exp),
+            "--claude-bin",
+            FAKE,
+        ],
+    )
+    assert run.exit_code == 0, run.output
+    out = tmp_path / "res"
+    rep = runner.invoke(
+        app, ["report", "--runs", str(exp), "--out", str(out), "--resamples", "200"]
+    )
+    assert rep.exit_code == 0, rep.output
+    assert (out / "summary.json").exists() and "`noop`" in (out / "summary.md").read_text()

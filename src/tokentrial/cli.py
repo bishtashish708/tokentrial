@@ -281,11 +281,35 @@ def install_arms(
 @app.command()
 def report(
     runs: Annotated[Path, typer.Option(help="Experiment directory.")] = Path("runs/pilot"),
-    out: Annotated[Path, typer.Option(help="Leaderboard output directory.")] = Path("site"),
+    out: Annotated[
+        Path | None, typer.Option(help="Output directory (default: results/<experiment name>).")
+    ] = None,
+    resamples: Annotated[int, typer.Option(min=100, help="Bootstrap resamples.")] = 10_000,
+    seed: Annotated[int, typer.Option(help="Bootstrap seed.")] = 0,
 ) -> None:
-    """Aggregate runs into cost per solved task with bootstrap CIs; build the leaderboard."""
-    typer.echo("Reporting is not implemented yet (see docs/PLAN.md, week 2).", err=True)
-    raise typer.Exit(code=EXIT_NOT_READY)
+    """Cost per solved task per arm, with bootstrap CIs against baseline and the noop floor."""
+    import json
+
+    from tokentrial.report import load_records, summarize, to_markdown
+
+    if not (runs / "records.jsonl").exists():
+        typer.echo(f"no records in {runs}/", err=True)
+        raise typer.Exit(code=EXIT_NOT_READY)
+    manifest = json.loads((runs / "manifest.json").read_text())
+    records = load_records(runs)
+    summary = summarize(records, n_boot=resamples, seed=seed)
+    expected = len(manifest["task_ids"]) * len(manifest["arms"]) * manifest["repeats"]
+    summary["complete"] = len(records) == expected
+    summary["manifest"] = manifest
+    dest = out or Path("results") / runs.name
+    dest.mkdir(parents=True, exist_ok=True)
+    (dest / "summary.json").write_text(json.dumps(summary, indent=2, default=str) + "\n")
+    md = to_markdown(summary, manifest)
+    if not summary["complete"]:
+        md = f"> Partial results: {len(records)} of {expected} runs.\n\n" + md
+    (dest / "summary.md").write_text(md)
+    typer.echo(md)
+    typer.echo(f"wrote {dest}/summary.json and {dest}/summary.md")
 
 
 if __name__ == "__main__":

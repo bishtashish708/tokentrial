@@ -1,0 +1,216 @@
+"""Aggregate run records into per-arm results with hierarchical bootstrap CIs.
+
+Headline metric: cost per solved task = total cost of an arm's runs / its solved runs.
+
+Bootstrap: resample tasks with replacement (shared across arms, so comparisons are
+paired by task), then resample each arm's runs within each sampled task. Differences
+are reported relative to `baseline`; the `noop - baseline` interval is the noise floor.
+"""
+
+from __future__ import annotations
+
+import json
+import math
+import random
+from collections import defaultdict
+from pathlib import Path
+
+from tokentrial.pricing import TOKEN_TYPES
+from tokentrial.runner import FINAL_STATUSES
+
+BASELINE, CONTROL = "baseline", "noop"
+
+
+def load_records(exp_dir: Path) -> list[dict]:
+    latest: dict[str, dict] = {}
+    for line in (exp_dir / "records.jsonl").read_text().splitlines():
+        if line.strip():
+            rec = json.loads(line)
+            latest[rec["run_id"]] = rec
+    return [r for r in latest.values() if r["status"] in FINAL_STATUSES]
+
+
+def _cost_per_solved(runs: list[dict]) -> float:
+    solved = sum(r["solved"] for r in runs)
+    return sum(r["cost_usd"]["total"] for r in runs) / solved if solved else math.inf
+
+
+def _pct(sorted_vals: list[float], q: float) -> float:
+    if not sorted_vals:
+        return math.nan
+    k = (len(sorted_vals) - 1) * q
+    lo, hi = math.floor(k), math.ceil(k)
+    return sorted_vals[lo] + (sorted_vals[hi] - sorted_vals[lo]) * (k - lo)
+
+
+def _ci(vals: list[float]) -> tuple[float, float]:
+    finite = sorted(v for v in vals if math.isfinite(v))
+    return _pct(finite, 0.025), _pct(finite, 0.975)
+
+
+def bootstrap(
+    by_arm_task: dict[str, dict[str, list[dict]]], n: int = 10_000, seed: int = 0
+) -> dict[str, list[float]]:
+    """Cost-per-solved samples per arm, from a task-then-run hierarchical bootstrap."""
+    rng = random.Random(seed)
+    arms = sorted(by_arm_task)
+    tasks = sorted({t for a in arms for t in by_arm_task[a]})
+    samples: dict[str, list[float]] = {a: [] for a in arms}
+    for _ in range(n):
+        picked = [rng.choice(tasks) for _ in tasks]
+        for a in arms:
+            runs: list[dict] = []
+            for t in picked:
+                pool = by_arm_task[a].get(t, [])
+                runs.extend(rng.choice(pool) for _ in pool)
+            samples[a].append(_cost_per_solved(runs))
+    return samples
+
+
+def summarize(records: list[dict], n_boot: int = 10_000, seed: int = 0) -> dict:
+    by_arm_task: dict[str, dict[str, list[dict]]] = defaultdict(lambda: defaultdict(list))
+    for r in records:
+        by_arm_task[r["arm"]][r["task"]].append(r)
+    samples = bootstrap(by_arm_task, n_boot, seed)
+
+    arms: dict[str, dict] = {}
+    for arm, tasks in sorted(by_arm_task.items()):
+        runs = [r for rs in tasks.values() for r in rs]
+        n = len(runs)
+        solved = sum(r["solved"] for r in runs)
+        cps = _cost_per_solved(runs)
+        lo, hi = _ci(samples[arm])
+
+        def mean(key, runs=runs, n=n):
+            return sum(key(r) for r in runs) / n
+
+        arms[arm] = {
+            "runs": n,
+            "solved": solved,
+            "solve_rate": solved / n,
+            "solved_by_task": {t: sum(r["solved"] for r in rs) for t, rs in sorted(tasks.items())},
+            "cost_per_solved": cps,
+            "cost_per_solved_ci95": [lo, hi],
+            "mean_cost_per_run": mean(lambda r: r["cost_usd"]["total"]),
+            "mean_cost_by_type": {t: mean(lambda r, t=t: r["cost_usd"][t]) for t in TOKEN_TYPES},
+            "mean_tokens_by_type": {t: mean(lambda r, t=t: r["usage"][t]) for t in TOKEN_TYPES},
+            "mean_background_cost": mean(lambda r: r["cost_usd"]["total"] - r["cost_main_usd"]),
+            "mean_turns": mean(lambda r: r.get("num_turns") or 0),
+            "mean_duration_s": mean(lambda r: r.get("duration_s") or 0),
+        }
+
+    base = samples.get(BASELINE)
+    noise = None
+    if base:
+        for arm, info in arms.items():
+            if arm == BASELINE:
+                continue
+            rel = [
+                a / b - 1
+                for a, b in zip(samples[arm], base, strict=True)
+                if math.isfinite(a) and math.isfinite(b)
+            ]
+            point = info["cost_per_solved"] / arms[BASELINE]["cost_per_solved"] - 1
+            info["vs_baseline"] = {"point": point, "ci95": list(_ci(rel))}
+        if CONTROL in arms:
+            noise = arms[CONTROL]["vs_baseline"]
+
+    for arm, info in arms.items():
+        vs = info.get("vs_baseline")
+        if arm in (BASELINE, CONTROL) or not vs or not noise:
+            continue
+        lo, hi = vs["ci95"]
+        nlo, nhi = noise["ci95"]
+        if hi < 0 and vs["point"] < nlo:
+            verdict = "cheaper than baseline, beyond the noise floor"
+        elif lo > 0 and vs["point"] > nhi:
+            verdict = "more expensive than baseline, beyond the noise floor"
+        else:
+            verdict = "inconclusive (CI includes no change or overlaps the noise floor)"
+        info["verdict"] = verdict
+
+    return {
+        "n_records": len(records),
+        "bootstrap": {"resamples": n_boot, "seed": seed, "method": "tasks, then runs within task"},
+        "noise_floor_noop_vs_baseline": noise,
+        "arms": arms,
+    }
+
+
+def _usd(x: float) -> str:
+    return "∞" if not math.isfinite(x) else f"${x:.4f}"
+
+
+def _rel(x: float) -> str:
+    return "n/a" if not math.isfinite(x) else f"{x * 100:+.0f}%"
+
+
+def to_markdown(summary: dict, manifest: dict) -> str:
+    arms = summary["arms"]
+    order = [a for a in ("baseline", "noop", "rtk", "caveman", "headroom") if a in arms]
+    order += [a for a in arms if a not in order]
+    out = [
+        "# TokenTrial pilot results",
+        "",
+        f"Model `{manifest['model']}`, mode `{manifest['mode']}` (API-equivalent cost), "
+        f"{len(manifest['task_ids'])} tasks × {len(manifest['arms'])} arms × "
+        f"{manifest['repeats']} repeats = {summary['n_records']} runs. "
+        f"95% CIs from a {summary['bootstrap']['resamples']:,}-resample hierarchical bootstrap "
+        "(tasks, then runs).",
+        "",
+        "| Arm | Solved | Cost per solved task (95% CI) | vs baseline (95% CI) "
+        "| Mean cost/run | Verdict |",
+        "|---|---|---|---|---|---|",
+    ]
+    for a in order:
+        i = arms[a]
+        lo, hi = i["cost_per_solved_ci95"]
+        vs = i.get("vs_baseline")
+        vs_s = (
+            f"{_rel(vs['point'])} ({_rel(vs['ci95'][0])} to {_rel(vs['ci95'][1])})" if vs else "—"
+        )
+        verdict = i.get("verdict") or ("noise floor" if a == CONTROL else "reference")
+        out.append(
+            f"| `{a}` | {i['solved']}/{i['runs']} | {_usd(i['cost_per_solved'])} "
+            f"({_usd(lo)} to {_usd(hi)}) | {vs_s} | {_usd(i['mean_cost_per_run'])} | {verdict} |"
+        )
+    out += [
+        "",
+        "## Mean tokens per run, by type",
+        "",
+        "| Arm | Fresh input | Cache write 5m | Cache write 1h | Cache read | Output | Turns |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for a in order:
+        t = arms[a]["mean_tokens_by_type"]
+        out.append(
+            f"| `{a}` | {t['input']:,.0f} | {t['cache_write_5m']:,.0f} "
+            f"| {t['cache_write_1h']:,.0f} | {t['cache_read']:,.0f} | {t['output']:,.0f} "
+            f"| {arms[a]['mean_turns']:.1f} |"
+        )
+    out += [
+        "",
+        "## Mean cost per run, by type (USD, API-equivalent)",
+        "",
+        "| Arm | Fresh input | Cache write | Cache read | Output | of which background model |",
+        "|---|---|---|---|---|---|",
+    ]
+    for a in order:
+        c = arms[a]["mean_cost_by_type"]
+        cw = c["cache_write_5m"] + c["cache_write_1h"]
+        out.append(
+            f"| `{a}` | {c['input']:.5f} | {cw:.5f} | {c['cache_read']:.5f} | {c['output']:.5f} "
+            f"| {arms[a]['mean_background_cost']:.5f} |"
+        )
+    tasks = sorted({t for a in order for t in arms[a]["solved_by_task"]})
+    out += [
+        "",
+        "## Solved runs by task",
+        "",
+        "| Task | " + " | ".join(f"`{a}`" for a in order) + " |",
+    ]
+    out.append("|---|" + "---|" * len(order))
+    for t in tasks:
+        cells = [f"{arms[a]['solved_by_task'].get(t, 0)}/{manifest['repeats']}" for a in order]
+        out.append(f"| `{t}` | " + " | ".join(cells) + " |")
+    return "\n".join(out) + "\n"
