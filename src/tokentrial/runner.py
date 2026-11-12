@@ -13,7 +13,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
-from tokentrial.arms import setup_arm
+from tokentrial.arms import ArmSetupError, setup_arm
 from tokentrial.budget import Budget, BudgetExceeded
 from tokentrial.claude_code import (
     AgentFatalError,
@@ -167,45 +167,53 @@ def _run_one(
 
     tmp = Path(tempfile.mkdtemp(prefix=f"tokentrial-{rid}-"))
     workspace = tmp / "ws"
+    runtime = None
+    log_dir = ckpt.out / "logs"
     try:
         materialize(task, workspace)
-        setup_arm(arm, workspace)
-        proc = subprocess.Popen(
-            build_command(claude_bin, config.model),
-            cwd=workspace,
-            env=child_env(config.mode),
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-        timed_out = threading.Event()
-
-        def _on_timeout() -> None:
-            timed_out.set()
-            proc.kill()
-
-        timer = threading.Timer(task.timeout_s, _on_timeout)
-        timer.start()
         try:
-            proc.stdin.write(task.prompt)
-            proc.stdin.close()
-            with (ckpt.out / "logs" / f"{rid}.jsonl").open("w") as raw_log:
-                for line in proc.stdout:
-                    raw_log.write(line)
-                    try:
-                        budget.charge(parser.feed(line))
-                    except BudgetExceeded as e:
-                        proc.kill()
-                        status, error = "aborted_budget", str(e)
-                        stop_experiment = "--max-usd " in str(e)
-                        break
-            proc.wait()
-            stderr = proc.stderr.read()
-        finally:
-            timer.cancel()
-            if proc.poll() is None:
+            runtime = setup_arm(arm, workspace)
+        except ArmSetupError as e:
+            raise AgentFatalError(f"arm {arm!r} setup failed: {e}") from e
+        with (log_dir / f"{rid}.stderr").open("w+") as err_log:
+            proc = subprocess.Popen(
+                build_command(claude_bin, config.model, runtime.extra_args),
+                cwd=workspace,
+                env=runtime.apply_env(child_env(config.mode)),
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=err_log,  # a file, so a chatty stderr can never block the pipe
+                text=True,
+            )
+            timed_out = threading.Event()
+
+            def _on_timeout() -> None:
+                timed_out.set()
                 proc.kill()
+
+            timer = threading.Timer(task.timeout_s, _on_timeout)
+            timer.start()
+            try:
+                proc.stdin.write(task.prompt)
+                proc.stdin.close()
+                with (log_dir / f"{rid}.jsonl").open("w") as raw_log:
+                    for line in proc.stdout:
+                        raw_log.write(line)
+                        try:
+                            budget.charge(parser.feed(line))
+                        except BudgetExceeded as e:
+                            proc.kill()
+                            status, error = "aborted_budget", str(e)
+                            stop_experiment = "--max-usd " in str(e)
+                            break
+                proc.wait()
+            finally:
+                timer.cancel()
+                if proc.poll() is None:
+                    proc.kill()
+                    proc.wait()
+            err_log.seek(0)
+            stderr = err_log.read()
 
         if status is None:
             result = parser.state.result
@@ -224,6 +232,8 @@ def _run_one(
                 if result.get("is_error"):
                     error = str(result.get("result") or result.get("subtype"))[:500]
     finally:
+        if runtime and runtime.cleanup:
+            runtime.cleanup()
         shutil.rmtree(tmp, ignore_errors=True)
 
     usage = parser.state.usage
@@ -246,6 +256,7 @@ def _run_one(
         "reported_cost_usd": result.get("total_cost_usd"),
         "duration_s": round(time.monotonic() - t0, 2),
         "started_at": started,
+        "arm_version": runtime.version if runtime else None,
         "claude_init": parser.state.init,
         "stop_experiment": stop_experiment,
     }

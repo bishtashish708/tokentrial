@@ -56,7 +56,9 @@ def parse_reset_epoch(text: str) -> int | None:
     return int(m.group(1)) if m else None
 
 
-def build_command(claude_bin: list[str], model: str) -> list[str]:
+def build_command(
+    claude_bin: list[str], model: str, extra_args: list[str] | None = None
+) -> list[str]:
     """Headless invocation. The prompt is sent on stdin.
 
     User-level settings, MCP servers, and slash commands are excluded so every
@@ -82,6 +84,7 @@ def build_command(claude_bin: list[str], model: str) -> list[str]:
         "--strict-mcp-config",
         "--disable-slash-commands",
         "--no-session-persistence",
+        *(extra_args or []),
     ]
 
 

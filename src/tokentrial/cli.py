@@ -13,8 +13,8 @@ from typing import Annotated
 
 import typer
 
-from tokentrial import __version__
-from tokentrial.arms import ARMS, PILOT_ARMS, missing_adapters
+from tokentrial import __version__, tools
+from tokentrial.arms import ARMS, PILOT_ARMS, unavailable_arms
 from tokentrial.claude_code import API_CREDENTIAL_VARS, auth_status
 from tokentrial.pricing import load_prices
 from tokentrial.runner import Checkpoint, Config, run_experiment
@@ -190,9 +190,9 @@ def run(
     typer.echo(f"caps ({cost_label}): total ${config.max_usd}, per run ${config.max_usd_per_run}")
     if not prices[key].verified:
         typer.echo("warning: price entry is unverified; results cannot be published.")
-    no_adapter = missing_adapters(config.arms)
-    if no_adapter:
-        typer.echo(f"warning: no adapter yet for arm(s): {', '.join(no_adapter)}")
+    not_ready = unavailable_arms(config.arms)
+    for arm_name, reason in not_ready.items():
+        typer.echo(f"warning: arm {arm_name}: {reason}")
 
     if dry_run:
         return
@@ -200,10 +200,10 @@ def run(
     if n_runs == 0:
         typer.echo("No runs planned (no tasks found).", err=True)
         raise typer.Exit(code=EXIT_NOT_READY)
-    if no_adapter:
+    if not_ready:
         typer.echo(
-            "Cannot run arms without an adapter. Pick others with --arm, e.g. "
-            "--arm baseline --arm noop.",
+            "Some arms cannot run yet (see warnings). Install them with "
+            "`tokentrial install-arms`, or pick others with --arm.",
             err=True,
         )
         raise typer.Exit(code=EXIT_NOT_READY)
@@ -248,6 +248,29 @@ def run(
     if outcome.stopped_reason == "budget":
         typer.echo(f"Stopped: total budget ${config.max_usd} reached. Results so far are saved.")
         raise typer.Exit(code=EXIT_BUDGET)
+
+
+@app.command("install-arms")
+def install_arms(
+    arms: Annotated[
+        list[str] | None, typer.Option("--arm", "-a", help="Tool to install (repeatable).")
+    ] = None,
+) -> None:
+    """Download the pinned versions of the tools under test into a local cache.
+
+    rtk: release binary from GitHub, verified against the release checksums.
+    caveman: git clone of the pinned tag, verified against the pinned commit.
+    Nothing is written to your global Claude Code configuration.
+    """
+    names = list(arms or tools.INSTALLERS)
+    unknown = [n for n in names if n not in tools.INSTALLERS]
+    if unknown:
+        raise typer.BadParameter(f"nothing to install for: {', '.join(unknown)}")
+    for name in names:
+        pin = tools.PINS[name]
+        typer.echo(f"{name} {pin.version} ({pin.source}) -> {tools.tool_dir(pin)}")
+        tools.INSTALLERS[name](log=lambda m: typer.echo(f"  {m}"))
+        typer.echo("  ok")
 
 
 @app.command()

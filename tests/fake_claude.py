@@ -27,6 +27,9 @@ def main():
         print("0.0.0 (fake)")
         return
     assert "--print" in args and "stream-json" in args
+    if os.environ.get("FAKE_ARGV_LOG"):
+        with open(os.environ["FAKE_ARGV_LOG"], "a") as f:
+            f.write(" ".join(args) + "\n")
     sys.stdin.read()
 
     scenario = os.environ.get("FAKE_SCENARIO", "solve")

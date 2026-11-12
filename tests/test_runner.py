@@ -126,3 +126,30 @@ def test_api_error_is_recorded_as_retryable_error(fake_env, tmp_path):
         cfg, TASKS, PRICE, Checkpoint(tmp_path / "exp"), FAKE, log=lambda *_: None
     )
     assert again.finished == 1  # the errored run was retried
+
+
+def test_tool_arms_run_with_their_runtime(fake_env, fake_tools, tmp_path):
+    fake_env.setenv("FAKE_SCENARIO", "solve")
+    fake_env.setenv("FAKE_ARGV_LOG", str(tmp_path / "argv.log"))
+    cfg = _config(arms=["rtk", "caveman"], repeats=1)
+    ck = Checkpoint(tmp_path / "exp")
+    ck.create(cfg)
+    outcome = run_experiment(cfg, TASKS, PRICE, ck, FAKE, log=lambda *_: None)
+    assert outcome.stopped_reason is None
+    recs = {r["arm"]: r for r in _records(tmp_path / "exp")}
+    assert recs["rtk"]["arm_version"] == "v1.1.0"
+    assert recs["caveman"]["arm_version"] == "v4.0.1"
+    argv = (tmp_path / "argv.log").read_text()
+    assert "--plugin-dir" in argv
+
+
+def test_arm_setup_failure_stops_experiment(fake_env, fake_tools, tmp_path):
+    from tokentrial import tools
+
+    (tools.rtk_bin_dir() / "rtk").write_text("#!/bin/sh\nexit 1\n")
+    cfg = _config(arms=["rtk"], repeats=1)
+    ck = Checkpoint(tmp_path / "exp")
+    ck.create(cfg)
+    outcome = run_experiment(cfg, TASKS, PRICE, ck, FAKE, log=lambda *_: None)
+    assert outcome.stopped_reason == "fatal"
+    assert "setup failed" in outcome.message

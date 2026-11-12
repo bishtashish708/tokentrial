@@ -23,7 +23,8 @@ def test_run_dry_run_defaults_to_subscription_pilot():
     assert "repeats=3" in result.output
     assert "arms: baseline, noop, rtk, caveman" in result.output
     assert "API-equivalent cost" in result.output
-    assert "no adapter yet for arm(s): rtk, caveman" in result.output
+    assert "arm rtk: not installed" in result.output
+    assert "arm caveman: not installed" in result.output
 
 
 def test_run_api_mode_reports_billed_cost():
@@ -35,7 +36,7 @@ def test_run_api_mode_reports_billed_cost():
 def test_run_refuses_arms_without_adapter():
     result = runner.invoke(app, ["run", "--claude-bin", FAKE])
     assert result.exit_code == 2
-    assert "adapter" in result.output
+    assert "install-arms" in result.output
 
 
 def test_run_rejects_unknown_arm():
