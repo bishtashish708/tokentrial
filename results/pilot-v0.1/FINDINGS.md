@@ -6,8 +6,10 @@ The total API-equivalent cost was $0.28, and no usage limit was hit.
 
 - Generated tables: [`summary.md`](summary.md), plus [`summary.json`](summary.json).
 - Raw data: [`raw/`](raw/), with the home path and username scrubbed.
-- Prices are list-price estimates that haven't been verified yet (see `pricing.toml`), so
-  these results are **not leaderboard-grade**.
+- Prices were unverified list-price estimates when the pilot ran. **Update, 2026-11-12:** they
+  were all verified against the official pages and found unchanged, so the pilot numbers stand.
+  See [`../v0.2/FINDINGS.md`](../v0.2/FINDINGS.md) for the follow-up, which explains caveman's
+  apparent saving.
 
 ## Headline
 
