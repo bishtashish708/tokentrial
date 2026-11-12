@@ -49,6 +49,13 @@ ARMS: dict[str, Arm] = {
             "this arm measures that effect on its own, separately from any tool.",
         ),
         Arm(
+            "noop-baseurl",
+            "control",
+            "Baseline with ANTHROPIC_BASE_URL set to Anthropic's own API URL. Proxy-based "
+            "tools (headroom) set ANTHROPIC_BASE_URL; this arm measures that setting's "
+            "effect on Claude Code by itself.",
+        ),
+        Arm(
             "rtk",
             "tool",
             "Command-output compression: a PreToolUse hook rewrites Bash commands to `rtk ...`.",
@@ -80,6 +87,14 @@ ARMS: dict[str, Arm] = {
             "`headroom wrap claude` sets it up.",
             "https://github.com/headroomlabs-ai/headroom",
         ),
+        Arm(
+            "headroom-passthrough",
+            "control",
+            "The headroom arm with the proxy's optimization off (`--no-optimize`): same "
+            "local proxy, MCP server and settings. Claude Code behaves differently behind a "
+            "non-Anthropic base URL (it skips its background title call), so this isolates "
+            "headroom's compression from the effect of routing through any proxy.",
+        ),
     ]
 }
 
@@ -97,6 +112,7 @@ V03_ARMS = (
     "caveman",
     "caveman-v4.1.0",
     "headroom",
+    "headroom-passthrough",
 )
 
 
@@ -139,6 +155,13 @@ def _setup_noop_hook(workspace: Path) -> ArmRuntime:
     settings = {"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "true"}]}]}}
     (workspace / ".claude" / "settings.json").write_text(json.dumps(settings, indent=2) + "\n")
     return ArmRuntime()
+
+
+ANTHROPIC_API_URL = "https://api.anthropic.com"
+
+
+def _setup_noop_baseurl(workspace: Path) -> ArmRuntime:
+    return ArmRuntime(env={"ANTHROPIC_BASE_URL": ANTHROPIC_API_URL})
 
 
 def _setup_noop(workspace: Path) -> ArmRuntime:
@@ -340,14 +363,17 @@ def _free_port() -> int:
 HEADROOM_MCP_TOOLS = ["mcp__headroom"]
 
 
-def _setup_headroom(workspace: Path) -> ArmRuntime:
+def _setup_headroom(workspace: Path, optimize: bool = True) -> ArmRuntime:
     """A per-run `headroom proxy` plus headroom's MCP retrieve server.
 
     Mirrors what `headroom wrap claude` does for a session (start a proxy, point
     ANTHROPIC_BASE_URL at it, register the `headroom` MCP server, set
     ENABLE_TOOL_SEARCH=true) without writing to ~/.claude.json or project settings.
-    Proxy settings are headroom's defaults (cache mode, coding profile). Telemetry and
-    the usage beacon are off, and headroom's state lives in a per-run directory.
+    Proxy settings are headroom's defaults (cache mode, coding profile), except that
+    telemetry, the usage beacon and the subscription-usage poller (which calls
+    Anthropic's /api/oauth/usage with the user's token; it does not change requests)
+    are off. headroom's state lives in a per-run directory. With optimize=False the
+    proxy runs in passthrough mode (the headroom-passthrough control).
     """
     exe = tools.headroom_bin()
     if not exe.exists():
@@ -362,7 +388,16 @@ def _setup_headroom(workspace: Path) -> ArmRuntime:
         **henv,
     }
     proc = subprocess.Popen(
-        [str(exe), "proxy", "--host", "127.0.0.1", "--port", str(port)],
+        [
+            str(exe),
+            "proxy",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            str(port),
+            "--no-subscription-tracking",
+            *([] if optimize else ["--no-optimize"]),
+        ],
         env=proc_env,
         cwd=root,
         stdin=subprocess.DEVNULL,
@@ -428,11 +463,13 @@ ADAPTERS: dict[str, Callable[[Path], ArmRuntime]] = {
     "baseline": _setup_baseline,
     "noop": _setup_noop,
     "noop-hook": _setup_noop_hook,
+    "noop-baseurl": _setup_noop_baseurl,
     "rtk": _setup_rtk,
     "rtk-v1.2.0": lambda ws: _setup_rtk(ws, tools.RTK_V120),
     "caveman": _setup_caveman,
     "caveman-v4.1.0": lambda ws: _setup_caveman(ws, tools.CAVEMAN_V410),
     "headroom": _setup_headroom,
+    "headroom-passthrough": lambda ws: _setup_headroom(ws, optimize=False),
 }
 
 # Arms whose tool must be installed with `tokentrial install-arms` first (arm -> pin).
@@ -442,6 +479,7 @@ NEEDS_INSTALL = {
     "caveman": "caveman",
     "caveman-v4.1.0": "caveman-v4.1.0",
     "headroom": "headroom",
+    "headroom-passthrough": "headroom",
 }
 
 

@@ -11,6 +11,10 @@ def isolated_tool_cache(tmp_path, monkeypatch):
     monkeypatch.setenv("TOKENTRIAL_TOOLS_DIR", str(tmp_path / "tools"))
     monkeypatch.setenv("CLAUDE_CONFIG_DIR", str(tmp_path / "claude-config"))
     monkeypatch.setenv("HOME", str(tmp_path / "home"))
+    # Arm adapters create temp dirs (rtk shim, headroom state); keep them in tmp_path.
+    (tmp_path / "tmp").mkdir()
+    monkeypatch.setenv("TMPDIR", str(tmp_path / "tmp"))
+    monkeypatch.setattr("tempfile.tempdir", None)
     monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "home" / ".local" / "share"))
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "home" / ".config"))
     (tmp_path / "home").mkdir()
@@ -64,6 +68,7 @@ def fake_tools(isolated_tool_cache):
         "            body = json.dumps({'ok': True}).encode()\n"
         "            self.send_response(200); self.end_headers(); self.wfile.write(body)\n"
         "        def log_message(self, *a): pass\n"
+        "    open(sys.argv[0] + '.argv', 'a').write(' '.join(sys.argv[1:]) + '\\n')\n"
         "    socketserver.TCPServer(('127.0.0.1', port), H).serve_forever()\n"
     )
     hr.chmod(0o755)

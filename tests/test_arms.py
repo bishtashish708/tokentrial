@@ -186,3 +186,15 @@ def test_headroom_runs_a_proxy_and_registers_its_mcp_server(fake_tools, tmp_path
     assert rt.metrics["headroom_stats"] == {"ok": True}
     # Nothing was written into the workspace or the real HOME.
     assert list(ws.iterdir()) == []
+
+
+def test_headroom_passthrough_disables_optimization(fake_tools, tmp_path):
+    from tokentrial.arms import setup_arm
+
+    for arm in ("headroom", "headroom-passthrough"):
+        ws = tmp_path / arm
+        ws.mkdir()
+        setup_arm(arm, ws).cleanup()
+    lines = Path(str(tools.headroom_bin()) + ".argv").read_text().splitlines()
+    assert all("--no-subscription-tracking" in line for line in lines)
+    assert "--no-optimize" not in lines[0] and "--no-optimize" in lines[1]
