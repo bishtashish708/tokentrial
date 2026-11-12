@@ -16,9 +16,9 @@ at API rates, so results are comparable. API-key mode is kept as an option for l
 | `tokentrial doctor` (install and login check, no model call) | Done |
 | Tasks | 5 of 5, all validated in CI (check fails on start, passes on reference) |
 | Arm adapters | All 4 done. rtk v1.1.0 and caveman v4.0.1 are pinned and installed with `tokentrial install-arms` |
-| Smoke run | First attempt hit an auth failure caused by the inherited host environment (fixed). The standalone CLI login has expired, so it needs `claude auth login` |
+| Smoke run | ✅ baseline and noop: 2 of 2 solved, about $0.003 per run API-equivalent. Next: an arm smoke run once rtk and caveman are installed |
 | `report`, bootstrap, leaderboard | Pending (week 2) |
-| Checked against real Claude Code output | **Not yet.** This is the first smoke run (below) |
+| Checked against real Claude Code output | ✅ Smoke runs on 2026-11-12: recorded usage matches Claude Code's totals exactly (findings below) |
 
 ## Tiers and cost estimates
 
@@ -136,15 +136,30 @@ is kept in `runs/<exp>/logs/<run_id>.jsonl`.
   run created there.
 - Nothing is installed into the user's global Claude Code configuration.
 
-**Caveats to check on the first smoke run**
+**What the smoke runs established (Claude Code 2.1.252, 2026-11-12)**
 
-- The usage field names in Claude Code's stream-json output. The parser accepts the Messages API
-  `usage` shape. Fixture tests cover it, but it hasn't been run against real output yet.
-- Whether `--setting-sources project` also keeps out the user's own `~/.claude/CLAUDE.md` and
-  auto-memory. The `init` event and raw log will show this. If they leak in, the runner will need
-  an isolated config directory.
-- The wording of usage-limit messages. Detection uses a broad regex, which may need adjusting.
-- The leaderboard labels subscription results "API-equivalent (subscription)".
+- **Usage source.** Per-message `usage` in the stream is a snapshot taken mid-stream. Its output
+  count is incomplete: 12 against a real 1,116, because it misses final output and thinking
+  tokens. The `result` event's `usage` is authoritative and is what gets recorded. The
+  per-message snapshots, plus `thinking_tokens` estimates, are only used for live budget checks,
+  which are reconciled to the final cost when the `result` event arrives.
+- **Background calls.** Claude Code also makes a small background call on `claude-haiku-4-5`
+  each session (938 input and 11 output tokens). It's reported in `modelUsage`, priced from
+  `pricing.toml` and included in each run's cost. It's about 30% of a short Haiku 5.5 run's cost
+  and identical across arms. A model with no price entry is listed in `unpriced_models`.
+- **Claude Code's own `total_cost_usd` is wrong for Haiku 5.5.** Claude Code 2.1.252 logs
+  `unrecognized_model` for `claude-haiku-5-5` and prices it like Opus, at $5/$25 per 1M tokens:
+  it reported $0.106 against an API-equivalent $0.003. The figure is kept in records but never
+  used. The same version also assumes a 200K context window for the model. That's the same for
+  every arm, so the comparison is still fair.
+- **Cache writes** observed so far all use the 1-hour TTL.
+- **Limits.** Each session emits a `rate_limit_event` with a status, a reset time and five-hour
+  and seven-day utilization. Any status other than `allowed*` pauses the experiment with that
+  reset time. Utilization is recorded with every run. Error text and HTTP 429 are still detected
+  as fallbacks.
+- **Isolation, verified from the `init` event:** exactly 6 tools, no MCP servers, no skills,
+  plugins or slash commands, `memory_paths: null` (auto-memory off), and `apiKeySource: none`
+  (subscription).
 
 ## First smoke run
 

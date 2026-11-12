@@ -12,7 +12,9 @@ ROOT = Path(__file__).parent.parent
 FAKE = [sys.executable, str(ROOT / "tests" / "fake_claude.py")]
 TASKS = {t.id: t for t in load_tasks(ROOT / "tasks")}
 TASK = next(iter(TASKS))
-PRICE = load_prices()[("anthropic", "claude-haiku-5-5")]
+PRICES = load_prices()
+PRICE = PRICES[("anthropic", "claude-haiku-5-5")]
+AUX = {"claude-haiku-4-5": PRICES[("anthropic", "claude-haiku-4-5")]}
 
 
 def _config(**kw):
@@ -50,6 +52,8 @@ def test_full_run_records_solved_with_cost(fake_env, tmp_path):
     assert all(r["status"] == "solved" for r in recs)
     assert all(r["cost_basis"] == "api_equivalent" for r in recs)
     assert recs[0]["usage"]["cache_read"] == 1000  # duplicate events not double counted
+    assert recs[0]["usage"]["output"] == 300  # final totals, not the streaming snapshot
+    assert recs[0]["usage_source"] == "result"
     assert recs[0]["cost_usd"]["total"] > 0
     assert (tmp_path / "exp" / "logs" / f"{recs[0]['run_id']}.jsonl").exists()
 
@@ -153,3 +157,25 @@ def test_arm_setup_failure_stops_experiment(fake_env, fake_tools, tmp_path):
     outcome = run_experiment(cfg, TASKS, PRICE, ck, FAKE, log=lambda *_: None)
     assert outcome.stopped_reason == "fatal"
     assert "setup failed" in outcome.message
+
+
+def test_background_model_cost_is_included(fake_env, tmp_path):
+    fake_env.setenv("FAKE_SCENARIO", "solve")
+    cfg, ck = _config(arms=["baseline"], repeats=1), Checkpoint(tmp_path / "exp")
+    ck.create(cfg)
+    run_experiment(cfg, TASKS, PRICE, ck, FAKE, log=lambda *_: None, aux_prices=AUX)
+    rec = _records(tmp_path / "exp")[0]
+    assert rec["usage_aux"]["claude-haiku-4-5-20251001"]["input"] == 900
+    assert rec["unpriced_models"] == []
+    assert rec["cost_usd"]["total"] > rec["cost_main_usd"]
+    assert rec["rate_limit_utilization"] == {"five_hour": 0.1}
+
+
+def test_rejected_rate_limit_event_pauses_without_recording(fake_env, tmp_path):
+    fake_env.setenv("FAKE_SCENARIO", "rate_limited")
+    cfg, ck = _config(), Checkpoint(tmp_path / "exp")
+    ck.create(cfg)
+    outcome = run_experiment(cfg, TASKS, PRICE, ck, FAKE, log=lambda *_: None)
+    assert outcome.stopped_reason == "usage_limit"
+    assert outcome.reset_epoch == 1893456000
+    assert not (tmp_path / "exp" / "records.jsonl").exists()

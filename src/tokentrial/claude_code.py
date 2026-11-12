@@ -124,33 +124,80 @@ def auth_status(claude_bin: list[str], mode: str = "subscription") -> dict:
 class StreamResult:
     """What one Claude Code session consumed and how it ended."""
 
-    calls: dict[str, Usage] = field(default_factory=dict)  # message id -> usage
+    calls: dict[str, Usage] = field(default_factory=dict)  # message id -> usage snapshot
     result: dict | None = None
     init: dict | None = None
+    rate_limit: dict | None = None
+    aux: dict[str, Usage] = field(default_factory=dict)  # other models Claude Code called
+    unpriced_models: list[str] = field(default_factory=list)
+
+    @property
+    def usage_source(self) -> str:
+        return "result" if self.result and self.result.get("usage") else "per_call"
 
     @property
     def usage(self) -> Usage:
+        """Usage of the benchmarked model.
+
+        The `result` event's totals are authoritative: per-message usage in the stream is
+        a snapshot taken while the response is still streaming, so its output count is
+        incomplete (observed: 12 vs 1116 output tokens on Claude Code 2.1.252). Per-call
+        sums are only a fallback for sessions that end without a result.
+        """
+        if self.usage_source == "result":
+            return usage_from_api(self.result["usage"])
         total = Usage()
         for u in self.calls.values():
             total = add_usage(total, u)
-        if not self.calls and self.result and self.result.get("usage"):
-            # Fallback when per-call usage is missing: session totals.
-            return usage_from_api(self.result["usage"])
         return total
+
+
+def _model_usage(raw: dict) -> Usage:
+    """`modelUsage` entries use camelCase and no cache-TTL split (counted as 5-minute)."""
+    return Usage(
+        input=int(raw.get("inputTokens") or 0),
+        cache_write_5m=int(raw.get("cacheCreationInputTokens") or 0),
+        cache_read=int(raw.get("cacheReadInputTokens") or 0),
+        output=int(raw.get("outputTokens") or 0),
+    )
 
 
 class StreamParser:
     """Incrementally parse stream-json lines; report the cost added by each line.
 
-    Claude Code may emit several `assistant` events for one API response (one per
-    content block), each repeating that response's usage. Usage is therefore
-    keyed by message id and only the change in cost is reported.
+    While streaming, cost is an estimate from per-message usage snapshots (keyed by
+    message id, since Claude Code repeats them once per content block) plus thinking-token
+    estimates, so budget caps can act mid-run. The `result` event then reconciles the
+    estimate to the session's final totals, including background calls Claude Code makes
+    on other models (`modelUsage`).
     """
 
-    def __init__(self, price: Price):
+    def __init__(self, price: Price, aux_prices: dict[str, Price] | None = None):
         self.price = price
+        self.aux_prices = aux_prices or {}
         self.state = StreamResult()
         self._cost_by_id: dict[str, float] = {}
+        self._charged = 0.0
+
+    def _charge(self, amount: float) -> float:
+        amount = max(amount, 0.0)
+        self._charged += amount
+        return amount
+
+    def cost(self) -> dict[str, float]:
+        """API-equivalent cost by token type, benchmarked model plus background models."""
+        parts = cost_breakdown(self.state.usage, self.price)
+        for model, usage in self.state.aux.items():
+            price = self.aux_prices.get(model)
+            if price is None:
+                continue
+            for k, v in cost_breakdown(usage, price).items():
+                parts[k] += v
+        return parts
+
+    def _main_model(self) -> str:
+        model = (self.state.init or {}).get("model") or self.price.model
+        return model.removeprefix("anthropic.")
 
     def feed(self, line: str) -> float:
         line = line.strip()
@@ -169,6 +216,18 @@ class StreamParser:
                 k: event.get(k)
                 for k in ("model", "claude_code_version", "tools", "mcp_servers", "cwd")
             }
+        elif etype == "system" and event.get("subtype") == "thinking_tokens":
+            delta = int(event.get("estimated_tokens_delta") or 0)
+            return self._charge(delta * self.price.output / 1_000_000)
+        elif etype == "rate_limit_event":
+            info = event.get("rate_limit_info") or {}
+            self.state.rate_limit = info
+            status = str(info.get("status") or "")
+            if status and not status.startswith("allowed"):
+                raise UsageLimitReached(
+                    f"rate limit status {status!r} ({info.get('rateLimitType')})",
+                    info.get("resetsAt"),
+                )
         elif etype == "assistant":
             msg = event.get("message") or {}
             mid, raw = msg.get("id"), msg.get("usage")
@@ -185,7 +244,7 @@ class StreamParser:
                 new = cost_breakdown(usage, self.price)["total"]
                 delta = new - self._cost_by_id.get(mid, 0.0)
                 self._cost_by_id[mid] = new
-                return max(delta, 0.0)
+                return self._charge(delta)
         elif etype == "result":
             self.state.result = event
             text = str(event.get("result") or "")
@@ -194,6 +253,18 @@ class StreamParser:
                     raise UsageLimitReached(text[:300], parse_reset_epoch(text))
                 if _is_auth_failure(text):
                     raise AgentFatalError(text[:300])
+            main = self._main_model()
+            for model, raw in (event.get("modelUsage") or {}).items():
+                if model.removeprefix("anthropic.") == main:
+                    continue
+                self.state.aux[model] = _model_usage(raw)
+                canonical = raw.get("canonicalModel")
+                if model not in self.aux_prices and canonical in self.aux_prices:
+                    self.aux_prices[model] = self.aux_prices[canonical]
+                if model not in self.aux_prices:
+                    self.state.unpriced_models.append(model)
+            # Reconcile the streaming estimate to the final totals.
+            return self._charge(self.cost()["total"] - self._charged)
         return 0.0
 
 

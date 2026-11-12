@@ -116,6 +116,7 @@ def run_experiment(
     ckpt: Checkpoint,
     claude_bin: list[str],
     log=print,
+    aux_prices: dict[str, Price] | None = None,
 ) -> Outcome:
     ckpt.load_records()
     done = ckpt.completed()
@@ -130,7 +131,9 @@ def run_experiment(
             continue
         log(f"[{i}/{len(cells)}] {rid} (spent so far ${budget.spent_total:.4f})")
         try:
-            record = _run_one(config, tasks[task_id], arm, rep, price, ckpt, claude_bin, budget)
+            record = _run_one(
+                config, tasks[task_id], arm, rep, price, ckpt, claude_bin, budget, aux_prices
+            )
         except UsageLimitReached as e:
             outcome.stopped_reason, outcome.reset_epoch = "usage_limit", e.reset_epoch
             log(f"usage limit reached: {e}")
@@ -157,12 +160,13 @@ def _run_one(
     ckpt: Checkpoint,
     claude_bin: list[str],
     budget: Budget,
+    aux_prices: dict[str, Price] | None = None,
 ) -> dict:
     rid = run_id(task.id, arm, rep)
     started = datetime.now(UTC).isoformat()
     t0 = time.monotonic()
     budget.start_run()
-    parser = StreamParser(price)
+    parser = StreamParser(price, dict(aux_prices or {}))
     status, error, stop_experiment = None, None, False
 
     tmp = Path(tempfile.mkdtemp(prefix=f"tokentrial-{rid}-"))
@@ -238,6 +242,8 @@ def _run_one(
 
     usage = parser.state.usage
     result = parser.state.result or {}
+    rate = parser.state.rate_limit or {}
+    windows = rate.get("unifiedWindows") or {}
     return {
         "run_id": rid,
         "task": task.id,
@@ -249,11 +255,17 @@ def _run_one(
         "mode": config.mode,
         "model": config.model,
         "usage": asdict(usage),
-        "cost_usd": cost_breakdown(usage, price),
+        "usage_source": parser.state.usage_source,
+        "usage_aux": {m: asdict(u) for m, u in parser.state.aux.items()},
+        "unpriced_models": parser.state.unpriced_models,
+        "cost_usd": parser.cost(),
+        "cost_main_usd": cost_breakdown(usage, price)["total"],
         "cost_basis": "api_equivalent" if config.mode == "subscription" else "api_billed",
         "num_api_calls": len(parser.state.calls),
         "num_turns": result.get("num_turns"),
+        # Claude Code's own figure; not used (it mis-prices models it doesn't recognise).
         "reported_cost_usd": result.get("total_cost_usd"),
+        "rate_limit_utilization": {k: w.get("utilization") for k, w in windows.items()},
         "duration_s": round(time.monotonic() - t0, 2),
         "started_at": started,
         "arm_version": runtime.version if runtime else None,

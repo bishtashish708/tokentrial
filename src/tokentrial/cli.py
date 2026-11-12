@@ -224,7 +224,12 @@ def run(
     if not resume:
         ckpt.create(config)
     tasks = {t.id: t for t in load_tasks(tasks_dir)}
-    outcome = run_experiment(config, tasks, prices[key], ckpt, cmd, log=typer.echo)
+    aux_prices = {
+        m: p for (prov, m), p in prices.items() if prov == config.provider and m != key[1]
+    }
+    outcome = run_experiment(
+        config, tasks, prices[key], ckpt, cmd, log=typer.echo, aux_prices=aux_prices
+    )
 
     typer.echo(f"finished {outcome.finished} run(s), skipped {outcome.skipped} already done")
     if outcome.stopped_reason == "usage_limit":

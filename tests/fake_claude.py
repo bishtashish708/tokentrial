@@ -1,10 +1,14 @@
 """Stand-in for the `claude` CLI used by tests. Never calls a model.
 
+Event shapes follow real Claude Code 2.1.252 output (see tests/fixtures/).
+
 Behaviour is chosen by environment variables:
   FAKE_SCENARIO   solve | nothing | usage_limit | expensive | auth_fail | api_error
+                  | rate_limited
   FAKE_SOLUTION   directory copied into cwd for the "solve" scenario
   FAKE_COUNTER    file counting invocations; with FAKE_LIMIT_AFTER=N the
                   N+1th and later sessions report a usage limit
+  FAKE_ARGV_LOG   append each session's argv to this file
 """
 
 import json
@@ -45,14 +49,27 @@ def main():
         {
             "type": "system",
             "subtype": "init",
-            "model": "fake",
+            "model": "claude-haiku-5-5",
             "tools": ["Read"],
             "mcp_servers": [],
             "claude_code_version": "0.0.0",
         }
     )
+    emit(
+        {
+            "type": "rate_limit_event",
+            "rate_limit_info": {
+                "status": "rejected" if scenario == "rate_limited" else "allowed",
+                "resetsAt": 1893456000,
+                "rateLimitType": "five_hour",
+                "unifiedWindows": {"five_hour": {"utilization": 0.1}},
+            },
+        }
+    )
+    if scenario == "rate_limited":
+        return
+
     if scenario == "auth_fail":
-        # Shape observed from real Claude Code 2.1.252 on an expired session.
         emit(
             {
                 "type": "assistant",
@@ -65,8 +82,8 @@ def main():
                     "content": [
                         {
                             "type": "text",
-                            "text": "Failed to authenticate: "
-                            "OAuth session expired and could not be refreshed",
+                            "text": "Failed to authenticate: OAuth session expired "
+                            "and could not be refreshed",
                         }
                     ],
                 },
@@ -114,10 +131,17 @@ def main():
         "output_tokens": 300,
         "cache_creation": {"ephemeral_5m_input_tokens": 2000, "ephemeral_1h_input_tokens": 0},
     }
-    msg = {"id": "msg_1", "role": "assistant", "usage": usage}
-    # Same message id twice, as Claude Code emits one event per content block.
+    # Streaming snapshots carry an early, incomplete output count, repeated once per
+    # content block under the same message id, as real Claude Code does.
+    msg = {
+        "id": "msg_1",
+        "role": "assistant",
+        "model": "claude-haiku-5-5",
+        "usage": {**usage, "output_tokens": 3},
+    }
     emit({"type": "assistant", "message": {**msg, "content": [{"type": "text", "text": "a"}]}})
     emit({"type": "assistant", "message": {**msg, "content": [{"type": "text", "text": "b"}]}})
+    emit({"type": "system", "subtype": "thinking_tokens", "estimated_tokens_delta": 40})
     if scenario == "solve":
         shutil.copytree(os.environ["FAKE_SOLUTION"], os.getcwd(), dirs_exist_ok=True)
     emit(
@@ -129,6 +153,14 @@ def main():
             "total_cost_usd": 0.01,
             "result": "done",
             "usage": usage,
+            "modelUsage": {
+                "claude-haiku-5-5": {"inputTokens": 100},
+                "claude-haiku-4-5-20251001": {
+                    "inputTokens": 900,
+                    "outputTokens": 10,
+                    "canonicalModel": "claude-haiku-4-5",
+                },
+            },
         }
     )
 

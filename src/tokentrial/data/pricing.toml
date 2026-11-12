@@ -40,6 +40,17 @@ output = 0.50
 source = "anthropic model table 2026-11; cache-write and cache-read via multipliers"
 verified = false
 
+[anthropic."claude-haiku-4-5"]
+# Not benchmarked: Claude Code 2.1.252 makes small background calls on this model
+# (observed ~940 input / ~11 output tokens per session); they are part of a run's cost.
+input = 1.00
+cache_write_5m = 1.25
+cache_write_1h = 2.00
+cache_read = 0.10
+output = 5.00
+source = "anthropic model table 2026-11; cache-write and cache-read via multipliers"
+verified = false
+
 [bedrock."anthropic.claude-opus-5-5"]
 region = "us-east-1"
 input = 4.00
