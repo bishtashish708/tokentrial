@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Run artifacts (raw transcripts can be large and may contain secrets)
+runs/
+results/raw/
+*.jsonl.gz
+workspaces/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Leaderboard build output
+site/_build/

@@ -1,0 +1,61 @@
+# USD per 1M tokens, split by the four token types TokenTrial reports.
+#
+# Every entry carries `source` and `verified`. A run refuses to publish to the
+# leaderboard while any price it used has verified = false.
+#
+# Anthropic first-party input/output/cache-read rates: Anthropic model table, 2026-11.
+# Cache-write rates assume the documented multipliers on base input
+# (5-minute TTL = 1.25x, 1-hour TTL = 2x) and must be re-checked against the
+# live pricing page before the first published run.
+#
+# Bedrock is partner-priced and differs by region and tier. Values below are
+# PLACEHOLDERS copied from first-party rates until filled in from
+# https://aws.amazon.com/bedrock/pricing/ .
+
+[anthropic."claude-opus-5-5"]
+input = 4.00
+cache_write_5m = 5.00
+cache_write_1h = 8.00
+cache_read = 0.20
+output = 20.00
+source = "anthropic model table 2026-11; cache-write via multipliers"
+verified = false
+
+[anthropic."claude-sonnet-5-5"]
+input = 2.00
+cache_write_5m = 2.50
+cache_write_1h = 4.00
+cache_read = 0.10
+output = 10.00
+source = "anthropic model table 2026-11; cache-write via multipliers"
+verified = false
+
+[anthropic."claude-haiku-5-5"]
+# Rates for prompts up to 100K tokens; longer prompts are billed higher (TODO: tiering).
+input = 0.10
+cache_write_5m = 0.125
+cache_write_1h = 0.20
+cache_read = 0.01
+output = 0.50
+source = "anthropic model table 2026-11; cache-write and cache-read via multipliers"
+verified = false
+
+[bedrock."anthropic.claude-opus-5-5"]
+region = "us-east-1"
+input = 4.00
+cache_write_5m = 5.00
+cache_write_1h = 8.00
+cache_read = 0.20
+output = 20.00
+source = "PLACEHOLDER - copy of first-party rates"
+verified = false
+
+[bedrock."anthropic.claude-sonnet-5-5"]
+region = "us-east-1"
+input = 2.00
+cache_write_5m = 2.50
+cache_write_1h = 4.00
+cache_read = 0.10
+output = 10.00
+source = "PLACEHOLDER - copy of first-party rates"
+verified = false
