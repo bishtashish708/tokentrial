@@ -11,7 +11,7 @@ Independent benchmark of rtk v1.1.0 in Claude Code: sharing results and inviting
 Hi, and thanks for rtk. I've been building **TokenTrial**
 (https://github.com/bishtashish708/tokentrial), an open benchmark that runs coding-agent tasks with
 and without a token-saving tool and reports cost per correctly solved task. rtk v1.1.0 was one of
-the first tools tested. I'm sharing the results before posting them anywhere, so you can check the
+the first tools tested. The results and raw data are public in the repo, but I'm sharing them with you before announcing them anywhere, so you can check the
 setup and push back if I've configured something wrong.
 
 **Setup**
@@ -57,6 +57,7 @@ version. v1.2.0 came out shortly before the runs were pinned and wasn't tested. 
 the latest release.
 
 **Links**
+- Leaderboard: https://bishtashish708.github.io/tokentrial/
 - Write-up: https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/FINDINGS.md
 - Per-run raw records and agent transcripts (scrubbed):
   https://github.com/bishtashish708/tokentrial/tree/main/results/v0.2/raw

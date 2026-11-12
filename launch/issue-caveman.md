@@ -11,7 +11,7 @@ Independent benchmark of caveman v4.0.1 in Claude Code, and a SessionStart side 
 Hi, and thanks for caveman. I've been building **TokenTrial**
 (https://github.com/bishtashish708/tokentrial), an open benchmark that runs coding-agent tasks with
 and without a token-saving tool and reports cost per correctly solved task. caveman v4.0.1 was one
-of the first tools tested. I'm sharing the results before posting them anywhere, so you can check
+of the first tools tested. The results and raw data are public in the repo, but I'm sharing them with you before announcing them anywhere, so you can check
 the setup and push back if anything's off.
 
 **Setup**
@@ -55,6 +55,7 @@ runs were pinned and wasn't tested. Larger tasks with longer answers could well 
 result.
 
 **Links**
+- Leaderboard: https://bishtashish708.github.io/tokentrial/
 - Write-up: https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/FINDINGS.md
   (see "Why caveman's pilot saving disappeared")
 - Raw records and scrubbed transcripts:
