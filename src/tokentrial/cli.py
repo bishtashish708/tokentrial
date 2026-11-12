@@ -207,6 +207,15 @@ def run(
             err=True,
         )
         raise typer.Exit(code=EXIT_NOT_READY)
+    tasks_by_id = {t.id: t for t in load_tasks(tasks_dir)}
+    unready = [t for t in config.task_ids if not tasks_by_id[t].ready]
+    if unready:
+        typer.echo(
+            f"Task(s) {', '.join(unready)} need tools that are not installed "
+            "(run `tokentrial install-arms`).",
+            err=True,
+        )
+        raise typer.Exit(code=EXIT_NOT_READY)
     if not resume and ckpt.exists():
         typer.echo(
             f"{out}/ already has an experiment. Use --resume to continue it, "

@@ -27,7 +27,7 @@ from tokentrial.claude_code import (
     parse_reset_epoch,
 )
 from tokentrial.pricing import Price, tiered_cost
-from tokentrial.tasks import Task, materialize, run_check
+from tokentrial.tasks import Task, materialize, run_check, task_path_env
 
 # Statuses that count as finished; anything else is retried on --resume.
 FINAL_STATUSES = {"solved", "unsolved", "aborted_budget", "timeout"}
@@ -199,7 +199,7 @@ def _run_one(
             proc = subprocess.Popen(
                 build_command(claude_bin, config.model, runtime.extra_args),
                 cwd=workspace,
-                env=runtime.apply_env(child_env(config.mode)),
+                env=runtime.apply_env(task_path_env(child_env(config.mode))),
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=err_log,  # a file, so a chatty stderr can never block the pipe

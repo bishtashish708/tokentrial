@@ -1,0 +1,9 @@
+prompt = """
+The test suite for `cartcalc` is failing. The pricing rules are specified in SPEC.md.
+Fix the source code under cartcalc/ so that it implements SPEC.md exactly. Do not modify the
+tests or the golden data in tests/. Run the tests with `python3 -m pytest tests`.
+Your fix will also be checked against additional tests derived from SPEC.md.
+"""
+timeout_s = 1200
+requires = ["pytest"]
+tags = ["python", "pytest", "large-test-output", "multi-bug", "spec"]

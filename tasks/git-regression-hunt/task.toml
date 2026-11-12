@@ -1,0 +1,12 @@
+prompt = """
+This repository's history is in git. `tests/test_bucket.py` passed at some point in the past,
+but now fails. Run the tests with `python3 -m pytest tests`.
+
+1. Find the commit that introduced the regression, and write its full commit SHA to a file
+   named ANSWER.txt in the repository root (the SHA only).
+2. Fix the bug in the current code so the tests pass. Do not modify the tests.
+"""
+timeout_s = 1200
+history = "history.bundle"
+requires = ["pytest"]
+tags = ["git", "pytest", "regression-hunt", "large-git-output"]

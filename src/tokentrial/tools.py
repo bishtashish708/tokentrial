@@ -49,7 +49,9 @@ CAVEMAN = Pin(
     "https://github.com/JuliusBrussee/caveman",
     "d262ab3882952a59312ff3537cd86d894523c5ab",
 )
-PINS = {p.name: p for p in (RTK, CAVEMAN)}
+# Shared Python environment for task test suites (put on PATH for every arm equally).
+PYTEST = Pin("pytest", "8.4.2", "https://pypi.org/project/pytest/8.4.2/", "")
+PINS = {p.name: p for p in (RTK, CAVEMAN, PYTEST)}
 
 _RTK_TARGETS = {
     ("Darwin", "arm64"): "aarch64-apple-darwin",
@@ -156,4 +158,34 @@ def install_caveman(log=print) -> Path:
     return dest
 
 
-INSTALLERS = {"rtk": install_rtk, "caveman": install_caveman}
+def task_env_bin() -> Path:
+    return tool_dir(PYTEST) / "venv" / "bin"
+
+
+def install_task_env(log=print) -> Path:
+    """A venv with pinned pytest for tasks whose tests use pytest."""
+    dest = tool_dir(PYTEST)
+    shutil.rmtree(dest, ignore_errors=True)
+    dest.mkdir(parents=True)
+    log(f"creating venv with pytest=={PYTEST.version}")
+    subprocess.run(["uv", "venv", "-q", "--python", "python3", str(dest / "venv")], check=True)
+    subprocess.run(
+        [
+            "uv",
+            "pip",
+            "install",
+            "-q",
+            "--python",
+            str(dest / "venv" / "bin" / "python"),
+            f"pytest=={PYTEST.version}",
+        ],
+        check=True,
+    )
+    version = subprocess.run(
+        [str(task_env_bin() / "pytest"), "--version"], capture_output=True, text=True, check=True
+    ).stdout.strip()
+    (dest / "install.json").write_text(json.dumps({"version": PYTEST.version, "check": version}))
+    return dest
+
+
+INSTALLERS = {"rtk": install_rtk, "caveman": install_caveman, "pytest": install_task_env}

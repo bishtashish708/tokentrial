@@ -1,0 +1,12 @@
+prompt = """
+This is the git repository of `fetchkit`. At some point the default value of `MAX_RETRIES` in
+the code was changed from 5 to 3. Find the commit that changed it in the code, and the first
+release tag that shipped the change.
+
+Write the answer to a file named ANSWER.txt in the repository root, as
+`<commit sha> <tag>` on one line (for example `0123abc v9.9`), and nothing else.
+Do not modify any other files.
+"""
+timeout_s = 900
+history = "history.bundle"
+tags = ["git", "exact-answer", "large-git-output"]
