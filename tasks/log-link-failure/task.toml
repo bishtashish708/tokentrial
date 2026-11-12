@@ -1,0 +1,9 @@
+prompt = """
+build.log is the log of a failed CI build of a C project. Find the source location of the
+first error that made the build fail. Errors the build tolerated do not count.
+
+Write the answer to a file named ANSWER.txt in the repository root, as `path:line`
+(for example `src/foo/bar.c:123`), and nothing else. Do not modify build.log.
+"""
+timeout_s = 600
+tags = ["log-triage", "large-tool-output", "exact-answer"]

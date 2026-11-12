@@ -1,0 +1,6 @@
+prompt = """
+`npm test` is failing in this repository. Run it, find the bug in the source code under
+src/, and fix it. Do not modify the tests.
+"""
+timeout_s = 600
+tags = ["javascript", "fix-failing-test", "noisy-test-output"]

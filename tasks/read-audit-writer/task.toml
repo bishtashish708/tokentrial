@@ -1,0 +1,11 @@
+prompt = """
+This repository contains `shopcore`, an order-management library. Question: when an order is
+refunded through the public API function `shopcore.api.refund_order`, which function actually
+writes the refund's audit-log record to the audit store?
+
+Write the answer to a file named ANSWER.txt in the repository root. It must contain only the
+fully qualified dotted name of that function (for example `shopcore.some.module.function_name`).
+Do not modify any other files.
+"""
+timeout_s = 900
+tags = ["python", "read-codebase", "exact-answer"]

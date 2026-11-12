@@ -1,0 +1,10 @@
+{
+  "name": "textkit",
+  "version": "0.3.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "pretest": "node scripts/banner.js",
+    "test": "node --test --test-reporter=spec"
+  }
+}

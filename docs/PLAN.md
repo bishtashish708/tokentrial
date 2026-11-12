@@ -14,8 +14,9 @@ at API rates, so results are comparable. API-key mode is kept as an option for l
 | Budget caps (`--max-usd`, `--max-usd-per-run`) | Done, enforced during each run |
 | Usage-limit detection, checkpointing, `--resume` | Done |
 | `tokentrial doctor` (install and login check, no model call) | Done |
-| Tasks | 1 of 5 (`py-ledger-parens`) |
-| Arm adapters | `baseline`, `noop` done. `rtk` and `caveman` are pending (day 4) |
+| Tasks | 5 of 5, all validated in CI (check fails on start, passes on reference) |
+| Arm adapters | All 4 done. rtk v1.1.0 and caveman v4.0.1 are pinned and installed with `tokentrial install-arms` |
+| Smoke run | First attempt hit an auth failure caused by the inherited host environment (fixed). The standalone CLI login has expired, so it needs `claude auth login` |
 | `report`, bootstrap, leaderboard | Pending (week 2) |
 | Checked against real Claude Code output | **Not yet.** This is the first smoke run (below) |
 
@@ -122,6 +123,19 @@ is kept in `runs/<exp>/logs/<run_id>.jsonl`.
 - Starting a new run with an `--out` that already holds an experiment is refused, so results are
   never mixed by accident.
 
+**Arm isolation**
+
+- rtk is installed per workspace: `rtk init` without `-g` writes the Bash PreToolUse hook to the
+  workspace's `.claude/settings.json`, plus `RTK.md` and a `CLAUDE.md` reference. rtk is put on the
+  agent's PATH. The setup fails loudly if no hook was written. The binary comes from the pinned
+  GitHub release and is verified against the release's `checksums.txt`.
+- caveman is loaded per session with `--plugin-dir`, from a clone at the pinned tag that is
+  verified against the pinned commit. Headless sessions start with caveman off unless
+  `CAVEMAN_DEFAULT_MODE` is set, so the arm sets it to `caveman`. caveman's hooks keep state in
+  `~/.claude/.caveman-active` and `~/.claude/.caveman-sessions/`. The adapter removes whatever a
+  run created there.
+- Nothing is installed into the user's global Claude Code configuration.
+
 **Caveats to check on the first smoke run**
 
 - The usage field names in Claude Code's stream-json output. The parser accepts the Messages API
@@ -157,13 +171,15 @@ Each task lives in `tasks/<id>/`. It has `task.toml` (prompt and limits), `repo/
 files), `check.sh` (hidden from the agent, exit 0 = solved) and `solution/`. The five pilot tasks
 cover the workloads that matter most to the two tools under test:
 
-| # | Task type | Why |
+| ID | Task type | Why |
 |---|---|---|
-| 1 | Fix a failing Python test with verbose pytest output | RTK's main target |
-| 2 | Fix a failing JS test with noisy npm/jest output | RTK, in a second ecosystem |
-| 3 | Small feature against spec tests | Balanced work, where caveman's terse output should show |
-| 4 | Read a mid-size codebase and give an exact answer | Context-heavy, little output |
-| 5 | Triage a build log and give an exact answer | Large tool output |
+| `py-ledger-parens` | Fix a failing Python test with verbose `unittest -v` output | RTK's main target |
+| `js-chunk-remainder` | Fix a failing JS test with noisy `npm test` / `node --test` output | RTK, in a second ecosystem |
+| `py-duration-spec` | Implement two functions from a docstring spec. Hidden tests cover the full spec | Balanced work, where caveman's terse output should show |
+| `read-audit-writer` | Trace an indirect call path (event bus → registry → settings override) and give an exact dotted name | Context-heavy, little output |
+| `log-link-failure` | Find the failing `path:line` in a CI log with distractor errors (an ignored legacy error, a flaky test rerun) | Large tool output |
+
+The build log is generated deterministically by `scripts/make_build_log.py`.
 
 Each check must fail on `repo/` and pass on `solution/`. CI checks both. In v0.2 this grows to 20
 tasks across 6 groups, adding JS/TS fixes, refactors and more read-heavy tasks.
@@ -198,11 +214,11 @@ Also reported: solve rate, cost per run, turns, wall time, and cost split by tok
 
 | Day | Deliverable |
 |---|---|
-| 1 | ✅ Task format, loader, `check.sh` contract. ✅ Task 1. Task 2 |
+| 1 | ✅ Task format, loader, `check.sh` contract. ✅ Task 1 |
 | 2 | ✅ Runner: isolated workspace, Claude Code headless (subscription by default), usage per call, checkpoint and `--resume`. Next: the smoke run to validate against real output |
 | 3 | Pricing: Anthropic rows verified, Haiku long-prompt tier, Bedrock rows filled in. ✅ Budget caps wired into the runner |
-| 4 | Arm adapters: `noop`, `rtk`, `caveman` at pinned versions |
-| 5 | Tasks 3–5. CI validates every check |
+| 4 | ✅ Arm adapters: `noop`, `rtk` (project-scoped `rtk init` hook), `caveman` (`--plugin-dir`, `CAVEMAN_DEFAULT_MODE=caveman`) |
+| 5 | ✅ Tasks 2–5. ✅ CI validates every check |
 
 ### Week 2: pilot and leaderboard
 

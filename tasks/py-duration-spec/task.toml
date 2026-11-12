@@ -1,0 +1,8 @@
+prompt = """
+Implement `parse_duration` and `format_duration` in durations.py. They currently raise
+NotImplementedError. The required behaviour is specified in their docstrings. Some tests are
+in tests/; your implementation must satisfy the full specification, not only those tests.
+Run the tests with `python3 -m unittest discover -s tests -v`.
+"""
+timeout_s = 900
+tags = ["python", "feature-from-spec"]

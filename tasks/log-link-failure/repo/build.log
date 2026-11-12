@@ -1,0 +1,700 @@
+2026-11-03T14:02:07.458Z ##[group]Run actions/checkout@v4
+2026-11-03T14:02:07.735Z Syncing repository: acme/wirekit
+2026-11-03T14:02:08.091Z Getting Git version info
+2026-11-03T14:02:08.254Z Temporarily overriding HOME='/home/runner/work/_temp/abc' before making global git config changes
+2026-11-03T14:02:08.726Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T14:02:09.050Z Deleting the contents of '/home/runner/work/wirekit/wirekit'
+2026-11-03T14:02:09.873Z Initializing the repository
+2026-11-03T14:02:10.542Z Fetching the repository
+2026-11-03T14:02:11.141Z HEAD is now at 9c41e2b net: batch packet finalization
+2026-11-03T14:02:11.257Z ##[endgroup]
+2026-11-03T14:02:11.445Z ##[group]Run sudo apt-get install -y build-essential cmake ninja-build python3-pip
+2026-11-03T14:02:11.704Z Get: libc6-dev (2.1-4ubuntu2) ...
+2026-11-03T14:02:11.826Z Unpacking libc6-dev (3.27-3ubuntu2) ...
+2026-11-03T14:02:12.478Z Setting up libc6-dev (5.17-2ubuntu1) ...
+2026-11-03T14:02:12.963Z Get: gcc-13 (4.23-1ubuntu1) ...
+2026-11-03T14:02:13.401Z Unpacking gcc-13 (6.2-1ubuntu2) ...
+2026-11-03T14:02:13.883Z Setting up gcc-13 (4.8-3ubuntu2) ...
+2026-11-03T14:02:14.618Z Get: g++-13 (8.21-2ubuntu3) ...
+2026-11-03T14:02:14.984Z Unpacking g++-13 (4.5-2ubuntu2) ...
+2026-11-03T14:02:15.700Z Setting up g++-13 (3.15-4ubuntu1) ...
+2026-11-03T14:02:15.844Z Get: cmake-data (7.21-3ubuntu1) ...
+2026-11-03T14:02:15.973Z Unpacking cmake-data (5.14-4ubuntu1) ...
+2026-11-03T14:02:16.365Z Setting up cmake-data (5.30-1ubuntu2) ...
+2026-11-03T14:02:16.586Z Get: ninja-build (2.10-5ubuntu3) ...
+2026-11-03T14:02:17.100Z Unpacking ninja-build (8.6-4ubuntu2) ...
+2026-11-03T14:02:17.328Z Setting up ninja-build (7.21-3ubuntu3) ...
+2026-11-03T14:02:17.887Z Get: python3-pip (1.26-2ubuntu2) ...
+2026-11-03T14:02:18.572Z Unpacking python3-pip (8.28-3ubuntu1) ...
+2026-11-03T14:02:19.406Z Setting up python3-pip (4.18-2ubuntu3) ...
+2026-11-03T14:02:20.236Z Get: libssl-dev (7.5-5ubuntu3) ...
+2026-11-03T14:02:20.502Z Unpacking libssl-dev (5.3-4ubuntu3) ...
+2026-11-03T14:02:20.582Z Setting up libssl-dev (5.15-4ubuntu1) ...
+2026-11-03T14:02:20.707Z Get: zlib1g-dev (2.11-5ubuntu1) ...
+2026-11-03T14:02:20.885Z Unpacking zlib1g-dev (5.3-2ubuntu2) ...
+2026-11-03T14:02:21.351Z Setting up zlib1g-dev (9.8-1ubuntu3) ...
+2026-11-03T14:02:22.117Z Get: pkg-config (3.27-4ubuntu3) ...
+2026-11-03T14:02:22.562Z Unpacking pkg-config (5.9-3ubuntu1) ...
+2026-11-03T14:02:23.384Z Setting up pkg-config (9.18-5ubuntu2) ...
+2026-11-03T14:02:24.240Z Get: doxygen (3.8-3ubuntu2) ...
+2026-11-03T14:02:24.491Z Unpacking doxygen (4.23-5ubuntu3) ...
+2026-11-03T14:02:25.049Z Setting up doxygen (4.10-1ubuntu2) ...
+2026-11-03T14:02:25.241Z Selecting previously unselected package libx0.
+2026-11-03T14:02:25.474Z Selecting previously unselected package libpcre1.
+2026-11-03T14:02:26.270Z Selecting previously unselected package libpcre2.
+2026-11-03T14:02:26.807Z Selecting previously unselected package libglib3.
+2026-11-03T14:02:27.577Z Selecting previously unselected package libgio4.
+2026-11-03T14:02:28.298Z Selecting previously unselected package libx5.
+2026-11-03T14:02:28.469Z Selecting previously unselected package libdbus6.
+2026-11-03T14:02:29.130Z Selecting previously unselected package libgio7.
+2026-11-03T14:02:29.644Z Selecting previously unselected package libpcre8.
+2026-11-03T14:02:30.184Z Selecting previously unselected package libpcre9.
+2026-11-03T14:02:30.584Z Selecting previously unselected package libx10.
+2026-11-03T14:02:30.901Z Selecting previously unselected package libpcre11.
+2026-11-03T14:02:31.165Z Selecting previously unselected package libffi12.
+2026-11-03T14:02:31.191Z Selecting previously unselected package libgl13.
+2026-11-03T14:02:32.003Z Selecting previously unselected package libgio14.
+2026-11-03T14:02:32.034Z Selecting previously unselected package libgio15.
+2026-11-03T14:02:32.838Z Selecting previously unselected package libffi16.
+2026-11-03T14:02:33.464Z Selecting previously unselected package libgl17.
+2026-11-03T14:02:33.552Z Selecting previously unselected package libgl18.
+2026-11-03T14:02:34.207Z Selecting previously unselected package libffi19.
+2026-11-03T14:02:34.786Z Selecting previously unselected package libdbus20.
+2026-11-03T14:02:35.014Z Selecting previously unselected package libglib21.
+2026-11-03T14:02:35.232Z Selecting previously unselected package libgio22.
+2026-11-03T14:02:35.810Z Selecting previously unselected package libffi23.
+2026-11-03T14:02:36.137Z Selecting previously unselected package libgl24.
+2026-11-03T14:02:36.640Z Selecting previously unselected package libgl25.
+2026-11-03T14:02:37.154Z Selecting previously unselected package libdbus26.
+2026-11-03T14:02:37.760Z Selecting previously unselected package libdbus27.
+2026-11-03T14:02:38.133Z Selecting previously unselected package libgio28.
+2026-11-03T14:02:38.659Z Selecting previously unselected package libgl29.
+2026-11-03T14:02:38.831Z Selecting previously unselected package libffi30.
+2026-11-03T14:02:39.520Z Selecting previously unselected package libglib31.
+2026-11-03T14:02:39.909Z Selecting previously unselected package libx32.
+2026-11-03T14:02:40.555Z Selecting previously unselected package libdbus33.
+2026-11-03T14:02:41.426Z Selecting previously unselected package libffi34.
+2026-11-03T14:02:42.060Z Selecting previously unselected package libglib35.
+2026-11-03T14:02:42.346Z Selecting previously unselected package libx36.
+2026-11-03T14:02:42.600Z Selecting previously unselected package libffi37.
+2026-11-03T14:02:42.844Z Selecting previously unselected package libx38.
+2026-11-03T14:02:43.125Z Selecting previously unselected package libgl39.
+2026-11-03T14:02:43.436Z Selecting previously unselected package libgio40.
+2026-11-03T14:02:44.214Z Selecting previously unselected package libffi41.
+2026-11-03T14:02:44.258Z Selecting previously unselected package libpcre42.
+2026-11-03T14:02:44.798Z Selecting previously unselected package libdbus43.
+2026-11-03T14:02:45.392Z Selecting previously unselected package libx44.
+2026-11-03T14:02:45.568Z Selecting previously unselected package libdbus45.
+2026-11-03T14:02:46.142Z Selecting previously unselected package libgl46.
+2026-11-03T14:02:46.298Z Selecting previously unselected package libglib47.
+2026-11-03T14:02:46.425Z Selecting previously unselected package libgl48.
+2026-11-03T14:02:46.925Z Selecting previously unselected package libdbus49.
+2026-11-03T14:02:47.115Z Selecting previously unselected package libgl50.
+2026-11-03T14:02:47.325Z Selecting previously unselected package libffi51.
+2026-11-03T14:02:48.135Z Selecting previously unselected package libglib52.
+2026-11-03T14:02:48.409Z Selecting previously unselected package libgl53.
+2026-11-03T14:02:48.987Z Selecting previously unselected package libx54.
+2026-11-03T14:02:49.266Z Selecting previously unselected package libpcre55.
+2026-11-03T14:02:50.038Z Selecting previously unselected package libgl56.
+2026-11-03T14:02:50.852Z Selecting previously unselected package libglib57.
+2026-11-03T14:02:51.556Z Selecting previously unselected package libx58.
+2026-11-03T14:02:51.607Z Selecting previously unselected package libgl59.
+2026-11-03T14:02:51.819Z Selecting previously unselected package libffi60.
+2026-11-03T14:02:52.197Z Selecting previously unselected package libpcre61.
+2026-11-03T14:02:52.400Z Selecting previously unselected package libdbus62.
+2026-11-03T14:02:52.975Z Selecting previously unselected package libffi63.
+2026-11-03T14:02:53.769Z Selecting previously unselected package libglib64.
+2026-11-03T14:02:53.818Z Selecting previously unselected package libpcre65.
+2026-11-03T14:02:54.524Z Selecting previously unselected package libffi66.
+2026-11-03T14:02:55.000Z Selecting previously unselected package libpcre67.
+2026-11-03T14:02:55.453Z Selecting previously unselected package libffi68.
+2026-11-03T14:02:55.741Z Selecting previously unselected package libpcre69.
+2026-11-03T14:02:56.425Z Selecting previously unselected package libpcre70.
+2026-11-03T14:02:57.117Z Selecting previously unselected package libdbus71.
+2026-11-03T14:02:57.176Z Selecting previously unselected package libgio72.
+2026-11-03T14:02:57.770Z Selecting previously unselected package libx73.
+2026-11-03T14:02:57.993Z Selecting previously unselected package libdbus74.
+2026-11-03T14:02:58.516Z Selecting previously unselected package libx75.
+2026-11-03T14:02:58.855Z Selecting previously unselected package libffi76.
+2026-11-03T14:02:59.122Z Selecting previously unselected package libgl77.
+2026-11-03T14:02:59.711Z Selecting previously unselected package libffi78.
+2026-11-03T14:03:00.059Z Selecting previously unselected package libgl79.
+2026-11-03T14:03:00.309Z Selecting previously unselected package libffi80.
+2026-11-03T14:03:00.527Z Selecting previously unselected package libpcre81.
+2026-11-03T14:03:01.017Z Selecting previously unselected package libgl82.
+2026-11-03T14:03:01.472Z Selecting previously unselected package libpcre83.
+2026-11-03T14:03:02.359Z Selecting previously unselected package libpcre84.
+2026-11-03T14:03:03.075Z Selecting previously unselected package libdbus85.
+2026-11-03T14:03:03.338Z Selecting previously unselected package libglib86.
+2026-11-03T14:03:03.954Z Selecting previously unselected package libpcre87.
+2026-11-03T14:03:04.182Z Selecting previously unselected package libffi88.
+2026-11-03T14:03:04.726Z Selecting previously unselected package libgio89.
+2026-11-03T14:03:05.553Z Selecting previously unselected package libgio90.
+2026-11-03T14:03:06.271Z Selecting previously unselected package libffi91.
+2026-11-03T14:03:06.587Z Selecting previously unselected package libgl92.
+2026-11-03T14:03:07.343Z Selecting previously unselected package libdbus93.
+2026-11-03T14:03:08.021Z Selecting previously unselected package libgio94.
+2026-11-03T14:03:08.574Z Selecting previously unselected package libx95.
+2026-11-03T14:03:08.651Z Selecting previously unselected package libgio96.
+2026-11-03T14:03:08.798Z Selecting previously unselected package libgl97.
+2026-11-03T14:03:09.398Z Selecting previously unselected package libglib98.
+2026-11-03T14:03:09.968Z Selecting previously unselected package libglib99.
+2026-11-03T14:03:10.332Z Selecting previously unselected package libglib100.
+2026-11-03T14:03:11.018Z Selecting previously unselected package libglib101.
+2026-11-03T14:03:11.742Z Selecting previously unselected package libgio102.
+2026-11-03T14:03:11.937Z Selecting previously unselected package libx103.
+2026-11-03T14:03:12.253Z Selecting previously unselected package libdbus104.
+2026-11-03T14:03:12.962Z Selecting previously unselected package libgio105.
+2026-11-03T14:03:13.367Z Selecting previously unselected package libdbus106.
+2026-11-03T14:03:13.710Z Selecting previously unselected package libpcre107.
+2026-11-03T14:03:14.393Z Selecting previously unselected package libpcre108.
+2026-11-03T14:03:15.006Z Selecting previously unselected package libglib109.
+2026-11-03T14:03:15.592Z Selecting previously unselected package libgl110.
+2026-11-03T14:03:16.314Z Selecting previously unselected package libglib111.
+2026-11-03T14:03:16.765Z Selecting previously unselected package libx112.
+2026-11-03T14:03:17.073Z Selecting previously unselected package libdbus113.
+2026-11-03T14:03:17.662Z Selecting previously unselected package libffi114.
+2026-11-03T14:03:18.194Z Selecting previously unselected package libgio115.
+2026-11-03T14:03:18.249Z Selecting previously unselected package libpcre116.
+2026-11-03T14:03:18.518Z Selecting previously unselected package libgl117.
+2026-11-03T14:03:18.889Z Selecting previously unselected package libgio118.
+2026-11-03T14:03:19.407Z Selecting previously unselected package libgio119.
+2026-11-03T14:03:19.415Z ##[endgroup]
+2026-11-03T14:03:19.506Z ##[group]Run python3 -m pytest tools/ -q --reruns 2
+2026-11-03T14:03:19.583Z ============================= test session starts ==============================
+2026-11-03T14:03:20.044Z platform linux -- Python 3.12.3, pytest-8.3.2, pluggy-1.5.0
+2026-11-03T14:03:20.509Z plugins: rerunfailures-14.0
+2026-11-03T14:03:20.660Z collected 64 items
+2026-11-03T14:03:21.167Z 
+2026-11-03T14:03:21.473Z tools/test_codegen.py ........................                               [ 37%]
+2026-11-03T14:03:22.093Z tools/test_fetch_fixtures.py R.                                              [ 40%]
+2026-11-03T14:03:22.244Z tools/test_versioning.py ......................................              [100%]
+2026-11-03T14:03:22.756Z 
+2026-11-03T14:03:23.485Z =================================== RERUNS ====================================
+2026-11-03T14:03:23.710Z _____________________________ test_download_mirror _____________________________
+2026-11-03T14:03:24.296Z E   ConnectionResetError: [Errno 104] Connection reset by peer
+2026-11-03T14:03:24.758Z ERROR tools/test_fetch_fixtures.py::test_download_mirror - ConnectionResetError (rerun 1 of 2: passed)
+2026-11-03T14:03:24.890Z ======================== 64 passed, 1 rerun in 9.41s ==========================
+2026-11-03T14:03:25.694Z ##[endgroup]
+2026-11-03T14:03:26.322Z ##[group]Run cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+2026-11-03T14:03:26.852Z -- The C compiler identification is GNU 13.2.0
+2026-11-03T14:03:27.163Z -- Detecting C compiler ABI info
+2026-11-03T14:03:27.810Z -- Detecting C compiler ABI info - done
+2026-11-03T14:03:28.325Z -- Check for working C compiler: /usr/bin/cc - skipped
+2026-11-03T14:03:28.803Z -- Detecting C compile features
+2026-11-03T14:03:29.658Z -- Detecting C compile features - done
+2026-11-03T14:03:30.272Z -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")
+2026-11-03T14:03:31.079Z -- Found ZLIB: /usr/lib/x86_64-linux-gnu/libz.so (found version "1.3")
+2026-11-03T14:03:31.534Z -- Option WIREKIT_WITH_CRC32_ASM: OFF
+2026-11-03T14:03:31.581Z -- Option WIREKIT_BUILD_LEGACY: ON (errors in legacy/ are non-fatal)
+2026-11-03T14:03:32.360Z -- Configuring done (1.8s)
+2026-11-03T14:03:32.671Z -- Generating done (0.1s)
+2026-11-03T14:03:33.370Z -- Build files have been written to: /home/runner/work/wirekit/wirekit/build
+2026-11-03T14:03:33.960Z ##[endgroup]
+2026-11-03T14:03:34.833Z ##[group]Run cmake --build build -- -k 0
+2026-11-03T14:03:35.326Z [1/39] Building C object src/CMakeFiles/wirekit.dir/core/alloc.c.o
+2026-11-03T14:03:36.127Z src/core/alloc.c: In function 'alloc_step':
+2026-11-03T14:03:36.941Z src/core/alloc.c:189:28: warning: this statement may fall through [-Wimplicit-fallthrough=]
+2026-11-03T14:03:37.001Z   189 |     int len = 0;
+2026-11-03T14:03:37.506Z [2/39] Building C object src/CMakeFiles/wirekit.dir/core/arena.c.o
+2026-11-03T14:03:37.632Z [3/39] Building C object src/CMakeFiles/wirekit.dir/core/strbuf.c.o
+2026-11-03T14:03:38.494Z [4/39] Building C object src/CMakeFiles/wirekit.dir/core/hash.c.o
+2026-11-03T14:03:38.535Z src/core/hash.c: In function 'hash_init':
+2026-11-03T14:03:39.188Z src/core/hash.c:382:10: warning: unused variable 'idx' [-Wunused-variable]
+2026-11-03T14:03:39.533Z   382 |     size_t idx = 0;
+2026-11-03T14:03:39.658Z src/core/hash.c: In function 'hash_write':
+2026-11-03T14:03:39.732Z src/core/hash.c:32:28: warning: this statement may fall through [-Wimplicit-fallthrough=]
+2026-11-03T14:03:40.342Z   32 |     uint8_t cursor = 0;
+2026-11-03T14:03:40.776Z [5/39] Building C object src/CMakeFiles/wirekit.dir/core/vec.c.o
+2026-11-03T14:03:41.627Z src/core/vec.c: In function 'vec_init':
+2026-11-03T14:03:42.355Z src/core/vec.c:223:22: warning: unused variable 'idx' [-Wunused-variable]
+2026-11-03T14:03:43.093Z   223 |     uint8_t idx = 0;
+2026-11-03T14:03:43.748Z [6/39] Building C object src/CMakeFiles/wirekit.dir/core/log.c.o
+2026-11-03T14:03:43.834Z [7/39] Building C object src/CMakeFiles/wirekit.dir/core/time.c.o
+2026-11-03T14:03:44.257Z src/core/time.c: In function 'time_free':
+2026-11-03T14:03:44.321Z src/core/time.c:136:9: warning: 'rc' may be used uninitialized [-Wmaybe-uninitialized]
+2026-11-03T14:03:44.618Z   136 |     int rc = 0;
+2026-11-03T14:03:45.249Z [8/39] Building C object src/CMakeFiles/wirekit.dir/core/config.c.o
+2026-11-03T14:03:45.805Z [9/39] Building C object src/CMakeFiles/wirekit.dir/core/error.c.o
+2026-11-03T14:03:45.824Z src/core/error.c: In function 'error_write':
+2026-11-03T14:03:45.947Z src/core/error.c:88:30: warning: 'len' may be used uninitialized [-Wmaybe-uninitialized]
+2026-11-03T14:03:46.497Z   88 |     int len = 0;
+2026-11-03T14:03:47.182Z [10/39] Building C object src/CMakeFiles/wirekit.dir/net/socket.c.o
+2026-11-03T14:03:47.579Z [11/39] Building C object src/CMakeFiles/wirekit.dir/net/packet.c.o
+2026-11-03T14:03:48.474Z src/net/packet.c: In function 'packet_read':
+2026-11-03T14:03:49.171Z src/net/packet.c:349:12: warning: 'tmp' may be used uninitialized [-Wmaybe-uninitialized]
+2026-11-03T14:03:49.375Z   349 |     int tmp = 0;
+2026-11-03T14:03:50.273Z src/net/packet.c: In function 'packet_write':
+2026-11-03T14:03:50.382Z src/net/packet.c:216:17: warning: 'rc' may be used uninitialized [-Wmaybe-uninitialized]
+2026-11-03T14:03:50.473Z   216 |     size_t rc = 0;
+2026-11-03T14:03:51.075Z [12/39] Building C object src/CMakeFiles/wirekit.dir/net/frame.c.o
+2026-11-03T14:03:51.678Z [13/39] Building C object src/CMakeFiles/wirekit.dir/net/tls_shim.c.o
+2026-11-03T14:03:52.514Z src/net/tls_shim.c: In function 'tls_shim_write':
+2026-11-03T14:03:53.262Z src/net/tls_shim.c:376:14: warning: comparison of integer expressions of different signedness: 'int' and 'size_t' [-Wsign-compare]
+2026-11-03T14:03:53.746Z   376 |     uint8_t flags = 0;
+2026-11-03T14:03:53.862Z [14/39] Building C object src/CMakeFiles/wirekit.dir/net/resolver.c.o
+2026-11-03T14:03:54.196Z [15/39] Building C object src/CMakeFiles/wirekit.dir/net/backoff.c.o
+2026-11-03T14:03:54.604Z src/net/backoff.c: In function 'backoff_free':
+2026-11-03T14:03:54.898Z src/net/backoff.c:275:9: warning: 'len' may be used uninitialized [-Wmaybe-uninitialized]
+2026-11-03T14:03:55.452Z   275 |     int len = 0;
+2026-11-03T14:03:56.239Z [16/39] Building C object src/CMakeFiles/wirekit.dir/net/http1.c.o
+2026-11-03T14:03:57.122Z [17/39] Building C object src/CMakeFiles/wirekit.dir/io/file.c.o
+2026-11-03T14:03:57.578Z src/io/file.c: In function 'file_step':
+2026-11-03T14:03:58.090Z src/io/file.c:38:6: warning: comparison of integer expressions of different signedness: 'int' and 'size_t' [-Wsign-compare]
+2026-11-03T14:03:58.702Z   38 |     int len = 0;
+2026-11-03T14:03:58.726Z src/io/file.c: In function 'file_free':
+2026-11-03T14:03:59.017Z src/io/file.c:251:18: warning: unused variable 'flags' [-Wunused-variable]
+2026-11-03T14:03:59.657Z   251 |     size_t flags = 0;
+2026-11-03T14:03:59.928Z [18/39] Building C object src/CMakeFiles/wirekit.dir/io/mmap.c.o
+2026-11-03T14:04:00.414Z [19/39] Building C object src/CMakeFiles/wirekit.dir/io/poll.c.o
+2026-11-03T14:04:01.306Z src/io/poll.c: In function 'poll_step':
+2026-11-03T14:04:01.700Z src/io/poll.c:388:5: warning: this statement may fall through [-Wimplicit-fallthrough=]
+2026-11-03T14:04:02.499Z   388 |     size_t idx = 0;
+2026-11-03T14:04:03.385Z src/io/poll.c: In function 'poll_read':
+2026-11-03T14:04:03.706Z src/io/poll.c:94:17: warning: unused variable 'rc' [-Wunused-variable]
+2026-11-03T14:04:04.436Z   94 |     int rc = 0;
+2026-11-03T14:04:05.319Z [20/39] Building C object src/CMakeFiles/wirekit.dir/io/pipe.c.o
+2026-11-03T14:04:05.707Z [21/39] Building C object src/CMakeFiles/wirekit.dir/io/buffer.c.o
+2026-11-03T14:04:06.027Z [22/39] Building C object src/CMakeFiles/wirekit.dir/codec/varint.c.o
+2026-11-03T14:04:06.409Z [23/39] Building C object src/CMakeFiles/wirekit.dir/codec/base64.c.o
+2026-11-03T14:04:06.926Z [24/39] Building C object src/CMakeFiles/wirekit.dir/codec/json.c.o
+2026-11-03T14:04:07.091Z [25/39] Building C object src/CMakeFiles/wirekit.dir/codec/msgpack.c.o
+2026-11-03T14:04:07.152Z [26/39] Building C object src/CMakeFiles/wirekit.dir/codec/utf8.c.o
+2026-11-03T14:04:07.772Z [27/39] Building C object src/CMakeFiles/wirekit.dir/util/sha1.c.o
+2026-11-03T14:04:07.880Z [28/39] Building C object src/CMakeFiles/wirekit.dir/util/rand.c.o
+2026-11-03T14:04:08.549Z [29/39] Building C object src/CMakeFiles/wirekit.dir/util/bitset.c.o
+2026-11-03T14:04:08.732Z [30/39] Building C object src/CMakeFiles/wirekit.dir/util/ring.c.o
+2026-11-03T14:04:09.111Z src/util/ring.c: In function 'ring_read':
+2026-11-03T14:04:09.773Z src/util/ring.c:243:13: warning: this statement may fall through [-Wimplicit-fallthrough=]
+2026-11-03T14:04:10.521Z   243 |     int flags = 0;
+2026-11-03T14:04:11.346Z [31/39] Building C object src/CMakeFiles/wirekit.dir/legacy/compat.c.o
+2026-11-03T14:04:12.097Z FAILED: src/CMakeFiles/wirekit_legacy.dir/legacy/compat.c.o
+2026-11-03T14:04:12.503Z /usr/bin/cc -DWIREKIT_LEGACY -O2 -c src/legacy/compat.c -o src/CMakeFiles/wirekit_legacy.dir/legacy/compat.c.o
+2026-11-03T14:04:12.590Z src/legacy/compat.c:45:12: error: implicit declaration of function 'gets'; did you mean 'fgets'? [-Wimplicit-function-declaration]
+2026-11-03T14:04:12.734Z    45 |     return gets(buf);
+2026-11-03T14:04:13.378Z       |            ^~~~
+2026-11-03T14:04:13.553Z       |            fgets
+2026-11-03T14:04:13.963Z note: target wirekit_legacy is optional (WIREKIT_BUILD_LEGACY non-fatal); continuing
+2026-11-03T14:04:14.833Z [32/39] Building C object src/CMakeFiles/wirekit.dir/legacy/shims.c.o
+2026-11-03T14:04:14.974Z [33/39] Building C object src/CMakeFiles/wirekit.dir/cli/main.c.o
+2026-11-03T14:04:15.843Z [34/39] Building C object src/CMakeFiles/wirekit.dir/cli/args.c.o
+2026-11-03T14:04:16.278Z [35/39] Building C object src/CMakeFiles/wirekit.dir/cli/repl.c.o
+2026-11-03T14:04:16.743Z [36/39] Building C object src/CMakeFiles/wirekit.dir/cli/format.c.o
+2026-11-03T14:04:17.474Z [37/39] Linking C static library src/libwirekit.a
+2026-11-03T14:04:18.229Z [38/39] Building C object cli/CMakeFiles/wirekit-cli.dir/main.c.o
+2026-11-03T14:04:18.370Z [39/39] Linking C executable cli/wirekit-cli
+2026-11-03T14:04:18.620Z FAILED: cli/wirekit-cli
+2026-11-03T14:04:19.093Z : && /usr/bin/cc -O2 cli/CMakeFiles/wirekit-cli.dir/main.c.o -o cli/wirekit-cli src/libwirekit.a -lssl -lcrypto -lz && :
+2026-11-03T14:04:19.302Z /usr/bin/ld: src/libwirekit.a(packet.c.o): in function `packet_finalize':
+2026-11-03T14:04:19.702Z packet.c:(.text+0x5f3): undefined reference to `crc32_update'
+2026-11-03T14:04:20.219Z /usr/bin/ld: src/net/packet.c:212: undefined reference to `crc32_update'
+2026-11-03T14:04:20.792Z /usr/bin/ld: src/libwirekit.a(frame.c.o): in function `frame_seal':
+2026-11-03T14:04:21.052Z frame.c:(.text+0x1a2): undefined reference to `crc32_finish'
+2026-11-03T14:04:21.771Z /usr/bin/ld: src/net/frame.c:88: undefined reference to `crc32_finish'
+2026-11-03T14:04:21.884Z collect2: error: ld returned 1 exit status
+2026-11-03T14:04:22.497Z ninja: build stopped: cannot make progress due to previous errors.
+2026-11-03T14:04:23.358Z ##[error]Process completed with exit code 1.
+2026-11-03T14:04:24.044Z ##[endgroup]
+2026-11-03T14:04:24.722Z ##[group]Post job cleanup.
+2026-11-03T14:04:25.567Z Cache skip: key ccache-3897806 chunk 0/400 (382 KB)
+2026-11-03T14:04:26.199Z Cache restore: key ccache-6512609 chunk 1/400 (604 KB)
+2026-11-03T14:04:26.329Z Cache restore: key ccache-3062841 chunk 2/400 (451 KB)
+2026-11-03T14:04:26.876Z Cache save: key ccache-2372659 chunk 3/400 (728 KB)
+2026-11-03T14:04:27.739Z Cache skip: key ccache-3306145 chunk 4/400 (689 KB)
+2026-11-03T14:04:27.785Z Cache save: key ccache-2346010 chunk 5/400 (560 KB)
+2026-11-03T14:04:28.477Z Cache restore: key ccache-4419330 chunk 6/400 (343 KB)
+2026-11-03T14:04:28.824Z Cache skip: key ccache-4841168 chunk 7/400 (783 KB)
+2026-11-03T14:04:29.504Z Cache save: key ccache-1459987 chunk 8/400 (39 KB)
+2026-11-03T14:04:30.123Z Cache skip: key ccache-4342387 chunk 9/400 (820 KB)
+2026-11-03T14:04:30.584Z Cache skip: key ccache-7644464 chunk 10/400 (448 KB)
+2026-11-03T14:04:30.818Z Cache restore: key ccache-1564060 chunk 11/400 (160 KB)
+2026-11-03T14:04:30.824Z Cache restore: key ccache-5385986 chunk 12/400 (342 KB)
+2026-11-03T14:04:31.719Z Cache save: key ccache-6377643 chunk 13/400 (199 KB)
+2026-11-03T14:04:32.279Z Cache restore: key ccache-9403246 chunk 14/400 (443 KB)
+2026-11-03T14:04:32.369Z Cache save: key ccache-4159788 chunk 15/400 (32 KB)
+2026-11-03T14:04:32.596Z Cache save: key ccache-2057503 chunk 16/400 (316 KB)
+2026-11-03T14:04:33.331Z Cache skip: key ccache-4910924 chunk 17/400 (306 KB)
+2026-11-03T14:04:33.525Z Cache save: key ccache-1093853 chunk 18/400 (703 KB)
+2026-11-03T14:04:33.528Z Cache restore: key ccache-5965112 chunk 19/400 (279 KB)
+2026-11-03T14:04:33.533Z Cache skip: key ccache-6392363 chunk 20/400 (477 KB)
+2026-11-03T14:04:34.021Z Cache save: key ccache-2888810 chunk 21/400 (26 KB)
+2026-11-03T14:04:34.596Z Cache save: key ccache-7225262 chunk 22/400 (70 KB)
+2026-11-03T14:04:34.745Z Cache restore: key ccache-1178884 chunk 23/400 (576 KB)
+2026-11-03T14:04:35.403Z Cache save: key ccache-2145959 chunk 24/400 (385 KB)
+2026-11-03T14:04:35.521Z Cache save: key ccache-4321277 chunk 25/400 (15 KB)
+2026-11-03T14:04:35.862Z Cache restore: key ccache-9255681 chunk 26/400 (362 KB)
+2026-11-03T14:04:36.616Z Cache skip: key ccache-5798907 chunk 27/400 (595 KB)
+2026-11-03T14:04:36.763Z Cache skip: key ccache-4670546 chunk 28/400 (267 KB)
+2026-11-03T14:04:37.230Z Cache restore: key ccache-2327714 chunk 29/400 (673 KB)
+2026-11-03T14:04:37.464Z Cache skip: key ccache-5406269 chunk 30/400 (634 KB)
+2026-11-03T14:04:37.826Z Cache restore: key ccache-4730526 chunk 31/400 (126 KB)
+2026-11-03T14:04:38.008Z Cache save: key ccache-2749623 chunk 32/400 (143 KB)
+2026-11-03T14:04:38.716Z Cache save: key ccache-9172162 chunk 33/400 (648 KB)
+2026-11-03T14:04:39.341Z Cache skip: key ccache-2243333 chunk 34/400 (631 KB)
+2026-11-03T14:04:39.814Z Cache skip: key ccache-4950698 chunk 35/400 (380 KB)
+2026-11-03T14:04:40.120Z Cache skip: key ccache-7104181 chunk 36/400 (789 KB)
+2026-11-03T14:04:40.478Z Cache skip: key ccache-3337087 chunk 37/400 (128 KB)
+2026-11-03T14:04:40.520Z Cache skip: key ccache-4006476 chunk 38/400 (526 KB)
+2026-11-03T14:04:40.625Z Cache save: key ccache-1860478 chunk 39/400 (514 KB)
+2026-11-03T14:04:40.676Z Cache restore: key ccache-6061357 chunk 40/400 (569 KB)
+2026-11-03T14:04:41.324Z Cache save: key ccache-7764044 chunk 41/400 (51 KB)
+2026-11-03T14:04:41.544Z Cache save: key ccache-3235112 chunk 42/400 (299 KB)
+2026-11-03T14:04:41.551Z Cache skip: key ccache-9196609 chunk 43/400 (35 KB)
+2026-11-03T14:04:42.182Z Cache save: key ccache-3394143 chunk 44/400 (276 KB)
+2026-11-03T14:04:42.724Z Cache restore: key ccache-7408021 chunk 45/400 (536 KB)
+2026-11-03T14:04:42.927Z Cache skip: key ccache-5670202 chunk 46/400 (10 KB)
+2026-11-03T14:04:43.347Z Cache skip: key ccache-6080808 chunk 47/400 (198 KB)
+2026-11-03T14:04:44.216Z Cache save: key ccache-8650800 chunk 48/400 (792 KB)
+2026-11-03T14:04:44.776Z Cache save: key ccache-4998267 chunk 49/400 (554 KB)
+2026-11-03T14:04:45.321Z Cache restore: key ccache-7127863 chunk 50/400 (820 KB)
+2026-11-03T14:04:45.951Z Cache restore: key ccache-8369485 chunk 51/400 (838 KB)
+2026-11-03T14:04:46.835Z Cache restore: key ccache-4194321 chunk 52/400 (305 KB)
+2026-11-03T14:04:47.407Z Cache restore: key ccache-6866554 chunk 53/400 (400 KB)
+2026-11-03T14:04:47.727Z Cache restore: key ccache-1100683 chunk 54/400 (649 KB)
+2026-11-03T14:04:48.092Z Cache save: key ccache-9063864 chunk 55/400 (849 KB)
+2026-11-03T14:04:48.503Z Cache restore: key ccache-3493517 chunk 56/400 (332 KB)
+2026-11-03T14:04:48.506Z Cache save: key ccache-3501723 chunk 57/400 (521 KB)
+2026-11-03T14:04:49.058Z Cache skip: key ccache-4645840 chunk 58/400 (21 KB)
+2026-11-03T14:04:49.311Z Cache restore: key ccache-7568782 chunk 59/400 (449 KB)
+2026-11-03T14:04:49.392Z Cache skip: key ccache-9378832 chunk 60/400 (343 KB)
+2026-11-03T14:04:50.172Z Cache restore: key ccache-4329732 chunk 61/400 (630 KB)
+2026-11-03T14:04:50.591Z Cache skip: key ccache-8379221 chunk 62/400 (679 KB)
+2026-11-03T14:04:50.925Z Cache skip: key ccache-4971383 chunk 63/400 (660 KB)
+2026-11-03T14:04:51.448Z Cache save: key ccache-7300213 chunk 64/400 (677 KB)
+2026-11-03T14:04:52.266Z Cache skip: key ccache-1118810 chunk 65/400 (783 KB)
+2026-11-03T14:04:52.793Z Cache restore: key ccache-3615047 chunk 66/400 (475 KB)
+2026-11-03T14:04:53.632Z Cache save: key ccache-4014291 chunk 67/400 (817 KB)
+2026-11-03T14:04:54.254Z Cache save: key ccache-1005283 chunk 68/400 (387 KB)
+2026-11-03T14:04:54.375Z Cache skip: key ccache-4348377 chunk 69/400 (529 KB)
+2026-11-03T14:04:54.869Z Cache save: key ccache-8167144 chunk 70/400 (432 KB)
+2026-11-03T14:04:54.928Z Cache skip: key ccache-7988797 chunk 71/400 (600 KB)
+2026-11-03T14:04:55.091Z Cache skip: key ccache-2071800 chunk 72/400 (115 KB)
+2026-11-03T14:04:55.801Z Cache skip: key ccache-1794787 chunk 73/400 (860 KB)
+2026-11-03T14:04:56.568Z Cache restore: key ccache-8784667 chunk 74/400 (273 KB)
+2026-11-03T14:04:57.442Z Cache restore: key ccache-9696479 chunk 75/400 (93 KB)
+2026-11-03T14:04:58.284Z Cache skip: key ccache-7691498 chunk 76/400 (171 KB)
+2026-11-03T14:04:58.842Z Cache skip: key ccache-3570597 chunk 77/400 (700 KB)
+2026-11-03T14:04:59.369Z Cache restore: key ccache-3161219 chunk 78/400 (209 KB)
+2026-11-03T14:04:59.538Z Cache restore: key ccache-1087971 chunk 79/400 (48 KB)
+2026-11-03T14:04:59.740Z Cache save: key ccache-7273387 chunk 80/400 (727 KB)
+2026-11-03T14:04:59.959Z Cache skip: key ccache-2102401 chunk 81/400 (478 KB)
+2026-11-03T14:05:00.511Z Cache skip: key ccache-2267670 chunk 82/400 (44 KB)
+2026-11-03T14:05:01.036Z Cache skip: key ccache-2807051 chunk 83/400 (567 KB)
+2026-11-03T14:05:01.612Z Cache skip: key ccache-5686289 chunk 84/400 (373 KB)
+2026-11-03T14:05:02.294Z Cache skip: key ccache-9226722 chunk 85/400 (783 KB)
+2026-11-03T14:05:02.627Z Cache skip: key ccache-8595206 chunk 86/400 (815 KB)
+2026-11-03T14:05:03.198Z Cache save: key ccache-2030912 chunk 87/400 (763 KB)
+2026-11-03T14:05:03.371Z Cache skip: key ccache-4294914 chunk 88/400 (350 KB)
+2026-11-03T14:05:03.375Z Cache save: key ccache-2276943 chunk 89/400 (440 KB)
+2026-11-03T14:05:03.625Z Cache save: key ccache-6995423 chunk 90/400 (507 KB)
+2026-11-03T14:05:04.245Z Cache save: key ccache-5733728 chunk 91/400 (879 KB)
+2026-11-03T14:05:05.068Z Cache save: key ccache-4576355 chunk 92/400 (271 KB)
+2026-11-03T14:05:05.086Z Cache save: key ccache-4665438 chunk 93/400 (149 KB)
+2026-11-03T14:05:05.381Z Cache save: key ccache-2732570 chunk 94/400 (752 KB)
+2026-11-03T14:05:06.249Z Cache skip: key ccache-5252569 chunk 95/400 (434 KB)
+2026-11-03T14:05:06.420Z Cache skip: key ccache-6260556 chunk 96/400 (558 KB)
+2026-11-03T14:05:06.880Z Cache restore: key ccache-6356749 chunk 97/400 (122 KB)
+2026-11-03T14:05:07.373Z Cache save: key ccache-7903831 chunk 98/400 (389 KB)
+2026-11-03T14:05:08.073Z Cache restore: key ccache-7423990 chunk 99/400 (837 KB)
+2026-11-03T14:05:08.222Z Cache save: key ccache-6167202 chunk 100/400 (172 KB)
+2026-11-03T14:05:08.728Z Cache skip: key ccache-1094217 chunk 101/400 (629 KB)
+2026-11-03T14:05:09.591Z Cache restore: key ccache-3441959 chunk 102/400 (871 KB)
+2026-11-03T14:05:10.446Z Cache restore: key ccache-7717447 chunk 103/400 (559 KB)
+2026-11-03T14:05:11.270Z Cache skip: key ccache-6003238 chunk 104/400 (394 KB)
+2026-11-03T14:05:11.532Z Cache restore: key ccache-2833159 chunk 105/400 (227 KB)
+2026-11-03T14:05:12.361Z Cache skip: key ccache-9530030 chunk 106/400 (195 KB)
+2026-11-03T14:05:13.123Z Cache save: key ccache-4877211 chunk 107/400 (66 KB)
+2026-11-03T14:05:13.869Z Cache save: key ccache-4782202 chunk 108/400 (222 KB)
+2026-11-03T14:05:14.684Z Cache save: key ccache-4320709 chunk 109/400 (230 KB)
+2026-11-03T14:05:14.773Z Cache restore: key ccache-8687099 chunk 110/400 (286 KB)
+2026-11-03T14:05:15.213Z Cache skip: key ccache-4155460 chunk 111/400 (87 KB)
+2026-11-03T14:05:16.020Z Cache save: key ccache-7431411 chunk 112/400 (466 KB)
+2026-11-03T14:05:16.809Z Cache restore: key ccache-3257643 chunk 113/400 (789 KB)
+2026-11-03T14:05:17.581Z Cache save: key ccache-9618627 chunk 114/400 (643 KB)
+2026-11-03T14:05:17.757Z Cache save: key ccache-2300060 chunk 115/400 (768 KB)
+2026-11-03T14:05:18.570Z Cache skip: key ccache-6633252 chunk 116/400 (46 KB)
+2026-11-03T14:05:19.039Z Cache restore: key ccache-8747189 chunk 117/400 (10 KB)
+2026-11-03T14:05:19.113Z Cache restore: key ccache-5579274 chunk 118/400 (729 KB)
+2026-11-03T14:05:19.174Z Cache save: key ccache-3353182 chunk 119/400 (690 KB)
+2026-11-03T14:05:19.707Z Cache save: key ccache-9763678 chunk 120/400 (592 KB)
+2026-11-03T14:05:20.488Z Cache skip: key ccache-1312003 chunk 121/400 (803 KB)
+2026-11-03T14:05:20.504Z Cache save: key ccache-5748351 chunk 122/400 (623 KB)
+2026-11-03T14:05:20.617Z Cache save: key ccache-9694379 chunk 123/400 (260 KB)
+2026-11-03T14:05:21.396Z Cache restore: key ccache-6415433 chunk 124/400 (847 KB)
+2026-11-03T14:05:22.112Z Cache save: key ccache-6390339 chunk 125/400 (232 KB)
+2026-11-03T14:05:22.877Z Cache save: key ccache-5420123 chunk 126/400 (662 KB)
+2026-11-03T14:05:23.613Z Cache restore: key ccache-4305116 chunk 127/400 (747 KB)
+2026-11-03T14:05:23.621Z Cache skip: key ccache-7588906 chunk 128/400 (190 KB)
+2026-11-03T14:05:23.651Z Cache save: key ccache-5027471 chunk 129/400 (421 KB)
+2026-11-03T14:05:24.020Z Cache save: key ccache-4163220 chunk 130/400 (365 KB)
+2026-11-03T14:05:24.684Z Cache save: key ccache-5514333 chunk 131/400 (68 KB)
+2026-11-03T14:05:25.027Z Cache restore: key ccache-5753520 chunk 132/400 (231 KB)
+2026-11-03T14:05:25.422Z Cache restore: key ccache-8333971 chunk 133/400 (205 KB)
+2026-11-03T14:05:25.764Z Cache save: key ccache-7711931 chunk 134/400 (745 KB)
+2026-11-03T14:05:25.855Z Cache save: key ccache-6901828 chunk 135/400 (630 KB)
+2026-11-03T14:05:26.680Z Cache skip: key ccache-9534707 chunk 136/400 (632 KB)
+2026-11-03T14:05:26.867Z Cache skip: key ccache-8833431 chunk 137/400 (552 KB)
+2026-11-03T14:05:27.403Z Cache save: key ccache-6937726 chunk 138/400 (700 KB)
+2026-11-03T14:05:28.267Z Cache restore: key ccache-9235679 chunk 139/400 (115 KB)
+2026-11-03T14:05:28.995Z Cache restore: key ccache-3629252 chunk 140/400 (531 KB)
+2026-11-03T14:05:29.706Z Cache skip: key ccache-7683646 chunk 141/400 (61 KB)
+2026-11-03T14:05:29.846Z Cache skip: key ccache-9095127 chunk 142/400 (373 KB)
+2026-11-03T14:05:29.944Z Cache save: key ccache-2819018 chunk 143/400 (780 KB)
+2026-11-03T14:05:30.769Z Cache skip: key ccache-8785433 chunk 144/400 (225 KB)
+2026-11-03T14:05:31.093Z Cache restore: key ccache-5261229 chunk 145/400 (83 KB)
+2026-11-03T14:05:31.599Z Cache skip: key ccache-1749134 chunk 146/400 (734 KB)
+2026-11-03T14:05:31.703Z Cache skip: key ccache-9093019 chunk 147/400 (4 KB)
+2026-11-03T14:05:32.037Z Cache restore: key ccache-9933257 chunk 148/400 (79 KB)
+2026-11-03T14:05:32.397Z Cache skip: key ccache-2851080 chunk 149/400 (499 KB)
+2026-11-03T14:05:32.643Z Cache skip: key ccache-3919434 chunk 150/400 (802 KB)
+2026-11-03T14:05:32.930Z Cache restore: key ccache-1132766 chunk 151/400 (825 KB)
+2026-11-03T14:05:33.762Z Cache restore: key ccache-6226574 chunk 152/400 (433 KB)
+2026-11-03T14:05:34.402Z Cache save: key ccache-4589786 chunk 153/400 (304 KB)
+2026-11-03T14:05:34.869Z Cache save: key ccache-5990673 chunk 154/400 (747 KB)
+2026-11-03T14:05:34.987Z Cache save: key ccache-3130383 chunk 155/400 (499 KB)
+2026-11-03T14:05:35.660Z Cache save: key ccache-5362854 chunk 156/400 (708 KB)
+2026-11-03T14:05:36.212Z Cache restore: key ccache-7003812 chunk 157/400 (441 KB)
+2026-11-03T14:05:36.393Z Cache skip: key ccache-7320737 chunk 158/400 (624 KB)
+2026-11-03T14:05:36.992Z Cache skip: key ccache-5815799 chunk 159/400 (359 KB)
+2026-11-03T14:05:37.235Z Cache restore: key ccache-4178675 chunk 160/400 (735 KB)
+2026-11-03T14:05:37.833Z Cache save: key ccache-4106385 chunk 161/400 (148 KB)
+2026-11-03T14:05:37.957Z Cache skip: key ccache-3275861 chunk 162/400 (869 KB)
+2026-11-03T14:05:38.533Z Cache save: key ccache-3170571 chunk 163/400 (416 KB)
+2026-11-03T14:05:39.130Z Cache restore: key ccache-5721012 chunk 164/400 (270 KB)
+2026-11-03T14:05:39.734Z Cache skip: key ccache-8142885 chunk 165/400 (388 KB)
+2026-11-03T14:05:40.179Z Cache save: key ccache-7504306 chunk 166/400 (216 KB)
+2026-11-03T14:05:40.249Z Cache restore: key ccache-8038418 chunk 167/400 (402 KB)
+2026-11-03T14:05:40.287Z Cache save: key ccache-1880747 chunk 168/400 (731 KB)
+2026-11-03T14:05:40.739Z Cache restore: key ccache-7605911 chunk 169/400 (150 KB)
+2026-11-03T14:05:41.569Z Cache restore: key ccache-4556604 chunk 170/400 (129 KB)
+2026-11-03T14:05:42.069Z Cache skip: key ccache-9165177 chunk 171/400 (449 KB)
+2026-11-03T14:05:42.919Z Cache save: key ccache-6607550 chunk 172/400 (324 KB)
+2026-11-03T14:05:43.417Z Cache save: key ccache-5487841 chunk 173/400 (519 KB)
+2026-11-03T14:05:43.509Z Cache skip: key ccache-3414126 chunk 174/400 (386 KB)
+2026-11-03T14:05:44.006Z Cache restore: key ccache-6598911 chunk 175/400 (110 KB)
+2026-11-03T14:05:44.113Z Cache save: key ccache-4455046 chunk 176/400 (368 KB)
+2026-11-03T14:05:44.257Z Cache skip: key ccache-2154172 chunk 177/400 (3 KB)
+2026-11-03T14:05:44.405Z Cache restore: key ccache-6345163 chunk 178/400 (647 KB)
+2026-11-03T14:05:44.468Z Cache skip: key ccache-3737922 chunk 179/400 (846 KB)
+2026-11-03T14:05:44.904Z Cache save: key ccache-5412701 chunk 180/400 (57 KB)
+2026-11-03T14:05:45.741Z Cache restore: key ccache-3692478 chunk 181/400 (704 KB)
+2026-11-03T14:05:46.546Z Cache save: key ccache-1271439 chunk 182/400 (618 KB)
+2026-11-03T14:05:46.662Z Cache restore: key ccache-9197725 chunk 183/400 (440 KB)
+2026-11-03T14:05:47.460Z Cache restore: key ccache-9170324 chunk 184/400 (868 KB)
+2026-11-03T14:05:48.220Z Cache save: key ccache-8951874 chunk 185/400 (673 KB)
+2026-11-03T14:05:48.232Z Cache restore: key ccache-9311653 chunk 186/400 (125 KB)
+2026-11-03T14:05:48.981Z Cache skip: key ccache-3047389 chunk 187/400 (85 KB)
+2026-11-03T14:05:49.602Z Cache restore: key ccache-8602284 chunk 188/400 (98 KB)
+2026-11-03T14:05:49.688Z Cache skip: key ccache-8334624 chunk 189/400 (637 KB)
+2026-11-03T14:05:49.930Z Cache skip: key ccache-1969861 chunk 190/400 (523 KB)
+2026-11-03T14:05:49.994Z Cache skip: key ccache-8655453 chunk 191/400 (300 KB)
+2026-11-03T14:05:50.703Z Cache restore: key ccache-5684953 chunk 192/400 (48 KB)
+2026-11-03T14:05:51.389Z Cache restore: key ccache-8199690 chunk 193/400 (248 KB)
+2026-11-03T14:05:51.460Z Cache save: key ccache-6568090 chunk 194/400 (644 KB)
+2026-11-03T14:05:51.651Z Cache save: key ccache-1365700 chunk 195/400 (849 KB)
+2026-11-03T14:05:51.715Z Cache restore: key ccache-9491739 chunk 196/400 (550 KB)
+2026-11-03T14:05:52.129Z Cache restore: key ccache-1989315 chunk 197/400 (622 KB)
+2026-11-03T14:05:52.225Z Cache save: key ccache-4234613 chunk 198/400 (806 KB)
+2026-11-03T14:05:52.830Z Cache restore: key ccache-2249204 chunk 199/400 (487 KB)
+2026-11-03T14:05:53.095Z Cache skip: key ccache-7213355 chunk 200/400 (643 KB)
+2026-11-03T14:05:53.930Z Cache restore: key ccache-3824242 chunk 201/400 (349 KB)
+2026-11-03T14:05:54.751Z Cache save: key ccache-2083630 chunk 202/400 (57 KB)
+2026-11-03T14:05:55.020Z Cache restore: key ccache-2722214 chunk 203/400 (73 KB)
+2026-11-03T14:05:55.307Z Cache skip: key ccache-4748380 chunk 204/400 (211 KB)
+2026-11-03T14:05:55.982Z Cache restore: key ccache-4765217 chunk 205/400 (645 KB)
+2026-11-03T14:05:56.604Z Cache save: key ccache-4476634 chunk 206/400 (883 KB)
+2026-11-03T14:05:56.616Z Cache save: key ccache-3338805 chunk 207/400 (693 KB)
+2026-11-03T14:05:57.248Z Cache save: key ccache-8007436 chunk 208/400 (10 KB)
+2026-11-03T14:05:58.031Z Cache save: key ccache-3892557 chunk 209/400 (608 KB)
+2026-11-03T14:05:58.893Z Cache save: key ccache-9645471 chunk 210/400 (299 KB)
+2026-11-03T14:05:59.312Z Cache restore: key ccache-9932113 chunk 211/400 (176 KB)
+2026-11-03T14:05:59.781Z Cache save: key ccache-3899400 chunk 212/400 (730 KB)
+2026-11-03T14:06:00.047Z Cache save: key ccache-2882582 chunk 213/400 (630 KB)
+2026-11-03T14:06:00.209Z Cache save: key ccache-9978318 chunk 214/400 (161 KB)
+2026-11-03T14:06:00.454Z Cache skip: key ccache-6878776 chunk 215/400 (463 KB)
+2026-11-03T14:06:00.647Z Cache restore: key ccache-1917209 chunk 216/400 (583 KB)
+2026-11-03T14:06:00.786Z Cache save: key ccache-4947954 chunk 217/400 (542 KB)
+2026-11-03T14:06:00.965Z Cache restore: key ccache-8142936 chunk 218/400 (516 KB)
+2026-11-03T14:06:01.768Z Cache restore: key ccache-6464244 chunk 219/400 (429 KB)
+2026-11-03T14:06:02.090Z Cache save: key ccache-4620343 chunk 220/400 (631 KB)
+2026-11-03T14:06:02.722Z Cache restore: key ccache-9528834 chunk 221/400 (794 KB)
+2026-11-03T14:06:02.775Z Cache restore: key ccache-5244088 chunk 222/400 (824 KB)
+2026-11-03T14:06:03.459Z Cache skip: key ccache-7367131 chunk 223/400 (653 KB)
+2026-11-03T14:06:03.685Z Cache save: key ccache-3888781 chunk 224/400 (194 KB)
+2026-11-03T14:06:03.831Z Cache restore: key ccache-4200828 chunk 225/400 (579 KB)
+2026-11-03T14:06:04.162Z Cache save: key ccache-5364832 chunk 226/400 (633 KB)
+2026-11-03T14:06:05.007Z Cache save: key ccache-4121533 chunk 227/400 (221 KB)
+2026-11-03T14:06:05.466Z Cache save: key ccache-9327280 chunk 228/400 (264 KB)
+2026-11-03T14:06:05.597Z Cache restore: key ccache-6263659 chunk 229/400 (489 KB)
+2026-11-03T14:06:05.955Z Cache skip: key ccache-1315909 chunk 230/400 (109 KB)
+2026-11-03T14:06:06.470Z Cache skip: key ccache-3041417 chunk 231/400 (780 KB)
+2026-11-03T14:06:07.275Z Cache skip: key ccache-7734020 chunk 232/400 (34 KB)
+2026-11-03T14:06:08.002Z Cache restore: key ccache-8475662 chunk 233/400 (266 KB)
+2026-11-03T14:06:08.860Z Cache skip: key ccache-7487081 chunk 234/400 (59 KB)
+2026-11-03T14:06:09.596Z Cache skip: key ccache-5190013 chunk 235/400 (194 KB)
+2026-11-03T14:06:10.234Z Cache skip: key ccache-3962484 chunk 236/400 (635 KB)
+2026-11-03T14:06:10.462Z Cache skip: key ccache-1116550 chunk 237/400 (650 KB)
+2026-11-03T14:06:11.122Z Cache save: key ccache-7669844 chunk 238/400 (506 KB)
+2026-11-03T14:06:11.503Z Cache restore: key ccache-3361510 chunk 239/400 (371 KB)
+2026-11-03T14:06:11.679Z Cache restore: key ccache-2292725 chunk 240/400 (472 KB)
+2026-11-03T14:06:12.048Z Cache save: key ccache-9142058 chunk 241/400 (79 KB)
+2026-11-03T14:06:12.895Z Cache skip: key ccache-3497087 chunk 242/400 (875 KB)
+2026-11-03T14:06:13.438Z Cache skip: key ccache-3447676 chunk 243/400 (83 KB)
+2026-11-03T14:06:13.910Z Cache skip: key ccache-5653818 chunk 244/400 (663 KB)
+2026-11-03T14:06:14.406Z Cache restore: key ccache-7502136 chunk 245/400 (481 KB)
+2026-11-03T14:06:15.120Z Cache save: key ccache-8107935 chunk 246/400 (416 KB)
+2026-11-03T14:06:15.989Z Cache save: key ccache-6971664 chunk 247/400 (141 KB)
+2026-11-03T14:06:16.794Z Cache save: key ccache-6962574 chunk 248/400 (44 KB)
+2026-11-03T14:06:17.183Z Cache skip: key ccache-3986793 chunk 249/400 (4 KB)
+2026-11-03T14:06:17.213Z Cache restore: key ccache-3028476 chunk 250/400 (456 KB)
+2026-11-03T14:06:17.569Z Cache restore: key ccache-8729422 chunk 251/400 (487 KB)
+2026-11-03T14:06:17.993Z Cache restore: key ccache-2540598 chunk 252/400 (408 KB)
+2026-11-03T14:06:18.057Z Cache restore: key ccache-6326727 chunk 253/400 (317 KB)
+2026-11-03T14:06:18.359Z Cache save: key ccache-7317461 chunk 254/400 (246 KB)
+2026-11-03T14:06:18.632Z Cache save: key ccache-7897023 chunk 255/400 (428 KB)
+2026-11-03T14:06:19.197Z Cache save: key ccache-3654922 chunk 256/400 (68 KB)
+2026-11-03T14:06:20.045Z Cache skip: key ccache-2913048 chunk 257/400 (572 KB)
+2026-11-03T14:06:20.512Z Cache restore: key ccache-5164993 chunk 258/400 (403 KB)
+2026-11-03T14:06:20.868Z Cache skip: key ccache-1426096 chunk 259/400 (601 KB)
+2026-11-03T14:06:21.519Z Cache restore: key ccache-6389894 chunk 260/400 (72 KB)
+2026-11-03T14:06:21.696Z Cache save: key ccache-8748158 chunk 261/400 (894 KB)
+2026-11-03T14:06:21.936Z Cache skip: key ccache-1597744 chunk 262/400 (840 KB)
+2026-11-03T14:06:22.453Z Cache save: key ccache-3069224 chunk 263/400 (818 KB)
+2026-11-03T14:06:23.240Z Cache skip: key ccache-6218563 chunk 264/400 (54 KB)
+2026-11-03T14:06:23.694Z Cache restore: key ccache-4817576 chunk 265/400 (334 KB)
+2026-11-03T14:06:24.275Z Cache skip: key ccache-1837305 chunk 266/400 (802 KB)
+2026-11-03T14:06:25.037Z Cache restore: key ccache-5703619 chunk 267/400 (526 KB)
+2026-11-03T14:06:25.930Z Cache skip: key ccache-9386146 chunk 268/400 (663 KB)
+2026-11-03T14:06:26.224Z Cache restore: key ccache-8617013 chunk 269/400 (894 KB)
+2026-11-03T14:06:26.633Z Cache save: key ccache-5900596 chunk 270/400 (723 KB)
+2026-11-03T14:06:26.656Z Cache skip: key ccache-5125951 chunk 271/400 (222 KB)
+2026-11-03T14:06:26.886Z Cache save: key ccache-5097642 chunk 272/400 (507 KB)
+2026-11-03T14:06:27.016Z Cache save: key ccache-5451145 chunk 273/400 (814 KB)
+2026-11-03T14:06:27.466Z Cache save: key ccache-1744294 chunk 274/400 (654 KB)
+2026-11-03T14:06:27.547Z Cache save: key ccache-3620603 chunk 275/400 (95 KB)
+2026-11-03T14:06:28.039Z Cache skip: key ccache-6217650 chunk 276/400 (83 KB)
+2026-11-03T14:06:28.102Z Cache skip: key ccache-9915820 chunk 277/400 (715 KB)
+2026-11-03T14:06:28.396Z Cache restore: key ccache-9086451 chunk 278/400 (362 KB)
+2026-11-03T14:06:28.951Z Cache save: key ccache-4196645 chunk 279/400 (596 KB)
+2026-11-03T14:06:29.526Z Cache save: key ccache-5884290 chunk 280/400 (253 KB)
+2026-11-03T14:06:29.916Z Cache save: key ccache-8926732 chunk 281/400 (296 KB)
+2026-11-03T14:06:30.404Z Cache restore: key ccache-8376581 chunk 282/400 (467 KB)
+2026-11-03T14:06:31.075Z Cache skip: key ccache-2136976 chunk 283/400 (872 KB)
+2026-11-03T14:06:31.301Z Cache save: key ccache-4070585 chunk 284/400 (829 KB)
+2026-11-03T14:06:31.867Z Cache restore: key ccache-3317119 chunk 285/400 (718 KB)
+2026-11-03T14:06:32.635Z Cache save: key ccache-3855215 chunk 286/400 (77 KB)
+2026-11-03T14:06:33.063Z Cache save: key ccache-8051268 chunk 287/400 (428 KB)
+2026-11-03T14:06:33.294Z Cache save: key ccache-1086682 chunk 288/400 (13 KB)
+2026-11-03T14:06:33.660Z Cache save: key ccache-9662483 chunk 289/400 (834 KB)
+2026-11-03T14:06:34.099Z Cache save: key ccache-2265302 chunk 290/400 (578 KB)
+2026-11-03T14:06:34.856Z Cache save: key ccache-1566995 chunk 291/400 (551 KB)
+2026-11-03T14:06:34.884Z Cache skip: key ccache-3729078 chunk 292/400 (881 KB)
+2026-11-03T14:06:35.722Z Cache skip: key ccache-1303104 chunk 293/400 (9 KB)
+2026-11-03T14:06:36.459Z Cache restore: key ccache-2462104 chunk 294/400 (86 KB)
+2026-11-03T14:06:36.893Z Cache skip: key ccache-6474560 chunk 295/400 (365 KB)
+2026-11-03T14:06:37.195Z Cache skip: key ccache-6643217 chunk 296/400 (421 KB)
+2026-11-03T14:06:37.779Z Cache restore: key ccache-7022169 chunk 297/400 (744 KB)
+2026-11-03T14:06:38.641Z Cache restore: key ccache-7937890 chunk 298/400 (342 KB)
+2026-11-03T14:06:38.827Z Cache restore: key ccache-3794922 chunk 299/400 (363 KB)
+2026-11-03T14:06:39.707Z Cache skip: key ccache-9259588 chunk 300/400 (406 KB)
+2026-11-03T14:06:39.739Z Cache save: key ccache-1829539 chunk 301/400 (678 KB)
+2026-11-03T14:06:39.817Z Cache restore: key ccache-2005764 chunk 302/400 (368 KB)
+2026-11-03T14:06:39.825Z Cache restore: key ccache-9529936 chunk 303/400 (258 KB)
+2026-11-03T14:06:40.307Z Cache save: key ccache-2471247 chunk 304/400 (742 KB)
+2026-11-03T14:06:40.707Z Cache save: key ccache-2099301 chunk 305/400 (244 KB)
+2026-11-03T14:06:41.372Z Cache skip: key ccache-9709885 chunk 306/400 (201 KB)
+2026-11-03T14:06:41.904Z Cache skip: key ccache-5447510 chunk 307/400 (377 KB)
+2026-11-03T14:06:42.269Z Cache skip: key ccache-2444091 chunk 308/400 (610 KB)
+2026-11-03T14:06:42.550Z Cache save: key ccache-6315841 chunk 309/400 (45 KB)
+2026-11-03T14:06:42.906Z Cache skip: key ccache-5518622 chunk 310/400 (602 KB)
+2026-11-03T14:06:42.913Z Cache restore: key ccache-2896735 chunk 311/400 (257 KB)
+2026-11-03T14:06:43.617Z Cache save: key ccache-1184780 chunk 312/400 (272 KB)
+2026-11-03T14:06:44.489Z Cache restore: key ccache-6975985 chunk 313/400 (362 KB)
+2026-11-03T14:06:44.543Z Cache restore: key ccache-6351655 chunk 314/400 (771 KB)
+2026-11-03T14:06:44.748Z Cache skip: key ccache-4340945 chunk 315/400 (459 KB)
+2026-11-03T14:06:45.465Z Cache skip: key ccache-8632577 chunk 316/400 (509 KB)
+2026-11-03T14:06:45.868Z Cache skip: key ccache-1653736 chunk 317/400 (443 KB)
+2026-11-03T14:06:46.703Z Cache save: key ccache-7766912 chunk 318/400 (586 KB)
+2026-11-03T14:06:47.062Z Cache restore: key ccache-5989742 chunk 319/400 (767 KB)
+2026-11-03T14:06:47.718Z Cache skip: key ccache-7073715 chunk 320/400 (574 KB)
+2026-11-03T14:06:48.593Z Cache skip: key ccache-3852622 chunk 321/400 (295 KB)
+2026-11-03T14:06:49.170Z Cache skip: key ccache-7670080 chunk 322/400 (783 KB)
+2026-11-03T14:06:49.441Z Cache restore: key ccache-5563850 chunk 323/400 (360 KB)
+2026-11-03T14:06:49.980Z Cache restore: key ccache-6024715 chunk 324/400 (37 KB)
+2026-11-03T14:06:50.465Z Cache save: key ccache-3420887 chunk 325/400 (225 KB)
+2026-11-03T14:06:51.025Z Cache save: key ccache-3755398 chunk 326/400 (359 KB)
+2026-11-03T14:06:51.450Z Cache save: key ccache-3707601 chunk 327/400 (582 KB)
+2026-11-03T14:06:52.016Z Cache save: key ccache-6833999 chunk 328/400 (790 KB)
+2026-11-03T14:06:52.131Z Cache restore: key ccache-4128240 chunk 329/400 (165 KB)
+2026-11-03T14:06:52.553Z Cache skip: key ccache-5302873 chunk 330/400 (151 KB)
+2026-11-03T14:06:52.664Z Cache restore: key ccache-6556650 chunk 331/400 (54 KB)
+2026-11-03T14:06:53.021Z Cache restore: key ccache-1299578 chunk 332/400 (820 KB)
+2026-11-03T14:06:53.681Z Cache skip: key ccache-8069564 chunk 333/400 (233 KB)
+2026-11-03T14:06:53.854Z Cache save: key ccache-9606955 chunk 334/400 (621 KB)
+2026-11-03T14:06:54.130Z Cache restore: key ccache-5321534 chunk 335/400 (380 KB)
+2026-11-03T14:06:55.022Z Cache save: key ccache-9999699 chunk 336/400 (224 KB)
+2026-11-03T14:06:55.326Z Cache save: key ccache-8798860 chunk 337/400 (196 KB)
+2026-11-03T14:06:55.888Z Cache skip: key ccache-8829199 chunk 338/400 (676 KB)
+2026-11-03T14:06:55.902Z Cache skip: key ccache-7184518 chunk 339/400 (269 KB)
+2026-11-03T14:06:56.501Z Cache skip: key ccache-6122538 chunk 340/400 (184 KB)
+2026-11-03T14:06:57.299Z Cache skip: key ccache-5897981 chunk 341/400 (430 KB)
+2026-11-03T14:06:57.466Z Cache restore: key ccache-2846090 chunk 342/400 (619 KB)
+2026-11-03T14:06:57.967Z Cache save: key ccache-7265995 chunk 343/400 (838 KB)
+2026-11-03T14:06:58.227Z Cache save: key ccache-8757562 chunk 344/400 (770 KB)
+2026-11-03T14:06:58.758Z Cache save: key ccache-3510654 chunk 345/400 (897 KB)
+2026-11-03T14:06:58.835Z Cache save: key ccache-1865520 chunk 346/400 (493 KB)
+2026-11-03T14:06:59.487Z Cache skip: key ccache-6848156 chunk 347/400 (505 KB)
+2026-11-03T14:06:59.744Z Cache save: key ccache-1881388 chunk 348/400 (541 KB)
+2026-11-03T14:07:00.500Z Cache save: key ccache-3793999 chunk 349/400 (727 KB)
+2026-11-03T14:07:00.781Z Cache skip: key ccache-1927324 chunk 350/400 (570 KB)
+2026-11-03T14:07:01.201Z Cache save: key ccache-3878086 chunk 351/400 (133 KB)
+2026-11-03T14:07:01.410Z Cache save: key ccache-6020130 chunk 352/400 (680 KB)
+2026-11-03T14:07:01.852Z Cache save: key ccache-4153644 chunk 353/400 (879 KB)
+2026-11-03T14:07:01.931Z Cache save: key ccache-4234884 chunk 354/400 (732 KB)
+2026-11-03T14:07:02.596Z Cache skip: key ccache-6476750 chunk 355/400 (380 KB)
+2026-11-03T14:07:03.206Z Cache save: key ccache-4493326 chunk 356/400 (810 KB)
+2026-11-03T14:07:03.416Z Cache save: key ccache-7882901 chunk 357/400 (599 KB)
+2026-11-03T14:07:03.724Z Cache restore: key ccache-4496965 chunk 358/400 (778 KB)
+2026-11-03T14:07:04.424Z Cache restore: key ccache-2636750 chunk 359/400 (684 KB)
+2026-11-03T14:07:04.749Z Cache restore: key ccache-8947781 chunk 360/400 (313 KB)
+2026-11-03T14:07:05.404Z Cache restore: key ccache-1232218 chunk 361/400 (324 KB)
+2026-11-03T14:07:05.465Z Cache save: key ccache-2722169 chunk 362/400 (401 KB)
+2026-11-03T14:07:06.040Z Cache restore: key ccache-4174105 chunk 363/400 (246 KB)
+2026-11-03T14:07:06.130Z Cache skip: key ccache-7027928 chunk 364/400 (679 KB)
+2026-11-03T14:07:06.451Z Cache restore: key ccache-5200040 chunk 365/400 (247 KB)
+2026-11-03T14:07:06.570Z Cache skip: key ccache-4946711 chunk 366/400 (376 KB)
+2026-11-03T14:07:06.726Z Cache save: key ccache-2423930 chunk 367/400 (749 KB)
+2026-11-03T14:07:07.197Z Cache skip: key ccache-5642512 chunk 368/400 (480 KB)
+2026-11-03T14:07:07.883Z Cache skip: key ccache-1018066 chunk 369/400 (114 KB)
+2026-11-03T14:07:08.444Z Cache skip: key ccache-3988504 chunk 370/400 (394 KB)
+2026-11-03T14:07:09.145Z Cache skip: key ccache-2398543 chunk 371/400 (96 KB)
+2026-11-03T14:07:09.452Z Cache save: key ccache-9242499 chunk 372/400 (849 KB)
+2026-11-03T14:07:10.102Z Cache restore: key ccache-6943917 chunk 373/400 (896 KB)
+2026-11-03T14:07:10.736Z Cache save: key ccache-4436235 chunk 374/400 (596 KB)
+2026-11-03T14:07:11.118Z Cache restore: key ccache-2051320 chunk 375/400 (464 KB)
+2026-11-03T14:07:11.593Z Cache restore: key ccache-4477822 chunk 376/400 (340 KB)
+2026-11-03T14:07:12.464Z Cache restore: key ccache-7870094 chunk 377/400 (605 KB)
+2026-11-03T14:07:12.684Z Cache restore: key ccache-5733971 chunk 378/400 (812 KB)
+2026-11-03T14:07:12.969Z Cache save: key ccache-9244411 chunk 379/400 (327 KB)
+2026-11-03T14:07:13.218Z Cache skip: key ccache-8311105 chunk 380/400 (578 KB)
+2026-11-03T14:07:13.712Z Cache save: key ccache-6828375 chunk 381/400 (218 KB)
+2026-11-03T14:07:14.170Z Cache save: key ccache-8647016 chunk 382/400 (207 KB)
+2026-11-03T14:07:14.246Z Cache restore: key ccache-8606595 chunk 383/400 (675 KB)
+2026-11-03T14:07:14.346Z Cache restore: key ccache-9259858 chunk 384/400 (383 KB)
+2026-11-03T14:07:14.574Z Cache save: key ccache-4733879 chunk 385/400 (327 KB)
+2026-11-03T14:07:14.849Z Cache save: key ccache-2293422 chunk 386/400 (704 KB)
+2026-11-03T14:07:15.367Z Cache restore: key ccache-4194142 chunk 387/400 (147 KB)
+2026-11-03T14:07:15.812Z Cache save: key ccache-5966757 chunk 388/400 (575 KB)
+2026-11-03T14:07:16.218Z Cache skip: key ccache-7523168 chunk 389/400 (261 KB)
+2026-11-03T14:07:16.823Z Cache restore: key ccache-9194268 chunk 390/400 (265 KB)
+2026-11-03T14:07:17.113Z Cache save: key ccache-3009316 chunk 391/400 (524 KB)
+2026-11-03T14:07:17.554Z Cache restore: key ccache-2766653 chunk 392/400 (338 KB)
+2026-11-03T14:07:18.138Z Cache save: key ccache-7557920 chunk 393/400 (467 KB)
+2026-11-03T14:07:18.956Z Cache restore: key ccache-6214285 chunk 394/400 (486 KB)
+2026-11-03T14:07:19.011Z Cache save: key ccache-4057993 chunk 395/400 (100 KB)
+2026-11-03T14:07:19.598Z Cache restore: key ccache-9594449 chunk 396/400 (305 KB)
+2026-11-03T14:07:19.929Z Cache restore: key ccache-8924481 chunk 397/400 (747 KB)
+2026-11-03T14:07:20.765Z Cache save: key ccache-5783159 chunk 398/400 (267 KB)
+2026-11-03T14:07:21.289Z Cache skip: key ccache-3604113 chunk 399/400 (382 KB)
+2026-11-03T14:07:21.392Z Cleaning up orphan processes
+2026-11-03T14:07:21.539Z ##[endgroup]

@@ -57,7 +57,19 @@ def test_resume_without_experiment_fails(tmp_path):
 def test_end_to_end_with_fake_claude_and_resume_refusal(tmp_path, monkeypatch):
     monkeypatch.setenv("FAKE_SCENARIO", "nothing")
     out = tmp_path / "exp"
-    args = ["run", "--arm", "baseline", "--repeats", "1", "--out", str(out), "--claude-bin", FAKE]
+    args = [
+        "run",
+        "--arm",
+        "baseline",
+        "--task",
+        "py-ledger-parens",
+        "--repeats",
+        "1",
+        "--out",
+        str(out),
+        "--claude-bin",
+        FAKE,
+    ]
     first = runner.invoke(app, args)
     assert first.exit_code == 0, first.output
     assert (out / "records.jsonl").exists()
