@@ -39,6 +39,13 @@ ARMS: dict[str, Arm] = {
             "Estimates run-to-run noise: any 'saving' it shows is not a real effect.",
         ),
         Arm(
+            "noop-hook",
+            "control",
+            "Baseline plus a SessionStart hook that does nothing. Claude Code 2.1.252 skips "
+            "its background session-title call when any SessionStart hook is configured; "
+            "this arm measures that effect on its own, separately from any tool.",
+        ),
+        Arm(
             "rtk",
             "tool",
             "Command-output compression: a PreToolUse hook rewrites Bash commands to `rtk ...`.",
@@ -59,8 +66,10 @@ ARMS: dict[str, Arm] = {
     ]
 }
 
-# v0.1 pilot arms. headroom is defined but joins in the v0.2 scale-up.
+# v0.1 pilot arms. headroom is defined but joins in a later scale-up.
 PILOT_ARMS = ("baseline", "noop", "rtk", "caveman")
+# v0.2 adds a control for Claude Code's SessionStart-hook side effect.
+V02_ARMS = ("baseline", "noop", "noop-hook", "rtk", "caveman")
 
 
 class ArmSetupError(RuntimeError):
@@ -92,6 +101,13 @@ NOOP_MARKER = ".tokentrial-noop"
 
 
 def _setup_baseline(workspace: Path) -> ArmRuntime:
+    return ArmRuntime()
+
+
+def _setup_noop_hook(workspace: Path) -> ArmRuntime:
+    (workspace / ".claude").mkdir(exist_ok=True)
+    settings = {"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "true"}]}]}}
+    (workspace / ".claude" / "settings.json").write_text(json.dumps(settings, indent=2) + "\n")
     return ArmRuntime()
 
 
@@ -232,27 +248,49 @@ def _claude_dir() -> Path:
     return Path(os.environ.get("CLAUDE_CONFIG_DIR") or Path.home() / ".claude")
 
 
+CAVEMAN_STATE_GLOBS = (".caveman*", "hooks/caveman-*", "plugins/data/caveman-*")
+# Directories caveman may create; removed after a run if the run created them and
+# they are empty. Deepest first.
+CAVEMAN_STATE_DIRS = ("plugins/data", "hooks")
+
+
+def _snapshot(root: Path, globs: tuple[str, ...]) -> set[Path]:
+    return {p for g in globs for p in root.glob(g)}
+
+
 def _setup_caveman(workspace: Path) -> ArmRuntime:
     plugin = tools.caveman_plugin_dir()
     if not (plugin / ".claude-plugin" / "plugin.json").exists():
         raise ArmSetupError(f"caveman plugin not found at {plugin}")
 
-    # caveman's hooks keep state in the Claude config dir (.caveman-active,
-    # .caveman-sessions/, .caveman-mode-log.jsonl, .caveman-nudge-shown, ...). Some of it
-    # changes later sessions (e.g. a one-time nudge), so everything a run creates is
-    # removed afterwards; entries that existed before the run are left alone.
+    # caveman's hooks write state into the Claude config dir: .caveman-active,
+    # .caveman-sessions/, .caveman-mode-log.jsonl, .caveman-nudge-shown, a copy of its
+    # statusline script in hooks/, and plugin data in plugins/data/. Some of it changes
+    # later sessions, so everything a run creates is removed afterwards; entries (and
+    # directories) that existed before the run are left alone.
     claude_dir = _claude_dir()
+    before = _snapshot(claude_dir, CAVEMAN_STATE_GLOBS)
+    dirs_before = {d for d in CAVEMAN_STATE_DIRS if (claude_dir / d).exists()}
     sessions = claude_dir / ".caveman-sessions"
-    before = {p.name for p in claude_dir.glob(".caveman*")}
     sessions_before = set(sessions.iterdir()) if sessions.is_dir() else set()
 
+    # Model a long-time user: caveman's one-time statusline nudge ("proactively offer to
+    # set this up") has already been shown. Without this every run is a first session.
+    nudge = claude_dir / ".caveman-nudge-shown"
+    if not nudge.exists():
+        claude_dir.mkdir(parents=True, exist_ok=True)
+        nudge.write_text("1")
+
     def cleanup() -> None:
-        for p in claude_dir.glob(".caveman*"):
-            if p.name not in before:
-                shutil.rmtree(p, ignore_errors=True) if p.is_dir() else p.unlink(missing_ok=True)
-        if sessions.name in before and sessions.is_dir():
+        for p in _snapshot(claude_dir, CAVEMAN_STATE_GLOBS) - before:
+            shutil.rmtree(p, ignore_errors=True) if p.is_dir() else p.unlink(missing_ok=True)
+        if sessions in before and sessions.is_dir():
             for p in set(sessions.iterdir()) - sessions_before:
                 shutil.rmtree(p, ignore_errors=True) if p.is_dir() else p.unlink(missing_ok=True)
+        for d in CAVEMAN_STATE_DIRS:
+            path = claude_dir / d
+            if d not in dirs_before and path.is_dir() and not any(path.iterdir()):
+                path.rmdir()
 
     return ArmRuntime(
         extra_args=["--plugin-dir", str(plugin)],
@@ -266,6 +304,7 @@ def _setup_caveman(workspace: Path) -> ArmRuntime:
 ADAPTERS: dict[str, Callable[[Path], ArmRuntime]] = {
     "baseline": _setup_baseline,
     "noop": _setup_noop,
+    "noop-hook": _setup_noop_hook,
     "rtk": _setup_rtk,
     "caveman": _setup_caveman,
 }

@@ -97,3 +97,41 @@ def test_caveman_loads_plugin_per_session_and_cleans_up_state(fake_tools, tmp_pa
 def test_noop_changes_nothing_the_agent_is_told_about(tmp_path):
     rt = setup_arm("noop", tmp_path)
     assert (rt.extra_args, rt.env, rt.path_prefix) == ([], {}, [])
+
+
+def test_caveman_seeds_nudge_shown_and_removes_all_run_state(fake_tools, tmp_path):
+    claude_dir = tmp_path / "claude-config"
+    rt = setup_arm("caveman", tmp_path)
+    assert (claude_dir / ".caveman-nudge-shown").read_text() == "1"  # long-time user
+    # State observed from real caveman v4.0.1 sessions:
+    (claude_dir / "hooks").mkdir()
+    (claude_dir / "hooks" / "caveman-statusline.sh").write_text("#!/bin/sh")
+    (claude_dir / "plugins" / "data" / "caveman-inline").mkdir(parents=True)
+    (claude_dir / ".caveman-mode-log.jsonl").write_text("{}")
+    rt.cleanup()
+    assert not (claude_dir / "hooks").exists()
+    assert not (claude_dir / "plugins" / "data").exists()
+    assert not list(claude_dir.glob(".caveman*"))
+
+
+def test_caveman_keeps_users_existing_hooks_dir(fake_tools, tmp_path):
+    claude_dir = tmp_path / "claude-config"
+    (claude_dir / "hooks").mkdir(parents=True)
+    (claude_dir / "hooks" / "my-hook.sh").write_text("mine")
+    (claude_dir / ".caveman-nudge-shown").write_text("1")
+    rt = setup_arm("caveman", tmp_path)
+    (claude_dir / "hooks" / "caveman-statusline.sh").write_text("#!/bin/sh")
+    rt.cleanup()
+    assert [p.name for p in (claude_dir / "hooks").iterdir()] == ["my-hook.sh"]
+    assert (claude_dir / ".caveman-nudge-shown").exists()  # pre-existing: left alone
+
+
+def test_noop_hook_installs_only_a_noop_sessionstart_hook(tmp_path):
+    import json
+
+    rt = setup_arm("noop-hook", tmp_path)
+    settings = json.loads((tmp_path / ".claude" / "settings.json").read_text())
+    assert settings == {
+        "hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "true"}]}]}
+    }
+    assert (rt.extra_args, rt.env, rt.path_prefix) == ([], {}, [])

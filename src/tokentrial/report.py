@@ -173,7 +173,9 @@ def _rel(x: float) -> str:
 
 def to_markdown(summary: dict, manifest: dict) -> str:
     arms = summary["arms"]
-    order = [a for a in ("baseline", "noop", "rtk", "caveman", "headroom") if a in arms]
+    order = [
+        a for a in ("baseline", "noop", "noop-hook", "rtk", "caveman", "headroom") if a in arms
+    ]
     order += [a for a in arms if a not in order]
     out = [
         "# TokenTrial pilot results",
