@@ -8,7 +8,15 @@ import re
 import subprocess
 from dataclasses import dataclass, field
 
-from tokentrial.pricing import Price, Usage, add_usage, cost_breakdown, usage_from_api
+from tokentrial.pricing import (
+    Price,
+    Usage,
+    add_usage,
+    cost_breakdown,
+    price_for_call,
+    tiered_cost,
+    usage_from_api,
+)
 
 # Tools the agent may use. Enough to read, edit, and run tests; no web, no MCP.
 ALLOWED_TOOLS = "Read,Edit,Write,Glob,Grep,Bash"
@@ -133,6 +141,7 @@ class StreamResult:
     rate_limit: dict | None = None
     aux: dict[str, Usage] = field(default_factory=dict)  # other models Claude Code called
     hook_events: dict[str, int] = field(default_factory=dict)
+    long_context_calls: int = 0
     unpriced_models: list[str] = field(default_factory=list)
 
     @property
@@ -190,7 +199,9 @@ class StreamParser:
 
     def cost(self) -> dict[str, float]:
         """API-equivalent cost by token type, benchmarked model plus background models."""
-        parts = cost_breakdown(self.state.usage, self.price)
+        parts, self.state.long_context_calls = tiered_cost(
+            self.state.usage, self.price, list(self.state.calls.values())
+        )
         for model, usage in self.state.aux.items():
             price = self.aux_prices.get(model)
             if price is None:
@@ -249,7 +260,7 @@ class StreamParser:
             if mid and raw and msg.get("model") != "<synthetic>":
                 usage = usage_from_api(raw)
                 self.state.calls[mid] = usage
-                new = cost_breakdown(usage, self.price)["total"]
+                new = cost_breakdown(usage, price_for_call(self.price, usage))["total"]
                 delta = new - self._cost_by_id.get(mid, 0.0)
                 self._cost_by_id[mid] = new
                 return self._charge(delta)

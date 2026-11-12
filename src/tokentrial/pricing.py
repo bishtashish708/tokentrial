@@ -22,6 +22,11 @@ class Price:
     output: float
     source: str = ""
     verified: bool = False
+    checked: str = ""
+    # Prices for a request whose prompt (input + cache reads + cache writes) exceeds
+    # long_threshold tokens; each request is priced on its own.
+    long_threshold: int | None = None
+    long: Price | None = None
 
 
 @dataclass(frozen=True)
@@ -40,14 +45,59 @@ def load_prices() -> dict[tuple[str, str], Price]:
     prices: dict[tuple[str, str], Price] = {}
     for provider, models in raw.items():
         for model, row in models.items():
+            long_row = row.get("long_context")
+            long = (
+                Price(provider, model, **{k: float(long_row[k]) for k in TOKEN_TYPES})
+                if long_row
+                else None
+            )
             prices[(provider, model)] = Price(
                 provider=provider,
                 model=model,
                 **{k: float(row[k]) for k in TOKEN_TYPES},
                 source=row.get("source", ""),
                 verified=bool(row.get("verified", False)),
+                checked=row.get("checked", ""),
+                long_threshold=int(long_row["threshold"]) if long_row else None,
+                long=long,
             )
     return prices
+
+
+def prompt_tokens(u: Usage) -> int:
+    """A request's prompt length as used for long-context pricing."""
+    return u.input + u.cache_write_5m + u.cache_write_1h + u.cache_read
+
+
+def price_for_call(price: Price, call: Usage) -> Price:
+    if price.long and price.long_threshold and prompt_tokens(call) > price.long_threshold:
+        return price.long
+    return price
+
+
+def tiered_cost(usage: Usage, price: Price, calls: list[Usage]) -> tuple[dict[str, float], int]:
+    """Cost of `usage` (session totals) with long-context calls priced at the long tier.
+
+    Input-side tokens of long calls come exactly from their per-call usage. Their output
+    is estimated: per-call output counts in the stream are mid-stream snapshots, so the
+    session's final output is split in proportion to the long calls' snapshot share.
+    Returns (cost by type, number of long-context calls).
+    """
+    long_calls = [c for c in calls if price_for_call(price, c) is not price]
+    if not long_calls:
+        return cost_breakdown(usage, price), 0
+    long_in = {
+        t: min(sum(getattr(c, t) for c in long_calls), getattr(usage, t))
+        for t in ("input", "cache_write_5m", "cache_write_1h", "cache_read")
+    }
+    snap_out = sum(c.output for c in calls)
+    share = (
+        sum(c.output for c in long_calls) / snap_out if snap_out else len(long_calls) / len(calls)
+    )
+    long_usage = Usage(**long_in, output=round(usage.output * share))
+    short_usage = Usage(**{t: getattr(usage, t) - getattr(long_usage, t) for t in TOKEN_TYPES})
+    a, b = cost_breakdown(short_usage, price), cost_breakdown(long_usage, price.long)
+    return {k: a[k] + b[k] for k in a}, len(long_calls)
 
 
 def cost_breakdown(usage: Usage, price: Price) -> dict[str, float]:

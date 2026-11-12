@@ -26,7 +26,7 @@ from tokentrial.claude_code import (
     looks_like_usage_limit,
     parse_reset_epoch,
 )
-from tokentrial.pricing import Price, cost_breakdown
+from tokentrial.pricing import Price, tiered_cost
 from tokentrial.tasks import Task, materialize, run_check
 
 # Statuses that count as finished; anything else is retried on --resume.
@@ -276,7 +276,8 @@ def _run_one(
         "usage_aux": {m: asdict(u) for m, u in parser.state.aux.items()},
         "unpriced_models": parser.state.unpriced_models,
         "cost_usd": parser.cost(),
-        "cost_main_usd": cost_breakdown(usage, price)["total"],
+        "cost_main_usd": tiered_cost(usage, price, list(parser.state.calls.values()))[0]["total"],
+        "long_context_calls": parser.state.long_context_calls,
         "cost_basis": "api_equivalent" if config.mode == "subscription" else "api_billed",
         "num_api_calls": len(parser.state.calls),
         "num_turns": result.get("num_turns"),

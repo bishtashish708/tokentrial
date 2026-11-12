@@ -1,16 +1,15 @@
-# USD per 1M tokens, split by the four token types TokenTrial reports.
+# USD per 1M tokens, split by the token types TokenTrial reports.
 #
-# Every entry carries `source` and `verified`. A run refuses to publish to the
-# leaderboard while any price it used has verified = false.
+# Every entry carries `source`, `checked` (date the source was read) and `verified`.
+# `report` refuses to publish leaderboard results while any price it used is unverified.
 #
-# Anthropic first-party input/output/cache-read rates: Anthropic model table, 2026-11.
-# Cache-write rates assume the documented multipliers on base input
-# (5-minute TTL = 1.25x, 1-hour TTL = 2x) and must be re-checked against the
-# live pricing page before the first published run.
-#
-# Bedrock is partner-priced and differs by region and tier. Values below are
-# PLACEHOLDERS copied from first-party rates until filled in from
-# https://aws.amazon.com/bedrock/pricing/ .
+# A `long_context` sub-table gives the prices for a request whose prompt (input +
+# cache reads + cache writes) exceeds `threshold` tokens. Each request is priced on
+# its own, per the Anthropic pricing page ("Long context pricing").
+
+# --- Anthropic API (first party) -----------------------------------------------
+# Source table "Model pricing"; checked 2026-11-12. Cache hits are 0.05x base input
+# on Opus 5.5 / Sonnet 5.5 (footnote 2) and 0.1x on other models.
 
 [anthropic."claude-opus-5-5"]
 input = 4.00
@@ -18,8 +17,9 @@ cache_write_5m = 5.00
 cache_write_1h = 8.00
 cache_read = 0.20
 output = 20.00
-source = "anthropic model table 2026-11; cache-write via multipliers"
-verified = false
+source = "https://platform.claude.com/docs/en/about-claude/pricing"
+checked = "2026-11-12"
+verified = true
 
 [anthropic."claude-sonnet-5-5"]
 input = 2.00
@@ -27,46 +27,123 @@ cache_write_5m = 2.50
 cache_write_1h = 4.00
 cache_read = 0.10
 output = 10.00
-source = "anthropic model table 2026-11; cache-write via multipliers"
-verified = false
+source = "https://platform.claude.com/docs/en/about-claude/pricing"
+checked = "2026-11-12"
+verified = true
 
 [anthropic."claude-haiku-5-5"]
-# Rates for prompts up to 100K tokens; longer prompts are billed higher (TODO: tiering).
 input = 0.10
 cache_write_5m = 0.125
 cache_write_1h = 0.20
 cache_read = 0.01
 output = 0.50
-source = "anthropic model table 2026-11; cache-write and cache-read via multipliers"
-verified = false
+source = "https://platform.claude.com/docs/en/about-claude/pricing"
+checked = "2026-11-12"
+verified = true
+
+[anthropic."claude-haiku-5-5".long_context]
+threshold = 100000
+input = 0.50
+cache_write_5m = 0.625
+cache_write_1h = 1.00
+cache_read = 0.05
+output = 2.50
 
 [anthropic."claude-haiku-4-5"]
-# Not benchmarked: Claude Code 2.1.252 makes small background calls on this model
-# (observed ~940 input / ~11 output tokens per session); they are part of a run's cost.
+# Not benchmarked: Claude Code 2.1.252 makes a small background call on this model
+# in most sessions; it is part of a run's cost.
 input = 1.00
 cache_write_5m = 1.25
 cache_write_1h = 2.00
 cache_read = 0.10
 output = 5.00
-source = "anthropic model table 2026-11; cache-write and cache-read via multipliers"
-verified = false
+source = "https://platform.claude.com/docs/en/about-claude/pricing"
+checked = "2026-11-12"
+verified = true
+
+# --- Amazon Bedrock --------------------------------------------------------------
+# Source: "Anthropic > On-Demand and Batch pricing", region US East (Ohio); checked
+# 2026-11-12. Global cross-region inference matches first-party prices; geo and
+# in-region cross-region inference is 1.1x (provider "bedrock-regional").
 
 [bedrock."anthropic.claude-opus-5-5"]
-region = "us-east-1"
+endpoint = "global cross-region inference"
 input = 4.00
 cache_write_5m = 5.00
 cache_write_1h = 8.00
 cache_read = 0.20
 output = 20.00
-source = "PLACEHOLDER - copy of first-party rates"
-verified = false
+source = "https://aws.amazon.com/bedrock/pricing/"
+checked = "2026-11-12"
+verified = true
 
 [bedrock."anthropic.claude-sonnet-5-5"]
-region = "us-east-1"
+endpoint = "global cross-region inference"
 input = 2.00
 cache_write_5m = 2.50
 cache_write_1h = 4.00
 cache_read = 0.10
 output = 10.00
-source = "PLACEHOLDER - copy of first-party rates"
-verified = false
+source = "https://aws.amazon.com/bedrock/pricing/"
+checked = "2026-11-12"
+verified = true
+
+[bedrock."anthropic.claude-haiku-5-5"]
+endpoint = "global cross-region inference"
+input = 0.10
+cache_write_5m = 0.125
+cache_write_1h = 0.20
+cache_read = 0.01
+output = 0.50
+source = "https://aws.amazon.com/bedrock/pricing/"
+checked = "2026-11-12"
+verified = true
+
+[bedrock."anthropic.claude-haiku-5-5".long_context]
+threshold = 100000
+input = 0.50
+cache_write_5m = 0.625
+cache_write_1h = 1.00
+cache_read = 0.05
+output = 2.50
+
+[bedrock."anthropic.claude-haiku-4-5"]
+endpoint = "global cross-region inference"
+input = 1.00
+cache_write_5m = 1.25
+cache_write_1h = 2.00
+cache_read = 0.10
+output = 5.00
+source = "https://aws.amazon.com/bedrock/pricing/"
+checked = "2026-11-12"
+verified = true
+
+[bedrock-regional."anthropic.claude-haiku-5-5"]
+endpoint = "geo and in-region cross-region inference, US East (Ohio)"
+input = 0.11
+cache_write_5m = 0.1375
+cache_write_1h = 0.22
+cache_read = 0.011
+output = 0.55
+source = "https://aws.amazon.com/bedrock/pricing/"
+checked = "2026-11-12"
+verified = true
+
+[bedrock-regional."anthropic.claude-haiku-5-5".long_context]
+threshold = 100000
+input = 0.55
+cache_write_5m = 0.6875
+cache_write_1h = 1.10
+cache_read = 0.055
+output = 2.75
+
+[bedrock-regional."anthropic.claude-haiku-4-5"]
+endpoint = "geo and in-region cross-region inference, US East (Ohio)"
+input = 1.10
+cache_write_5m = 1.375
+cache_write_1h = 2.20
+cache_read = 0.11
+output = 5.50
+source = "https://aws.amazon.com/bedrock/pricing/"
+checked = "2026-11-12"
+verified = true
