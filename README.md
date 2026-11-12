@@ -105,8 +105,9 @@ it with `uv run python scripts/make_site.py results/<exp> docs/index.html`.
   [docs/PLAN.md](docs/PLAN.md).
 - **v0.2 (done):** 10 tasks, including 5 with large pytest and git output, × 5 arms (adding a
   `noop-hook` control) × 8 repeats = 400 runs on a subscription, with verified prices.
-- **v0.3:** frontier-hard tasks (so solve rates differ), more tasks rather than more repeats, newer
-  tool versions, Sonnet 5.5, headroom. Funded by credit programs if needed.
+- **v0.3 (prepared, not run):** 18 tasks across Python, Node, C, SQL and bash; rtk v1.2.0 and
+  caveman v4.1.0 next to the v0.2 pins; headroom with a proxy-only control; Haiku 5.5 and
+  Sonnet 5.5. See the [v0.3 plan](docs/PLAN.md#v03-plan-proposed-not-started).
 - **Later:** more tools (context-mode, CLAUDE.md variants), more agents and models, effort-level
   sweeps, and a template so tool authors can submit their own arm.
 - **Later:** a CI job that reruns the leaderboard when a tool releases a new version, and

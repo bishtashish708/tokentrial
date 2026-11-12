@@ -1,0 +1,10 @@
+prompt = """
+bin/rotate-backups.sh keeps the newest N backups per prefix in a directory and deletes the
+rest, but it has bugs and its tests fail. SPEC.md defines the required behaviour exactly,
+including the output format and exit codes. Fix bin/rotate-backups.sh so that it
+implements SPEC.md. It must keep working under macOS's /bin/bash 3.2 as well as bash 5.
+Do not modify the tests. Run them with `bash tests/run-tests.sh`. Your fix will also be
+checked against additional cases derived from SPEC.md.
+"""
+timeout_s = 1200
+tags = ["bash", "shell", "spec", "multi-bug", "filesystem", "medium"]

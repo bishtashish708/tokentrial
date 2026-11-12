@@ -1,0 +1,8 @@
+region,product,units,notes
+north,widget,12,"first order, paid"
+south,gadget,5,
+north,gadget,3,"customer said ""call me"""
+
+east,widget,7,"two-line
+note"
+south,widget,9,plain

@@ -1,0 +1,8 @@
+[project]
+name = "ingestd"
+version = "2.4.1"
+description = "Event ingestion service"
+requires-python = ">=3.10"
+
+[project.scripts]
+ingestd = "ingestd.cli:main"

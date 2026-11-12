@@ -36,5 +36,5 @@ def test_check_ignores_edited_tests(task, tmp_path):
 
 
 def test_task_set():
-    assert len(TASKS) == 10
+    assert len(TASKS) == 18
     assert {t.id for t in TASKS if t.history} == {"git-regression-hunt", "git-config-forensics"}

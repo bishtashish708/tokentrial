@@ -1,0 +1,10 @@
+prompt = """
+`reports/monthly_revenue.sql` in this SQLite analytics repository produces the wrong numbers.
+SPEC.md defines exactly what the report must return. Fix reports/monthly_revenue.sql so that
+it implements SPEC.md exactly; that file is the deliverable (it must stay a single SELECT
+statement). Do not modify the tests, the fixture or schema.sql. Run the tests with
+`python3 -m unittest discover -s tests`. Your fix will also be checked against additional
+cases derived from SPEC.md, on a larger dataset.
+"""
+timeout_s = 1200
+tags = ["sql", "sqlite", "python", "spec", "multi-bug", "hard"]

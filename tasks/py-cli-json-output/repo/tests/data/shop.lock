@@ -1,0 +1,64 @@
+version = 1
+
+[project]
+name = "shop-api"
+dependencies = ["requests>=2.28", "click", "pyyaml >= 6", "stripe-sdk"]
+
+[[package]]
+name = "requests"
+version = "2.31.0"
+license = "Apache 2.0"
+dependencies = ["urllib3 >= 1.21, < 3", "idna", "charset-normalizer>=2,<4", "certifi>=2017.4.17"]
+
+[[package]]
+name = "urllib3"
+version = "2.0.7"
+license = "MIT"
+
+[[package]]
+name = "idna"
+version = "3.10"
+license = "BSD"
+
+[[package]]
+name = "idna"
+version = "3.9"
+license = "bsd-3-clause"
+
+[[package]]
+name = "charset-normalizer"
+version = "3.3.2"
+license = "MIT License"
+
+[[package]]
+name = "click"
+version = "8.1.7"
+license = "BSD-3-Clause"
+dependencies = ["colorama"]
+
+[[package]]
+name = "pyyaml"
+version = "5.4.1"
+license = "MIT"
+
+[[package]]
+name = "stripe-sdk"
+version = "7.0.0"
+source = "git"
+license = "  Proprietary "
+dependencies = ["requests>=2.20", "typing-ext>=4"]
+
+[[package]]
+name = "typing-ext"
+version = "4.8.0"
+source = "path"
+license = "PSF-2.0"
+
+[[package]]
+name = "gplthing"
+version = "1.0"
+license = "GPLv3"
+
+[[package]]
+name = "nolicense"
+version = "0.0.1"

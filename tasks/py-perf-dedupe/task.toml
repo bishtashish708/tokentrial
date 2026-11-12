@@ -1,0 +1,11 @@
+prompt = """
+`contactdedupe.dedupe` merges duplicate contact records. It is correct but far too slow
+for the batch sizes described in README.md. Make it fast enough for those batch sizes
+without changing its behaviour in any way: the exact semantics are defined in SPEC.md and
+the output must stay identical. Do not modify the tests. Run them with
+`python3 -m unittest discover -s tests`. Your change will also be checked against
+additional cases derived from SPEC.md, and against a timed batch of the size given in
+README.md.
+"""
+timeout_s = 1200
+tags = ["python", "unittest", "performance", "algorithms", "spec", "medium"]

@@ -1,0 +1,11 @@
+prompt = """
+`lockscan` is a small CLI that reports on a dependency lockfile (see README.md). Add a
+`--format json` option to its `licenses` and `check` subcommands, exactly as specified in
+SPEC.md (JSON schema, sorting, null values, exit statuses, and how errors are reported in
+JSON mode). The existing text output of every command must stay byte-for-byte unchanged.
+Do not modify the tests. Run them with `python3 -m unittest discover -s tests`. Your change
+will also be checked against additional cases derived from SPEC.md and README.md, on many
+other lockfiles.
+"""
+timeout_s = 1500
+tags = ["python", "unittest", "cli", "feature", "multi-file", "spec", "json", "medium"]

@@ -1,0 +1,26 @@
+prompt = """
+This repository contains `ingestd`, an event-ingestion service with a layered configuration
+system. The service is started from the repository root, with the configuration files
+exactly as checked in, with these environment variables set (and no other variables whose
+names start with INGESTD_):
+
+    INGESTD_PROFILE=staging
+    INGESTD_WORKER_MAX_BATCH_BYTES=12MiB
+    INGESTD_QUEUE__ENVELOPE_RESERVE_BYTES=2MiB
+    INGESTD_ENVELOPE_RESERVE=32KiB
+    INGESTD_SINK__COMPRESS=true
+    INGESTD_LOG_LEVEL=debug
+
+and with this command line:
+
+    python3 -m ingestd serve --profile prod --workers 6 --set worker.batch_align_bytes=64KiB
+
+Question: what is the effective value of the setting `worker.max_batch_bytes`, in bytes,
+once the service has loaded its configuration (that is, the value the worker pool is
+started with)?
+
+Write the answer to a file named ANSWER.txt in the repository root. It must contain only
+the integer number of bytes (digits only, e.g. `1048576`). Do not modify any other files.
+"""
+timeout_s = 900
+tags = ["python", "read-codebase", "exact-answer", "config"]

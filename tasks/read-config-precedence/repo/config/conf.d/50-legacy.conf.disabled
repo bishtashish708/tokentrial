@@ -1,0 +1,3 @@
+# Pre-2024 broker limits. Kept for reference; rename to .conf to re-enable.
+[queue]
+max_payload_bytes = 5MiB

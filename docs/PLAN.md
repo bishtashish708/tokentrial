@@ -21,7 +21,8 @@ at API rates, so results are comparable. API-key mode is kept as an option for l
 | `report` and bootstrap | ✅ `tokentrial report [--export-raw]`. Task-then-run hierarchical bootstrap, paired by task, with the noop noise floor |
 | Pilot run | ✅ 2026-11-12: 60 of 60 runs solved, $0.28 API-equivalent, no usage limit hit. See [`results/pilot-v0.1/FINDINGS.md`](../results/pilot-v0.1/FINDINGS.md) |
 | v0.2 run | ✅ 2026-11-12: 10 tasks × 5 arms × 8 repeats = 400 runs, 396 solved, $2.87 API-equivalent, all prices verified. See [`results/v0.2/FINDINGS.md`](../results/v0.2/FINDINGS.md) |
-| Leaderboard | Pending |
+| Leaderboard | ✅ Static page from `results/v0.2/summary.json`: https://bishtashish708.github.io/tokentrial/ |
+| v0.3 prep | ✅ 2026-11-12: 18 tasks, new arms (rtk v1.2.0, caveman v4.1.0, headroom 0.42.0 and two controls), `--model` repeatable, `--pause-at-utilization`. Activation-checked on Haiku. **The v0.3 run has not started**; see [v0.3 plan](#v03-plan-proposed-not-started) |
 | Checked against real Claude Code output | ✅ Smoke runs on 2026-11-12: recorded usage matches Claude Code's totals exactly (findings below) |
 
 ## Tiers and cost estimates
@@ -279,6 +280,97 @@ once the pilot gets traction: stars, issues, or tool authors engaging. Ways to f
   by bit.
 - **Sponsors.** Tool authors may fund their own runs. Arm configs and raw data stay public, so
   this doesn't affect fairness.
+
+## v0.3 plan (proposed, not started)
+
+### What changed since v0.2
+
+- **Tasks: 10 → 18.** v0.2's intervals were driven by task-to-task variance, so v0.3 adds
+  variety rather than repeats. New: `c-ring-buffer` (C), `js-csv-quoted-fields`,
+  `js-lru-ttl-cache` (Node; bug fix and feature-from-spec), `sql-monthly-revenue` (SQLite),
+  `sh-backup-rotate` (bash), `py-perf-dedupe` (performance), `py-cli-json-output` (multi-file
+  feature) and `read-config-precedence` (code reading, exact answer). Each was validated the same
+  way as before: the check fails on the start state, passes on the reference, and fails with the
+  visible tests blanked. Hidden cases come from a seeded generator and are cross-checked against
+  an independent implementation. Haiku solved all 8 in a single calibration run each
+  (2026-11-12, $0.13), so difficulty is still a limitation; the new tasks are about 2.4× costlier
+  per run than v0.2's ($0.0166 against $0.0068 on baseline).
+- **Arms.**
+  - `rtk-v1.2.0` and `caveman-v4.1.0` run next to the v0.2 pins, using the same adapters. Both
+    releases kept the hook layout, environment variable and state paths.
+  - `headroom` (0.42.0, the newest release at least two weeks old) runs a per-run
+    `headroom proxy` with its MCP retrieve server, as `headroom wrap claude` does, without writing
+    to `~/.claude.json`. Telemetry, the usage beacon and the subscription-usage poller are off.
+  - Controls. The activation check found that **Claude Code skips its background title call when
+    its traffic goes through a local proxy** (a third side effect after the SessionStart hook);
+    `ANTHROPIC_BASE_URL` set to Anthropic's own URL does not cause it (`noop-baseurl`, one run).
+    `headroom-passthrough` runs the same proxy and MCP server with `--no-optimize`, so `headroom`
+    vs `headroom-passthrough` isolates the compression. `report` now compares each tool with its
+    matched control.
+- **Models.** `--model` is repeatable; each model gets its own experiment under
+  `--out/<model>/`. Sonnet 5.5 prices were re-checked (unchanged; no long-context tier).
+- **Shared subscription.** `--pause-at-utilization 0.6` pauses resumably (exit 3) once the
+  five-hour window reaches 60%, leaving room for the other project on the same account.
+
+### Activation check (Haiku, `py-pytest-cart-pricing`, 1 repeat)
+
+| Arm | Solved | Cost | Evidence |
+|---|---|---|---|
+| `rtk-v1.2.0` | ✅ | $0.0127 | PreToolUse hook fired 4×; `rtk gain`: 8 commands, 371 tokens saved; no "No hook installed" nag |
+| `caveman-v4.1.0` | ✅ | $0.0072 | SessionStart + UserPromptSubmit hooks fired; "CAVEMAN MODE ACTIVE — mode: caveman" in context |
+| `headroom` | ✅ | $0.0121 | 7 requests through the proxy, 5 compressed (1,640 tokens removed); MCP server connected; no title call |
+| `headroom-passthrough` | ✅ | $0.0089 | 9 requests, 0 compressed; no title call |
+| `noop-baseurl` | ✅ | $0.0060 | title call still made, so a base URL alone is not the trigger |
+
+### Proposed matrix
+
+| Phase | Model | Tasks | Arms | Repeats | Runs |
+|---|---|---|---|---|---|
+| A | Haiku 5.5 | 18 | 9: baseline, noop, noop-hook, headroom-passthrough, rtk, rtk-v1.2.0, caveman, caveman-v4.1.0, headroom | 5 | **810** |
+| B0 | Sonnet 5.5 calibration | 2 | 5 (baseline, noop-hook, rtk-v1.2.0, caveman-v4.1.0, headroom) | 1 | **10** |
+| B | Sonnet 5.5 | 18 | 6: baseline, noop-hook, headroom-passthrough, rtk-v1.2.0, caveman-v4.1.0, headroom | 3 | **324** |
+
+Sonnet drops `noop` (Haiku measures the noise floor), the old tool pins (the version comparison
+is on Haiku) and goes to 3 repeats, because each Sonnet run costs about 16× a Haiku run.
+
+### Usage estimate
+
+Measured: v0.2 moved the five-hour window by about **4.2% per $1 of Haiku API-equivalent cost**
+(+9 points for $2.10 in one window; +3 for $0.77 in the next) and the weekly window by about 1
+point for the whole run ($2.87). Assumption: subscription usage scales with API-equivalent cost
+across models. That is not documented and is the main uncertainty, which is why phase B0 exists.
+
+| Phase | Est. API-equivalent | Five-hour window | Weekly window | Wall clock |
+|---|---|---|---|---|
+| A (Haiku, 810) | $9–11 (≈$0.012/run) | ≈40–45 points in total, spread over the run; never near the limit | ≈3–7% | ≈13 h (mean ≈60 s per run) |
+| B0 (Sonnet, 10) | ≈$2 | ≈8 points | <1% | ≈15 min |
+| B (Sonnet, 324) | ≈$50–70 (≈$0.15–0.20/run) | ≈210–290 points: **4–5 windows** at a 60% pause threshold | ≈20–25% (could be 10–45% if usage is not proportional to price) | ≈7 h of runs plus pauses: **1.5–3 days** |
+
+Per-run Sonnet cost assumes the same tokens as Haiku priced at Sonnet rates (20× for input,
+cache writes and output, 10× for cache reads), which gives ≈16×. Sonnet often takes fewer turns,
+so this is probably high. The parallel project's own use is not included: the five-hour window
+rose from 5% to 15% during this prep while tokentrial used about 1 point.
+
+Caps: `--max-usd 20` for A and `--max-usd 90 --max-usd-per-run 2` for B (API-equivalent).
+
+### Commands (not run)
+
+```
+uv run tokentrial run --model claude-haiku-5-5 --repeats 5 --seed 3 --max-usd 20 \
+  --pause-at-utilization 0.6 --out runs/v0.3-haiku \
+  --arm baseline --arm noop --arm noop-hook --arm headroom-passthrough --arm rtk \
+  --arm rtk-v1.2.0 --arm caveman --arm caveman-v4.1.0 --arm headroom
+uv run tokentrial run --model claude-sonnet-5-5 --repeats 1 --max-usd 5 --max-usd-per-run 2 \
+  --pause-at-utilization 0.6 --out runs/v0.3-sonnet-calib \
+  --task py-pytest-cart-pricing --task js-csv-quoted-fields \
+  --arm baseline --arm noop-hook --arm rtk-v1.2.0 --arm caveman-v4.1.0 --arm headroom
+uv run tokentrial run --model claude-sonnet-5-5 --repeats 3 --seed 3 --max-usd 90 \
+  --max-usd-per-run 2 --pause-at-utilization 0.6 --out runs/v0.3-sonnet \
+  --arm baseline --arm noop-hook --arm headroom-passthrough --arm rtk-v1.2.0 \
+  --arm caveman-v4.1.0 --arm headroom
+```
+
+After a pause, continue with `uv run tokentrial run --resume --out <dir>`.
 
 ## Definition of done (v0.1)
 

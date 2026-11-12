@@ -1,0 +1,11 @@
+{
+  "name": "csvkit",
+  "version": "1.4.0",
+  "private": true,
+  "type": "module",
+  "description": "Tiny dependency-free CSV reader/writer and reporting helpers",
+  "scripts": {
+    "test": "node --test test/csv.test.js test/report.test.js",
+    "report": "node src/cli.js data/sales.csv region units"
+  }
+}

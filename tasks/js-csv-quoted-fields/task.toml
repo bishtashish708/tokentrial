@@ -1,0 +1,10 @@
+prompt = """
+`src/csv.js` is a small CSV parser/writer, and `src/report.js` builds on it. The parser does
+not follow SPEC.md, and some of its tests fail. Fix src/csv.js so that `parse` and
+`stringify` implement SPEC.md exactly (record and line-break rules, quoting and escaping,
+and the exact error messages and line numbers). Do not modify the tests. Run them with
+`node --test test/csv.test.js test/report.test.js`.
+Your fix will also be checked against additional cases derived from SPEC.md.
+"""
+timeout_s = 1200
+tags = ["javascript", "node-test", "spec", "multi-bug", "parsing", "hard"]

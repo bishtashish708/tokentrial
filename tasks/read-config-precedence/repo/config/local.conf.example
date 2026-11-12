@@ -1,0 +1,7 @@
+# Copy to config/local.conf for developer overrides (local.conf is git-ignored).
+[worker]
+count = 1
+max_batch_bytes = 16MiB
+
+[logging]
+level = debug

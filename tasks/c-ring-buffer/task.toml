@@ -1,0 +1,11 @@
+prompt = """
+This is a small C library: a fixed-capacity byte ring buffer (ringbuf.c / ringbuf.h) and a
+newline-framed reader built on it (linereader.c). The ring buffer has bugs and its tests
+fail. SPEC.md defines the required behaviour of the ringbuf API precisely. Fix ringbuf.c so
+that it implements SPEC.md exactly; keep the public API in ringbuf.h unchanged. Do not
+modify the tests. Build and run them with `make test` (compiled with
+`cc -std=c11 -Wall -Wextra`). Your fix will also be checked against additional cases
+derived from SPEC.md.
+"""
+timeout_s = 1200
+tags = ["c", "make", "spec", "multi-bug", "data-structure", "medium"]

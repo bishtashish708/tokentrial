@@ -1,0 +1,6137 @@
+{
+ "parse": [
+  {
+   "input": " \r\t\n\r",
+   "delimiter": "\t",
+   "records": [
+    [
+     " "
+    ],
+    [
+     "",
+     ""
+    ],
+    []
+   ]
+  },
+  {
+   "input": "\"a7\",\"bx\r\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "a7",
+     "bx\r"
+    ]
+   ]
+  },
+  {
+   "input": "\", aba\",\"x\r\n\"\n7,\"\",\"\r\n\",a\r\n\r\n\"\"\"a\",\",\u00e9\"\"\"\"\"\"a\",\"x\"\"\"\",a\"",
+   "delimiter": ",",
+   "records": [
+    [
+     ", aba",
+     "x\r\n"
+    ],
+    [
+     "7",
+     "",
+     "\r\n",
+     "a"
+    ],
+    [],
+    [
+     "\"a",
+     ",\u00e9\"\"\"a",
+     "x\"\",a"
+    ]
+   ]
+  },
+  {
+   "input": "\"a\"\"\"\"a;\"\r\r\";a\";abx;\"\u00e9\"\"a\u00e9\"\r\"\u00e9\r\na\"\"\"\r\n;x;;ab\";\"bb\"\"\";\"a\"\"\"\"\"\"\"\"a;\"",
+   "delimiter": ";",
+   "records": [
+    [
+     "a\"\"a;"
+    ],
+    [],
+    [
+     ";a",
+     "abx",
+     "\u00e9\"a\u00e9"
+    ],
+    [
+     "\u00e9\r\na\""
+    ],
+    [
+     "",
+     "x",
+     "",
+     "ab\"",
+     "bb\"",
+     "a\"\"\"\"a;"
+    ]
+   ]
+  },
+  {
+   "input": "\" \",7a \n,\"\"\"aa\"\"\"\"\",\"b\",\"\u00e9 a\r\"\r\n\"\"\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     " ",
+     "7a "
+    ],
+    [
+     "",
+     "\"aa\"\"",
+     "b",
+     "\u00e9 a\r"
+    ],
+    [
+     "\""
+    ]
+   ]
+  },
+  {
+   "input": ",x7xba,\"\",\"xba\"\n\"7\r\n\"\r\n\n\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "x7xba",
+     "",
+     "xba"
+    ],
+    [
+     "7\r\n"
+    ],
+    [],
+    []
+   ]
+  },
+  {
+   "input": "\nb\"\"a a\r\n",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "b\"\"a a"
+    ]
+   ]
+  },
+  {
+   "input": "a\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "a\"\""
+    ]
+   ]
+  },
+  {
+   "input": "bx\n\r\n,\"\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "bx"
+    ],
+    [],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\r\"\u00e9,\u00e9\",\"\"\",\",\"a,\"\"\"\"\",\"x\n\"\n\u00e9ax\r,\"x\"\"\",aba\r\n\"\"\"\"",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "\u00e9,\u00e9",
+     "\",",
+     "a,\"\"",
+     "x\n"
+    ],
+    [
+     "\u00e9ax"
+    ],
+    [
+     "",
+     "x\"",
+     "aba"
+    ],
+    [
+     "\""
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"b\",,\"7\",\"\u00e9ba,\r\n\"\r\n\"xaa \",\"b\r\r7a\"\na,\"\",\"bba\",\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "\"b",
+     "",
+     "7",
+     "\u00e9ba,\r\n"
+    ],
+    [
+     "xaa ",
+     "b\r\r7a"
+    ],
+    [
+     "a",
+     "",
+     "bba",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\",\",\",a\r\"\r\n\n",
+   "delimiter": ",",
+   "records": [
+    [
+     ",",
+     ",a\r"
+    ],
+    []
+   ]
+  },
+  {
+   "input": "\"b,a7x\"\r\nx, ax,,\"\"\"\"\r\n\r,\"a\",\"b,7a\",\"\n\"\n,\"\"\"a a\u00e9\",\"aba\"\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "b,a7x"
+    ],
+    [
+     "x",
+     " ax",
+     "",
+     "\""
+    ],
+    [],
+    [
+     "",
+     "a",
+     "b,7a",
+     "\n"
+    ],
+    [
+     "",
+     "\"a a\u00e9",
+     "aba"
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"7\r\n\"\"a\",,\"\n\rx\"\n\"\r\n\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "\"7\r\n\"a",
+     "",
+     "\n\rx"
+    ],
+    [
+     "\r\n"
+    ]
+   ]
+  },
+  {
+   "input": "\"\raa \",\"\rx ,\",\"\",\"\"\r\n\"xbb,\"\n\"7\r\n\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "\raa ",
+     "\rx ,",
+     "",
+     ""
+    ],
+    [
+     "xbb,"
+    ],
+    [
+     "7\r\n"
+    ]
+   ]
+  },
+  {
+   "input": "a",
+   "delimiter": ",",
+   "records": [
+    [
+     "a"
+    ]
+   ]
+  },
+  {
+   "input": "a\n\";bab7\";a;bb7\u00e9 \nxaxxa;;\"aa\"\";\"\r",
+   "delimiter": ";",
+   "records": [
+    [
+     "a"
+    ],
+    [
+     ";bab7",
+     "a",
+     "bb7\u00e9 "
+    ],
+    [
+     "xaxxa",
+     "",
+     "aa\";"
+    ]
+   ]
+  },
+  {
+   "input": "\"\r\n\"\r\"\r\nxaba\"\n\"\",\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "\r\n"
+    ],
+    [
+     "\r\nxaba"
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\r\n\r\" \"\"\"\"\"\n\" ax;\";\" \nbx;\";\"abab\";",
+   "delimiter": ";",
+   "records": [
+    [],
+    [],
+    [
+     " \"\""
+    ],
+    [
+     " ax;",
+     " \nbx;",
+     "abab",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"a\"\"bba\",\"a\rb\"\" \"\r\n\n,",
+   "delimiter": ",",
+   "records": [
+    [
+     "a\"bba",
+     "a\rb\" "
+    ],
+    [],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": " ,\"axba\"\r,\"ab\"\"7\"\r\",7\"\"\"\"a\"\"\",\"\"\"\",a,\"7b,\"\r",
+   "delimiter": ",",
+   "records": [
+    [
+     " ",
+     "axba"
+    ],
+    [
+     "",
+     "ab\"7"
+    ],
+    [
+     ",7\"\"a\"",
+     "\"",
+     "a",
+     "7b,"
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"\"\r\n\r\n\"\n\rab\";b7;\u00e9\r\n\" \"\"\"",
+   "delimiter": ";",
+   "records": [
+    [
+     "\""
+    ],
+    [],
+    [
+     "\n\rab",
+     "b7",
+     "\u00e9"
+    ],
+    [
+     " \""
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"\"\"\",\u00e9\u00e9 x,\"\"\"x\r\n\",ba7 \r\n\"x\",\"b7aa\",\"\"\"a\"\n\"bx \"\"\"\"a\",\" aa\",a\n\"\n\"\"b\",,\"a7\r7\", \r\n a7,\" a\u00e9\",a a\u00e9a",
+   "delimiter": ",",
+   "records": [
+    [
+     "\"\"",
+     "\u00e9\u00e9 x",
+     "\"x\r\n",
+     "ba7 "
+    ],
+    [
+     "x",
+     "b7aa",
+     "\"a"
+    ],
+    [
+     "bx \"\"a",
+     " aa",
+     "a"
+    ],
+    [
+     "\n\"b",
+     "",
+     "a7\r7",
+     " "
+    ],
+    [
+     " a7",
+     " a\u00e9",
+     "a a\u00e9a"
+    ]
+   ]
+  },
+  {
+   "input": "aa,",
+   "delimiter": ",",
+   "records": [
+    [
+     "aa",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\ta\r\"\t\t\tb\ra  \t\"\raa\"\r\n\t\"\"\"\"\"b\txb\"\n\"a \"\"a \"\t\t\"\"\r",
+   "delimiter": "\t",
+   "records": [
+    [
+     "\ta\r",
+     "",
+     "",
+     "b"
+    ],
+    [
+     "a  ",
+     "\raa"
+    ],
+    [
+     "",
+     "\"\"b\txb"
+    ],
+    [
+     "a \"a ",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"\"\"xb \",\"\"\"bx\"\"b\",\"b\r\na,\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "\"\"xb ",
+     "\"bx\"b",
+     "b\r\na,"
+    ]
+   ]
+  },
+  {
+   "input": "\"a\";\r\n\";\u00e9\"\"\"\r\"aa\u00e9\"\"\"\"\"\r\n\"\r\n\";\"\"\"\"\" a\"\r\nbbb;\";\r\n b\u00e9\";\"b\u00e9b\";\"\"",
+   "delimiter": ";",
+   "records": [
+    [
+     "a",
+     ""
+    ],
+    [
+     ";\u00e9\""
+    ],
+    [
+     "aa\u00e9\"\""
+    ],
+    [
+     "\r\n",
+     "\"\" a"
+    ],
+    [
+     "bbb",
+     ";\r\n b\u00e9",
+     "b\u00e9b",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"xa\",\"b,\r\n\"\"x\",x\r\"\r\n\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "xa",
+     "b,\r\n\"x",
+     "x"
+    ],
+    [
+     "\r\n"
+    ]
+   ]
+  },
+  {
+   "input": "\"77x\",,\"\"\r\"x\n b\"\r\"\",x7b,,\"a \"\"\"\"b\r\n\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "77x",
+     "",
+     ""
+    ],
+    [
+     "x\n b"
+    ],
+    [
+     "",
+     "x7b",
+     "",
+     "a \"\"b\r\n"
+    ]
+   ]
+  },
+  {
+   "input": "b\u00e9,,b\rxbx\nbb,\",\",",
+   "delimiter": ",",
+   "records": [
+    [
+     "b\u00e9",
+     "",
+     "b"
+    ],
+    [
+     "xbx"
+    ],
+    [
+     "bb",
+     ",",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\nab\"a,\r\"\"\"",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 3",
+    "line": 3
+   }
+  },
+  {
+   "input": "\"\tax\"\"\"\r\r\"\nbx\"",
+   "delimiter": "\t",
+   "records": [
+    [
+     "\tax\""
+    ],
+    [],
+    [
+     "\nbx"
+    ]
+   ]
+  },
+  {
+   "input": "\"7\r\naa\",\"\r\n\",\"a\r\"\"\"\"\",\"\"\"\"\"ba\"\r\n\r\n\"\"\"\"bab\",\",bb\r\n\",",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 6",
+    "line": 6
+   }
+  },
+  {
+   "input": "\"\r\naaa\n\",aabx,b ,\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "\r\naaa\n",
+     "aabx",
+     "b ",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\ra7\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "\ra7"
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\r\nx7\u00e9x,\"\",\"\rx7\",\"\"\"\"\n\"\",\"b\"\"7a7\"\n,,\"\rbbb\",\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     ""
+    ],
+    [
+     "x7\u00e9x",
+     "",
+     "\rx7",
+     "\""
+    ],
+    [
+     "",
+     "b\"7a7"
+    ],
+    [
+     "",
+     "",
+     "\rbbb",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\" b,\r\n\r",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 1",
+    "line": 1
+   }
+  },
+  {
+   "input": "\r\n\"\",\"\",\"aa\",\"b\r\"",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "",
+     "",
+     "aa",
+     "b\r"
+    ]
+   ]
+  },
+  {
+   "input": "a\r\nb\r \n,\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "a"
+    ],
+    [
+     "b"
+    ],
+    [
+     " "
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"bxbx \",\"bb,\",,bxa\n\r\n\"\"\"\"\"bb\",\"ba\"\r\nb7a\n\",bbab\",,\"7,\",\"\"\" b\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "bxbx ",
+     "bb,",
+     "",
+     "bxa"
+    ],
+    [],
+    [
+     "\"\"bb",
+     "ba"
+    ],
+    [
+     "b7a"
+    ],
+    [
+     ",bbab",
+     "",
+     "7,",
+     "\" b"
+    ]
+   ]
+  },
+  {
+   "input": "\n\"\"\"\"",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "\""
+    ]
+   ]
+  },
+  {
+   "input": "\r\n\"\"\r\t\n\"\t\rbb",
+   "delimiter": "\t",
+   "error": {
+    "message": "Unterminated quoted field at line 4",
+    "line": 4
+   }
+  },
+  {
+   "input": "7\r\"\u00e9\";\"\n\"\"\"\"\";\"\"\"\nb\"\n",
+   "delimiter": ";",
+   "records": [
+    [
+     "7"
+    ],
+    [
+     "\u00e9",
+     "\n\"\"",
+     "\"\nb"
+    ]
+   ]
+  },
+  {
+   "input": ",\na\r\"\r\"\"\r\n",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 3",
+    "line": 3
+   }
+  },
+  {
+   "input": "b,\r\n\",\r\n\r\r\n,b\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "b",
+     ""
+    ],
+    [
+     ",\r\n\r\r\n,b"
+    ]
+   ]
+  },
+  {
+   "input": "\n,\"x77\r\",\", \ra\"\r\n\u00e9b7,\r",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "",
+     "x77\r",
+     ", \ra"
+    ],
+    [
+     "\u00e9b7",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\r\n \r\n;",
+   "delimiter": ";",
+   "error": {
+    "message": "Unterminated quoted field at line 1",
+    "line": 1
+   }
+  },
+  {
+   "input": "\r\n\"\r\n\"\"\"\"\"\"\u00e9\",,ax\rxbb,\"ba\rb\",\u00e9,\"x\r\na\"\n",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "\r\n\"\"\"\u00e9",
+     "",
+     "ax"
+    ],
+    [
+     "xbb",
+     "ba\rb",
+     "\u00e9",
+     "x\r\na"
+    ]
+   ]
+  },
+  {
+   "input": "\"\rx7\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "\rx7"
+    ]
+   ]
+  },
+  {
+   "input": "b7\u00e9,\",\",\",\"\"b\"\r\n\"\n\",b,,\r\",\na\r\n\",\"\",\"b\u00e9\"\"\r\na\"\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "b7\u00e9",
+     ",",
+     ",\"b"
+    ],
+    [
+     "\n",
+     "b",
+     "",
+     ""
+    ],
+    [
+     ",\na\r\n",
+     "",
+     "b\u00e9\"\r\na"
+    ]
+   ]
+  },
+  {
+   "input": "x\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "x"
+    ]
+   ]
+  },
+  {
+   "input": "\"x\"\r\n\n\"bbb\",,\"\raba\"\n\"b\"\"\"\"b\",\" \u00e9bb\",\"a\",\"bba,\r\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "x"
+    ],
+    [],
+    [
+     "bbb",
+     "",
+     "\raba"
+    ],
+    [
+     "b\"\"b",
+     " \u00e9bb",
+     "a",
+     "bba,\r"
+    ]
+   ]
+  },
+  {
+   "input": ",\"aa\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "aa"
+    ]
+   ]
+  },
+  {
+   "input": "b\u00e9xb,\"x\n\",b7,\"\r\nb\"\r\"bx\n \"\n\"bx7\ra\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "b\u00e9xb",
+     "x\n",
+     "b7",
+     "\r\nb"
+    ],
+    [
+     "bx\n "
+    ],
+    [
+     "bx7\ra"
+    ]
+   ]
+  },
+  {
+   "input": "\"77x,\"\r\nbxb,\"ab,a\",,b\u00e9b\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "77x,"
+    ],
+    [
+     "bxb",
+     "ab,a",
+     "",
+     "b\u00e9b"
+    ]
+   ]
+  },
+  {
+   "input": "\r\n\"\rbaxa\"\n",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "\rbaxa"
+    ]
+   ]
+  },
+  {
+   "input": "\n a,\"\",,\"7,b7\"\n\"\"\"a\",\u00e9xb\n,\"\r\na\"\"b \",,\"7\"\"\"",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     " a",
+     "",
+     "",
+     "7,b7"
+    ],
+    [
+     "\"a",
+     "\u00e9xb"
+    ],
+    [
+     "",
+     "\r\na\"b ",
+     "",
+     "7\""
+    ]
+   ]
+  },
+  {
+   "input": "\"x\"\"bxb\",\"b\"\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "x\"bxb",
+     "b"
+    ]
+   ]
+  },
+  {
+   "input": "7ba\r\nb,\"b\"\"\n\",\"\u00e9\"\"\"\"\"\"\"\"\"\"\"\"a\",a77 b\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "7ba"
+    ],
+    [
+     "b",
+     "b\"\n",
+     "\u00e9\"\"\"\"\"\"a",
+     "a77 b"
+    ]
+   ]
+  },
+  {
+   "input": "a\u00e9b\tx7\r\n\"a\t\"\"\"\"\r\n\r\"\r\nx\t\n\"\"\"bab\"\t\"\"\"a\tax\"\t\"\t b\"\t\r\n\"\"\"\"\"b \t \"",
+   "delimiter": "\t",
+   "records": [
+    [
+     "a\u00e9b",
+     "x7"
+    ],
+    [
+     "a\t\"\"\r\n\r"
+    ],
+    [
+     "x",
+     ""
+    ],
+    [
+     "\"bab",
+     "\"a\tax",
+     "\t b",
+     ""
+    ],
+    [
+     "\"\"b \t "
+    ]
+   ]
+  },
+  {
+   "input": "\"a\"\"\r\n\"\n\n\"",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 4",
+    "line": 4
+   }
+  },
+  {
+   "input": "b\r\r\"\"\"  \"",
+   "delimiter": "\t",
+   "records": [
+    [
+     "b"
+    ],
+    [],
+    [
+     "\"  "
+    ]
+   ]
+  },
+  {
+   "input": "\"bx\r\n\"\"\"\r\n,,\"b7,x \",\n,,\"\"\n\",\u00e9a7\u00e9\",\"\",\"\"\"\"\"\r7,\"\"\"\"\",b\r\"axa\"\"\"\"\r\n\",7b,bb b",
+   "delimiter": ",",
+   "records": [
+    [
+     "bx\r\n\""
+    ],
+    [
+     "",
+     "",
+     "b7,x ",
+     ""
+    ],
+    [
+     "",
+     "",
+     ""
+    ],
+    [
+     ",\u00e9a7\u00e9",
+     "",
+     "\"\"\r7,\"\"",
+     "b"
+    ],
+    [
+     "axa\"\"\r\n",
+     "7b",
+     "bb b"
+    ]
+   ]
+  },
+  {
+   "input": "",
+   "delimiter": ",",
+   "records": []
+  },
+  {
+   "input": "\"",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 1",
+    "line": 1
+   }
+  },
+  {
+   "input": " ",
+   "delimiter": ",",
+   "records": [
+    [
+     " "
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"x \"\"\"\"a\"\t\"\u00e9\"\"\"\"aa\r\n\"\ta\r\r\n\t\"\t \ra\u00e9\"\t\"xb\n\"",
+   "delimiter": "\t",
+   "records": [
+    [
+     "\"x \"\"a",
+     "\u00e9\"\"aa\r\n",
+     "a"
+    ],
+    [],
+    [
+     "",
+     "\t \ra\u00e9",
+     "xb\n"
+    ]
+   ]
+  },
+  {
+   "input": ",\"\",\"a\"\n\"\"\"a77x\",aab7b,b,\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "",
+     "a"
+    ],
+    [
+     "\"a77x",
+     "aab7b",
+     "b",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"\"\t\" b\"\"\"\r\"\rb\"\"\n\"\t\"aa\"\r\"\n\"\t\"xa\tb\"\t\"x\r\rb\"",
+   "delimiter": "\t",
+   "records": [
+    [
+     "\"",
+     " b\""
+    ],
+    [
+     "\rb\"\n",
+     "aa"
+    ],
+    [
+     "\n",
+     "xa\tb",
+     "x\r\rb"
+    ]
+   ]
+  },
+  {
+   "input": "\n\"x\"\"\r\nb\"\t\"ab\"\t\"x\"\r\"\"\"\"\"\r\na\"\n7\tbabaa",
+   "delimiter": "\t",
+   "records": [
+    [],
+    [
+     "x\"\r\nb",
+     "ab",
+     "x"
+    ],
+    [
+     "\"\"\r\na"
+    ],
+    [
+     "7",
+     "babaa"
+    ]
+   ]
+  },
+  {
+   "input": "aa,\" \r aa\",baa,\"\"\"\"\n\"a\r\na\",\"x\"\"\"\"b\",,\r\n\"b77\",\"xbb\",\"\r\n\"\r\"a a\"\"\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "aa",
+     " \r aa",
+     "baa",
+     "\""
+    ],
+    [
+     "a\r\na",
+     "x\"\"b",
+     "",
+     ""
+    ],
+    [
+     "b77",
+     "xbb",
+     "\r\n"
+    ],
+    [
+     "a a\""
+    ]
+   ]
+  },
+  {
+   "input": "\"\r\n\n\"",
+   "delimiter": ";",
+   "records": [
+    [
+     "\r\n\n"
+    ]
+   ]
+  },
+  {
+   "input": "ab a\r\n\r\n\n\n\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "ab a"
+    ],
+    [],
+    [],
+    [],
+    []
+   ]
+  },
+  {
+   "input": "\"\",\"\"\", a\"x\"\",\",\",\r",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 1",
+    "line": 1
+   }
+  },
+  {
+   "input": "\"\"\"x\"\t\t\"\r\n7a\"\t\r\" a7\"\r\nax\t\"\"\"\r\nx\"\n\t\"\t\"\taa\t\"x\"\r\n\r\n",
+   "delimiter": "\t",
+   "records": [
+    [
+     "\"x",
+     "",
+     "\r\n7a",
+     ""
+    ],
+    [
+     " a7"
+    ],
+    [
+     "ax",
+     "\"\r\nx"
+    ],
+    [
+     "",
+     "\t",
+     "aa",
+     "x"
+    ],
+    []
+   ]
+  },
+  {
+   "input": "\"\u00e9\"\"\",\"axb\",\"abbb,\"\r\r\"\",\"ab\",\"xb7\"\r\n\"xaxb\r\n\",\"\"\"aab \"\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "\u00e9\"",
+     "axb",
+     "abbb,"
+    ],
+    [],
+    [
+     "",
+     "ab",
+     "xb7"
+    ],
+    [
+     "xaxb\r\n",
+     "\"aab "
+    ]
+   ]
+  },
+  {
+   "input": "\"b\", \u00e9,\"7\nba\r\"\n\"\rbx\u00e9\",\"xa,\u00e9\"\"\"\r\n\"a\u00e9\r\nba\",\"b,b\"\"\"\"a\",\"xxb\n \"",
+   "delimiter": ",",
+   "records": [
+    [
+     "b",
+     " \u00e9",
+     "7\nba\r"
+    ],
+    [
+     "\rbx\u00e9",
+     "xa,\u00e9\""
+    ],
+    [
+     "a\u00e9\r\nba",
+     "b,b\"\"a",
+     "xxb\n "
+    ]
+   ]
+  },
+  {
+   "input": "\"\nba\"\t\"\"\" \"\t\" b\r\"\tbb\rbb\t\t\"x\tx\"\t\"\"\r\"xba\"\" \"\t\"\"\"\"\"\"\"\ra\"\t\"\"\"\"\"\"\r\n\"7ax\"\t\"b\t\"",
+   "delimiter": "\t",
+   "records": [
+    [
+     "\nba",
+     "\" ",
+     " b\r",
+     "bb"
+    ],
+    [
+     "bb",
+     "",
+     "x\tx",
+     ""
+    ],
+    [
+     "xba\" ",
+     "\"\"\"\ra",
+     "\"\""
+    ],
+    [
+     "7ax",
+     "b\t"
+    ]
+   ]
+  },
+  {
+   "input": "\"bxab\"\n\u00e9,,aa\nb\r\"\rabb\"\"\",\"a\"\"\"\"\"\"\u00e9\",\" ,\r\nx\",\"\"\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "bxab"
+    ],
+    [
+     "\u00e9",
+     "",
+     "aa"
+    ],
+    [
+     "b"
+    ],
+    [
+     "\rabb\"",
+     "a\"\"\"\u00e9",
+     " ,\r\nx",
+     "\""
+    ]
+   ]
+  },
+  {
+   "input": "\t\"a\tb\r\n\"\t\"\"\"\"\t\"x\r\n\t\ta\"\r\n",
+   "delimiter": "\t",
+   "records": [
+    [
+     "",
+     "a\tb\r\n",
+     "\"",
+     "x\r\n\t\ta"
+    ]
+   ]
+  },
+  {
+   "input": "\"\n\"\r\nx7 bx,\"\u00e9a,\"\r\n,\"  x\"\"\"\"a\",\r\n\"7\rxxx\",\"\rb7a,\",\"\"\"  \u00e9\",\r\n\",\",a,xbb,\",7\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "\n"
+    ],
+    [
+     "x7 bx",
+     "\u00e9a,"
+    ],
+    [
+     "",
+     "  x\"\"a",
+     ""
+    ],
+    [
+     "7\rxxx",
+     "\rb7a,",
+     "\"  \u00e9",
+     ""
+    ],
+    [
+     ",",
+     "a",
+     "xbb",
+     ",7"
+    ]
+   ]
+  },
+  {
+   "input": "\",\"\"\"\"\"\r\"\",\"\",\"\u00e9,7a\"\n\r\r\"\"z\"\r\n\"\"\"\"",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 5",
+    "line": 5
+   }
+  },
+  {
+   "input": "a\" \n\"\r\n b",
+   "delimiter": "\t",
+   "error": {
+    "message": "Unterminated quoted field at line 2",
+    "line": 2
+   }
+  },
+  {
+   "input": "7\t\t\"ab \n\"\n\t\"\t\"\n\t\"\"\r\nxab\t\"\u00e9\t \t\"  b\n\"\r\"\"\"\"",
+   "delimiter": "\t",
+   "error": {
+    "message": "Unexpected character after closing quote at line 5",
+    "line": 5
+   }
+  },
+  {
+   "input": "\"b\"\t\"\n\u00e9b\"\tb\t\r\n\r\n",
+   "delimiter": "\t",
+   "records": [
+    [
+     "b",
+     "\n\u00e9b",
+     "b",
+     ""
+    ],
+    []
+   ]
+  },
+  {
+   "input": "\"ab\r\nax\",\"\"\"\"\"\",\"\"\" ba\"\n\"\rba7b\",aab\r\n\r\n\n\"\",\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "ab\r\nax",
+     "\"\"",
+     "\" ba"
+    ],
+    [
+     "\rba7b",
+     "aab"
+    ],
+    [],
+    [],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "bb,\"xbb \",\"xa\r\na\",\"\r\n\"\n\r\r\n\"a\r\n\"\"x \"\r\"bx\",\"x\",\"\u00e9\n\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "bb",
+     "xbb ",
+     "xa\r\na",
+     "\r\n"
+    ],
+    [],
+    [],
+    [
+     "a\r\n\"x "
+    ],
+    [
+     "bx",
+     "x",
+     "\u00e9\n"
+    ]
+   ]
+  },
+  {
+   "input": "a7\r\"\",\"\r\na\"\nbxx ,babaa",
+   "delimiter": ",",
+   "records": [
+    [
+     "a7"
+    ],
+    [
+     "",
+     "\r\na"
+    ],
+    [
+     "bxx ",
+     "babaa"
+    ]
+   ]
+  },
+  {
+   "input": "\r;;\r\n;b\" \r",
+   "delimiter": ";",
+   "records": [
+    [],
+    [
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "b\" "
+    ]
+   ]
+  },
+  {
+   "input": "aa 7x,a\u00e9 bb,,\",\"\"\r\"\r\nxx,baa7,\" x\"\"aa\"\n\"x7 x\r\",b,\u00e977,x\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "aa 7x",
+     "a\u00e9 bb",
+     "",
+     ",\"\r"
+    ],
+    [
+     "xx",
+     "baa7",
+     " x\"aa"
+    ],
+    [
+     "x7 x\r",
+     "b",
+     "\u00e977",
+     "x"
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"\"\"\",\"x x\"\"\"\"a\",\"aaa\"\"\",\r\n\r\n\r\n\"\n \",\"ab\",\",aab \"",
+   "delimiter": ",",
+   "records": [
+    [
+     "\"\"",
+     "x x\"\"a",
+     "aaa\"",
+     ""
+    ],
+    [],
+    [],
+    [
+     "\n ",
+     "ab",
+     ",aab "
+    ]
+   ]
+  },
+  {
+   "input": "b\r\n\"a\"\n\"\",bb, \r\" \nb\n\",,\"\nba\",\"\"\"\"\" a7x\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "b"
+    ],
+    [
+     "a"
+    ],
+    [
+     "",
+     "bb",
+     " "
+    ],
+    [
+     " \nb\n",
+     "",
+     "\nba",
+     "\"\" a7x"
+    ]
+   ]
+  },
+  {
+   "input": "\",xa,\",,\"\nab\"\r\n7\r\r\nba\r\n,\"\",\"a,\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     ",xa,",
+     "",
+     "\nab"
+    ],
+    [
+     "7"
+    ],
+    [],
+    [
+     "ba"
+    ],
+    [
+     "",
+     "",
+     "a,"
+    ]
+   ]
+  },
+  {
+   "input": "bb7;\"bbb\";\"\n\";\"\"\"a\"\r\n\"\"\"\";\";\"",
+   "delimiter": ";",
+   "records": [
+    [
+     "bb7",
+     "bbb",
+     "\n",
+     "\"a"
+    ],
+    [
+     "\"",
+     ";"
+    ]
+   ]
+  },
+  {
+   "input": "\na\n,babb\" \",\"\r",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 3",
+    "line": 3
+   }
+  },
+  {
+   "input": "aaabx\r\"b xx;\";;x7;\"\nxb\u00e9\"\n\";a\";\"\"\"\"\"b\";\r;xab7;\" abb\"\"\"\"\";\"\"\r\n\"\"\";a\u00e9a\";;ba\n\"\"\"\"",
+   "delimiter": ";",
+   "records": [
+    [
+     "aaabx"
+    ],
+    [
+     "b xx;",
+     "",
+     "x7",
+     "\nxb\u00e9"
+    ],
+    [
+     ";a",
+     "\"\"b",
+     ""
+    ],
+    [
+     "",
+     "xab7",
+     " abb\"\"",
+     ""
+    ],
+    [
+     "\";a\u00e9a",
+     "",
+     "ba"
+    ],
+    [
+     "\""
+    ]
+   ]
+  },
+  {
+   "input": " \", a\r \n\"\"b\"a\"",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 3",
+    "line": 3
+   }
+  },
+  {
+   "input": "\"b,7b\",ab,a77b,\r\naba7a,ba,\",bb\r\n7\",\"\"\"\"\"a\"\"\"\"\"\r\n\",\u00e9\",\",b\"\n\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "b,7b",
+     "ab",
+     "a77b",
+     ""
+    ],
+    [
+     "aba7a",
+     "ba",
+     ",bb\r\n7",
+     "\"\"a\"\""
+    ],
+    [
+     ",\u00e9",
+     ",b"
+    ],
+    []
+   ]
+  },
+  {
+   "input": " ,\",\nb",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 1",
+    "line": 1
+   }
+  },
+  {
+   "input": "a\r\r\n\",a\r\nb ",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 3",
+    "line": 3
+   }
+  },
+  {
+   "input": "\"\", b,\"b\r\n\"\naxa\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     " b",
+     "b\r\n"
+    ],
+    [
+     "axa"
+    ]
+   ]
+  },
+  {
+   "input": "\"bx\r\n\"\r\nxa b,\"aaa7\"\n\"\nab\",\"\n\r\na\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "bx\r\n"
+    ],
+    [
+     "xa b",
+     "aaa7"
+    ],
+    [
+     "\nab",
+     "\n\r\na"
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\" \r\",\"a\ra\",\"\"\"\",\"a\"\"b \"\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "\" \r",
+     "a\ra",
+     "\"",
+     "a\"b "
+    ]
+   ]
+  },
+  {
+   "input": "\",ax\u00e9\u00e9\",\"\"\r7,\r\n\r\"\"\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     ",ax\u00e9\u00e9",
+     ""
+    ],
+    [
+     "7",
+     ""
+    ],
+    [],
+    [
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"7ab\",\"b b \r\"\n\"\"\"ba\"\"\",,,\"\"\"\nb\"\r\n\",,\rxa\",\"b\n\"\r\n7,\"\",\"7\"\"\"\r\"7\"\"\"\"b\ra\",\"b\"\"a\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "7ab",
+     "b b \r"
+    ],
+    [
+     "\"ba\"",
+     "",
+     "",
+     "\"\nb"
+    ],
+    [
+     ",,\rxa",
+     "b\n"
+    ],
+    [
+     "7",
+     "",
+     "7\""
+    ],
+    [
+     "7\"\"b\ra",
+     "b\"a"
+    ]
+   ]
+  },
+  {
+   "input": ";b;\"bax\";\"\ra\"\r\n\"aa\";\"\r\n \"\n\r\n\"\nb \";b;\"\rx\";\"a\"\"a\"\n",
+   "delimiter": ";",
+   "records": [
+    [
+     "",
+     "b",
+     "bax",
+     "\ra"
+    ],
+    [
+     "aa",
+     "\r\n "
+    ],
+    [],
+    [
+     "\nb ",
+     "b",
+     "\rx",
+     "a\"a"
+    ]
+   ]
+  },
+  {
+   "input": "\r\n\"\"a\na",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 2",
+    "line": 2
+   }
+  },
+  {
+   "input": "\u00e9;\" \u00e9aaa\";\"7\"\"\"\"b\";b\n\";\";\"\"\"x\";\u00e9bb;\"x\r\na\"\n",
+   "delimiter": ";",
+   "records": [
+    [
+     "\u00e9",
+     " \u00e9aaa",
+     "7\"\"b",
+     "b"
+    ],
+    [
+     ";",
+     "\"x",
+     "\u00e9bb",
+     "x\r\na"
+    ]
+   ]
+  },
+  {
+   "input": "\nx\n",
+   "delimiter": ";",
+   "records": [
+    [],
+    [
+     "x"
+    ]
+   ]
+  },
+  {
+   "input": ";\r\n\"\";\"\"",
+   "delimiter": ";",
+   "records": [
+    [
+     "",
+     ""
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": ",\"b,b\",\r\n,\"\"\r\n\"aa\n\",,\"b,b\ra\"\na\u00e9ba,xa\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "b,b",
+     ""
+    ],
+    [
+     "",
+     ""
+    ],
+    [
+     "aa\n",
+     "",
+     "b,b\ra"
+    ],
+    [
+     "a\u00e9ba",
+     "xa"
+    ]
+   ]
+  },
+  {
+   "input": ",\"x\",,\"\"\"b7\"\r\n\"x\rbb\",\"a\naxa\", a b,a\n\"a,b\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "x",
+     "",
+     "\"b7"
+    ],
+    [
+     "x\rbb",
+     "a\naxa",
+     " a b",
+     "a"
+    ],
+    [
+     "a,b"
+    ]
+   ]
+  },
+  {
+   "input": ",\r\"\"\r\n\r  ",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     ""
+    ],
+    [
+     ""
+    ],
+    [],
+    [
+     "  "
+    ]
+   ]
+  },
+  {
+   "input": "\"x\"\"\"\r\"xa\t\"\t\"bxx\r\"\n\t\"\"\"\"\"\"\r\tax\t\"\"\" b\r\r\"\n\r\"\"\"\"",
+   "delimiter": "\t",
+   "records": [
+    [
+     "x\""
+    ],
+    [
+     "xa\t",
+     "bxx\r"
+    ],
+    [
+     "",
+     "\"\""
+    ],
+    [
+     "",
+     "ax",
+     "\" b\r\r"
+    ],
+    [],
+    [
+     "\""
+    ]
+   ]
+  },
+  {
+   "input": ",\"b\"\"\"\"x \",\"\"\r\"\"\"aa,\",\"\",x\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "b\"\"x ",
+     ""
+    ],
+    [
+     "\"aa,",
+     "",
+     "x"
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\na\t \r  ",
+   "delimiter": "\t",
+   "records": [
+    [
+     ""
+    ],
+    [
+     "a",
+     " "
+    ],
+    [
+     "  "
+    ]
+   ]
+  },
+  {
+   "input": "a,ab,bb,a\r\nb,\"\r\",\"\n,\"\"\",\" a\u00e9,\"\r\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "a",
+     "ab",
+     "bb",
+     "a"
+    ],
+    [
+     "b",
+     "\r",
+     "\n,\"",
+     " a\u00e9,"
+    ],
+    []
+   ]
+  },
+  {
+   "input": "7x7,\"a\"\" \"\n\"b\n\"\"\n\",\"a\"\r\n\"aa\r\na\"\"\"\na",
+   "delimiter": ",",
+   "records": [
+    [
+     "7x7",
+     "a\" "
+    ],
+    [
+     "b\n\"\n",
+     "a"
+    ],
+    [
+     "aa\r\na\""
+    ],
+    [
+     "a"
+    ]
+   ]
+  },
+  {
+   "input": "\r\r\"axb\"\"\"\"\",\"\"\"\"\"\",\"\"\"\"\",\rbx\",\"ax\"\na,7x,xb\r\n\",,bbb\"\n",
+   "delimiter": ",",
+   "records": [
+    [],
+    [],
+    [
+     "axb\"\"",
+     "\"\"",
+     "\"\",\rbx",
+     "ax"
+    ],
+    [
+     "a",
+     "7x",
+     "xb"
+    ],
+    [
+     ",,bbb"
+    ]
+   ]
+  },
+  {
+   "input": "\"bx,77\",ax,\"a7x\ra\"\r\r\"\n\r\n,\r\",,\"x \"\"\"\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "bx,77",
+     "ax",
+     "a7x\ra"
+    ],
+    [],
+    [
+     "\n\r\n,\r",
+     "",
+     "x \""
+    ]
+   ]
+  },
+  {
+   "input": "\r\n",
+   "delimiter": ";",
+   "records": [
+    []
+   ]
+  },
+  {
+   "input": " ,b\r\nb,\"\n\r\",",
+   "delimiter": ",",
+   "records": [
+    [
+     " ",
+     "b"
+    ],
+    [
+     "b",
+     "\n\r",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "a\r\"\"\r \n\"\r\"bba",
+   "delimiter": ";",
+   "error": {
+    "message": "Unexpected character after closing quote at line 5",
+    "line": 5
+   }
+  },
+  {
+   "input": "",
+   "delimiter": "\t",
+   "records": []
+  },
+  {
+   "input": "\"ab\";\"b\"\"a\r\n\u00e9\";\"\"\"\"\"aaaa\"\r\n\"\rab\"\r\n",
+   "delimiter": ";",
+   "records": [
+    [
+     "ab",
+     "b\"a\r\n\u00e9",
+     "\"\"aaaa"
+    ],
+    [
+     "\rab"
+    ]
+   ]
+  },
+  {
+   "input": " \n",
+   "delimiter": ",",
+   "records": [
+    [
+     " "
+    ]
+   ]
+  },
+  {
+   "input": "abxx,b,b\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "abxx",
+     "b",
+     "b"
+    ]
+   ]
+  },
+  {
+   "input": "\n\"a\r\n\",\"\n\u00e9 \", \nbaxaa,x\u00e9bx,\n\"7,b\r\n\"\r\"a7x\",\"x\"\"\"\"\",,\",\"\n",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "a\r\n",
+     "\n\u00e9 ",
+     " "
+    ],
+    [
+     "baxaa",
+     "x\u00e9bx",
+     ""
+    ],
+    [
+     "7,b\r\n"
+    ],
+    [
+     "a7x",
+     "x\"\"",
+     "",
+     ","
+    ]
+   ]
+  },
+  {
+   "input": "\tbbab\r\"\"\" ab \"\tab \r\n\ta\t\"a\"\t\"a\r\nb7\u00e9",
+   "delimiter": "\t",
+   "error": {
+    "message": "Unterminated quoted field at line 3",
+    "line": 3
+   }
+  },
+  {
+   "input": "\"a\u00e9\"\"\" \"b\",axxb\n\"\",\"\n\",\"\n\",\"bba\"\"\n\"\n,",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 1",
+    "line": 1
+   }
+  },
+  {
+   "input": "\"abb\";\"\"\r\n\"\"\"\"\"\n x\"\r\na 7;\"a;a\"\"x\";\"\"\"\"\r\"\";\"\"\"\"\"\";\"b\"\"\"\"\"\r;",
+   "delimiter": ";",
+   "records": [
+    [
+     "abb",
+     ""
+    ],
+    [
+     "\"\"\n x"
+    ],
+    [
+     "a 7",
+     "a;a\"x",
+     "\""
+    ],
+    [
+     "",
+     "\"\"",
+     "b\"\""
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"a\n\r\n\r\"\n\na \r ",
+   "delimiter": ",",
+   "records": [
+    [
+     "a\n\r\n\r"
+    ],
+    [],
+    [
+     "a "
+    ],
+    [
+     " "
+    ]
+   ]
+  },
+  {
+   "input": "\"ab\"\"\"\"ab\"\r\n7a\u00e9ba,\"\",\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "ab\"\"ab"
+    ],
+    [
+     "7a\u00e9ba",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\r\n\",,\"\"\"\"\",b\r\n\"\"\"\"\"\r\"b\r\n\r\",\"b \"\"a\"x,\r\r\n\"\r\n\"",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 6",
+    "line": 6
+   }
+  },
+  {
+   "input": "\"ab\";",
+   "delimiter": ";",
+   "records": [
+    [
+     "ab",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"a\"\"\"\"b\",,,\n\"b\r\"\"\n\",\",abb\",\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "a\"\"b",
+     "",
+     "",
+     ""
+    ],
+    [
+     "b\r\"\n",
+     ",abb",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\rb\n\n\n\t",
+   "delimiter": "\t",
+   "records": [
+    [],
+    [
+     "b"
+    ],
+    [],
+    [],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\n\"\n\n\",x,\"a\"\"\"\"\u00e9\"\r\"\rb\",\"aa \",\r\n",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "\n\n",
+     "x",
+     "a\"\"\u00e9"
+    ],
+    [
+     "\rb",
+     "aa ",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"a7\t\"\t\"xb\"\"\"\"\r\n\"\t\"\"\t\"\tx\u00e9b \"\r\nab\t\"\"\t\"x \"\" \r\n\"\t\"\r\na\"\r7\t\" ab\"\"\"\txxbx",
+   "delimiter": "\t",
+   "records": [
+    [
+     "a7\t",
+     "xb\"\"\r\n",
+     "",
+     "\tx\u00e9b "
+    ],
+    [
+     "ab",
+     "",
+     "x \" \r\n",
+     "\r\na"
+    ],
+    [
+     "7",
+     " ab\"",
+     "xxbx"
+    ]
+   ]
+  },
+  {
+   "input": "\"7\"\"\"\"xb\";\"b;bba\";a\r7;7;\"a\r\n\"\r\nbaxa",
+   "delimiter": ";",
+   "records": [
+    [
+     "7\"\"xb",
+     "b;bba",
+     "a"
+    ],
+    [
+     "7",
+     "7",
+     "a\r\n"
+    ],
+    [
+     "baxa"
+    ]
+   ]
+  },
+  {
+   "input": "\"x7,b\",\"\",\"\n\r\", b",
+   "delimiter": ",",
+   "records": [
+    [
+     "x7,b",
+     "",
+     "\n\r",
+     " b"
+    ]
+   ]
+  },
+  {
+   "input": "\"\r\n\"\"\",ax\n\r\"\",\"\",\"a\"\"\"\"7b\"\r\r\r\n,",
+   "delimiter": ",",
+   "records": [
+    [
+     "\r\n\"",
+     "ax"
+    ],
+    [],
+    [
+     "",
+     "",
+     "a\"\"7b"
+    ],
+    [],
+    [],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": " \r\n\r\n",
+   "delimiter": "\t",
+   "records": [
+    [
+     " "
+    ],
+    []
+   ]
+  },
+  {
+   "input": "\" \r\";\"\n7\u00e97;\";\"\"\" \"\n\"\"",
+   "delimiter": ";",
+   "records": [
+    [
+     " \r",
+     "\n7\u00e97;",
+     "\" "
+    ],
+    [
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\nx\r\n",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "x"
+    ]
+   ]
+  },
+  {
+   "input": "\r\nb b,\"\r\n,\u00e9 a\"\r\n\"\u00e9\",axa,\"7x b\"\"\"\r\n\"\r\n\"",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "b b",
+     "\r\n,\u00e9 a"
+    ],
+    [
+     "\u00e9",
+     "axa",
+     "7x b\""
+    ],
+    [
+     "\r\n"
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"\"\"a\"\r\n\"\u00e9 \nxb\",\"xx\r\"\rab,\"\",,7\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "\"\"a"
+    ],
+    [
+     "\u00e9 \nxb",
+     "xx\r"
+    ],
+    [
+     "ab",
+     "",
+     "",
+     "7"
+    ]
+   ]
+  },
+  {
+   "input": "\"aax\"\r\n\nx ba\r\n7\t\r\n\"\"\"\"",
+   "delimiter": "\t",
+   "records": [
+    [
+     "aax"
+    ],
+    [],
+    [
+     "x ba"
+    ],
+    [
+     "7",
+     ""
+    ],
+    [
+     "\""
+    ]
+   ]
+  },
+  {
+   "input": "\na\r\nbba\"\r\n,",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "a"
+    ],
+    [
+     "bba\""
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\n\"\",",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"",
+   "delimiter": ";",
+   "error": {
+    "message": "Unterminated quoted field at line 1",
+    "line": 1
+   }
+  },
+  {
+   "input": "\r\n\rbbb,\"\r\nb\"\r",
+   "delimiter": ",",
+   "records": [
+    [],
+    [],
+    [
+     "bbb",
+     "\r\nb"
+    ]
+   ]
+  },
+  {
+   "input": "a\ra\r\n\r,,   ,\r\"",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 5",
+    "line": 5
+   }
+  },
+  {
+   "input": ",\"\"\r\n, ,\",7\u00e9\"\"\"\"\"\"\",\",b\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     ""
+    ],
+    [
+     "",
+     " ",
+     ",7\u00e9\"\"\"",
+     ",b"
+    ]
+   ]
+  },
+  {
+   "input": "\n\"x7\"\"\";;\"a;\";\"\r\n\"\r\n\"\";\"abbx \";\"\r\"\"\"",
+   "delimiter": ";",
+   "records": [
+    [],
+    [
+     "x7\"",
+     "",
+     "a;",
+     "\r\n"
+    ],
+    [
+     "",
+     "abbx ",
+     "\r\""
+    ]
+   ]
+  },
+  {
+   "input": "\"7\t 7\u00e9\"\t\"\t\"\t\"\"\"xaa\"\r\n\"xxb\"\t\" \"\"\"\t\"\"\t\u00e9\r\"abb\t\"\tx\t\"\u00e9bx \n\"\ta\n\r\n",
+   "delimiter": "\t",
+   "records": [
+    [
+     "7\t 7\u00e9",
+     "\t",
+     "\"xaa"
+    ],
+    [
+     "xxb",
+     " \"",
+     "",
+     "\u00e9"
+    ],
+    [
+     "abb\t",
+     "x",
+     "\u00e9bx \n",
+     "a"
+    ],
+    []
+   ]
+  },
+  {
+   "input": " \"\"b\"\r ",
+   "delimiter": ",",
+   "records": [
+    [
+     " \"\"b\""
+    ],
+    [
+     " "
+    ]
+   ]
+  },
+  {
+   "input": "b",
+   "delimiter": ",",
+   "records": [
+    [
+     "b"
+    ]
+   ]
+  },
+  {
+   "input": "a\r\"7\ra\nb\",,\"\"\r,\"x 7\r\nb\",\"\",\"\"\"b a\"\r\n\"7ab\n\",\",\"\"\na\"\r\"\"\"\"\"\r7\"\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "a"
+    ],
+    [
+     "7\ra\nb",
+     "",
+     ""
+    ],
+    [
+     "",
+     "x 7\r\nb",
+     "",
+     "\"b a"
+    ],
+    [
+     "7ab\n",
+     ",\"\na"
+    ],
+    [
+     "\"\"\r7"
+    ]
+   ]
+  },
+  {
+   "input": "\t\"\"\t\"aa\"\r\n\t\"\r\n\n\"\t\"b \"\t xbb7\n\"\"\t\"\"",
+   "delimiter": "\t",
+   "records": [
+    [
+     "",
+     "",
+     "aa"
+    ],
+    [
+     "",
+     "\r\n\n",
+     "b ",
+     " xbb7"
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\n\"\"\r\na",
+   "delimiter": ",",
+   "records": [
+    [
+     ""
+    ],
+    [
+     ""
+    ],
+    [
+     "a"
+    ]
+   ]
+  },
+  {
+   "input": ",\"\raa\nb\",x\r\"\r\nb\rb\",,\"\",\"\n\"\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "\raa\nb",
+     "x"
+    ],
+    [
+     "\r\nb\rb",
+     "",
+     "",
+     "\n\""
+    ]
+   ]
+  },
+  {
+   "input": "7ab,\"aa,\",\"\"\r\" \"\"a\",\"\"\"a\"\raax,\"\u00e9\"\"\"\n,\"a\"\"\"\"\"\"\r\",,\"\r\"\"\"\" x\"\n,bxx,\"\"\"\"\"b\"\"\"\"x\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "7ab",
+     "aa,",
+     ""
+    ],
+    [
+     " \"a",
+     "\"a"
+    ],
+    [
+     "aax",
+     "\u00e9\""
+    ],
+    [
+     "",
+     "a\"\"\"\r",
+     "",
+     "\r\"\" x"
+    ],
+    [
+     "",
+     "bxx",
+     "\"\"b\"\"x"
+    ]
+   ]
+  },
+  {
+   "input": "\u00e9ba,\"ax,ab\", aa\r\"\",,\" \n\"\r\"a7b\",xb7a,\"\"\"\u00e9\"\"\r\" \n\"a\r\",a b\r\"\"\"\"\"77x\"\"\"\r",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 5",
+    "line": 5
+   }
+  },
+  {
+   "input": ",\"\r\nbb\r\na\",,\"7\r\n\"\r\"\r\nx,\",\"\"\nba,7x,7ba, \r\n\",\",\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "\r\nbb\r\na",
+     "",
+     "7\r\n"
+    ],
+    [
+     "\r\nx,",
+     ""
+    ],
+    [
+     "ba",
+     "7x",
+     "7ba",
+     " "
+    ],
+    [
+     ",",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\" aa\";\n\"x\"\n\"7axb\";a\u00e9 a",
+   "delimiter": ";",
+   "records": [
+    [
+     " aa",
+     ""
+    ],
+    [
+     "x"
+    ],
+    [
+     "7axb",
+     "a\u00e9 a"
+    ]
+   ]
+  },
+  {
+   "input": "\"aba\t\"\taxa\r\n\n\"x\n\t\"\t\r\n",
+   "delimiter": "\t",
+   "records": [
+    [
+     "aba\t",
+     "axa"
+    ],
+    [],
+    [
+     "x\n\t",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"\r\n7x\",abx7a\r\"\"\"\"\"\",\"a,\",\"\",\r\r\n\"\",\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "\"\r\n7x",
+     "abx7a"
+    ],
+    [
+     "\"\"",
+     "a,",
+     "",
+     ""
+    ],
+    [],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"7b\",\n7b7a,\"x\"\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "\"7b",
+     ""
+    ],
+    [
+     "7b7a",
+     "x"
+    ]
+   ]
+  },
+  {
+   "input": "\"\r\"\"a7\",\"x,\r\n,b\"\n\"7x\r,\n\",\u00e9b,\"aab \",x",
+   "delimiter": ",",
+   "records": [
+    [
+     "\r\"a7",
+     "x,\r\n,b"
+    ],
+    [
+     "7x\r,\n",
+     "\u00e9b",
+     "aab ",
+     "x"
+    ]
+   ]
+  },
+  {
+   "input": "7a,\",xb\",\"7\"\n\"a\",\"x,\r\nx\",\"\"\r\n,\r\",\",,\"\r\nb\"\r\"7bbb\r\n\",7,\"b,\",7\n\"a,b\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "7a",
+     ",xb",
+     "7"
+    ],
+    [
+     "a",
+     "x,\r\nx",
+     ""
+    ],
+    [
+     "",
+     ""
+    ],
+    [
+     ",",
+     "",
+     "\r\nb"
+    ],
+    [
+     "7bbb\r\n",
+     "7",
+     "b,",
+     "7"
+    ],
+    [
+     "a,b"
+    ]
+   ]
+  },
+  {
+   "input": ",\"b\"\"\"\" \",\u00e9 ,\" x\"\"\"\"\"\n\"\r\nbb,\",\"77\r\n\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "b\"\" ",
+     "\u00e9 ",
+     " x\"\""
+    ],
+    [
+     "\r\nbb,",
+     "77\r\n"
+    ]
+   ]
+  },
+  {
+   "input": ";bbabx\r\n\r\"\"\"\"\";7 \";\"\naa\r\n\";;\"\r;b\u00e9\"",
+   "delimiter": ";",
+   "records": [
+    [
+     "",
+     "bbabx"
+    ],
+    [],
+    [
+     "\"\";7 ",
+     "\naa\r\n",
+     "",
+     "\r;b\u00e9"
+    ]
+   ]
+  },
+  {
+   "input": "b\u00e9;b7;\"\r\"\";\"a;a\"",
+   "delimiter": ";",
+   "error": {
+    "message": "Unexpected character after closing quote at line 2",
+    "line": 2
+   }
+  },
+  {
+   "input": "\r\n\"b \",\" x\",\"\"\"x,\" ,\"\"\r\r\n",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 2",
+    "line": 2
+   }
+  },
+  {
+   "input": "\r\n\r\n\r\n\r,\"",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 5",
+    "line": 5
+   }
+  },
+  {
+   "input": "\"b\r\n\",\"a\n\",\"\"\"bbb\"\rab,\"\",a,\"b\n7b\"\r\n\r\n\"b\nxxb\",\u00e9b\r\n7,\"ba,a\",\"b\",\"\u00e9b\"\"b\r\n\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "b\r\n",
+     "a\n",
+     "\"bbb"
+    ],
+    [
+     "ab",
+     "",
+     "a",
+     "b\n7b"
+    ],
+    [],
+    [
+     "b\nxxb",
+     "\u00e9b"
+    ],
+    [
+     "7",
+     "ba,a",
+     "b",
+     "\u00e9b\"b\r\n"
+    ]
+   ]
+  },
+  {
+   "input": "\"b\"\"\"\n\"\"\"\"",
+   "delimiter": ";",
+   "records": [
+    [
+     "b\""
+    ],
+    [
+     "\""
+    ]
+   ]
+  },
+  {
+   "input": "\"a\"\t\"  \tb\"\taabbb\tax\r\n\nx \r\t\"\"\"\"\t\"a\"\"\"\"a\"\t\"a\"\r\r\n\"a\tb\"",
+   "delimiter": "\t",
+   "records": [
+    [
+     "a",
+     "  \tb",
+     "aabbb",
+     "ax"
+    ],
+    [],
+    [
+     "x "
+    ],
+    [
+     "",
+     "\"",
+     "a\"\"a",
+     "a"
+    ],
+    [],
+    [
+     "a\tb"
+    ]
+   ]
+  },
+  {
+   "input": "\"\n\",,x\n\"\"\r\n\"\"\"\",\"ab,aa\"\r\n\"\n7, \r\",\r\n\"bbaab\",\"\"\"\"\n\"a,b\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "\n",
+     "",
+     "x"
+    ],
+    [
+     ""
+    ],
+    [
+     "\"",
+     "ab,aa"
+    ],
+    [
+     "\n7, \r",
+     ""
+    ],
+    [
+     "bbaab",
+     "\""
+    ],
+    [
+     "a,b"
+    ]
+   ]
+  },
+  {
+   "input": "\n\"ba\"\r\n\"bbb\"\n\"  ;a\";\" \"\" \"\"7\"\r\n\"\n\r\"\n\"\";\"\"",
+   "delimiter": ";",
+   "records": [
+    [],
+    [
+     "ba"
+    ],
+    [
+     "bbb"
+    ],
+    [
+     "  ;a",
+     " \" \"7"
+    ],
+    [
+     "\n\r"
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\n\"xaa\"\"a\"\ta\n\"\u00e9b\r\n\"\t\r\n\"a \"\r\n",
+   "delimiter": "\t",
+   "records": [
+    [],
+    [
+     "xaa\"a",
+     "a"
+    ],
+    [
+     "\u00e9b\r\n",
+     ""
+    ],
+    [
+     "a "
+    ]
+   ]
+  },
+  {
+   "input": "\"b7,b7\",\"\u00e9abb\",\"axa\r\n \"\r\n\"bax\"\r\n\"a\",\"\"\"\"\"x7\",7ab\r\n\"\",\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "b7,b7",
+     "\u00e9abb",
+     "axa\r\n "
+    ],
+    [
+     "bax"
+    ],
+    [
+     "a",
+     "\"\"x7",
+     "7ab"
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\r\n\"b\"\"\"\"\"\r\n,,,\"\"\"77\"\r\"\"\"\"\"7a\"\"\"\"\"\n\"\",\"\"",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "b\"\""
+    ],
+    [
+     "",
+     "",
+     "",
+     "\"77"
+    ],
+    [
+     "\"\"7a\"\""
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\rbxax,\"7\"\"x \",\"\"",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "bxax",
+     "7\"x ",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\r\"\r,x\",7\"\"b\"\r\n,\"a\"\"\n\"\r\"a,b\"",
+   "delimiter": ",",
+   "records": [
+    [
+     ""
+    ],
+    [
+     "\r,x",
+     "7\"\"b\""
+    ],
+    [
+     "",
+     "a\"\n"
+    ],
+    [
+     "a,b"
+    ]
+   ]
+  },
+  {
+   "input": ",\n\"\u00e9\"\"ax\",\",\r\",\"\"\"\",\"7ba\"\"a\"\r\"\",\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     ""
+    ],
+    [
+     "\u00e9\"ax",
+     ",\r",
+     "\"",
+     "7ba\"a"
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": ",",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"a\r\na\raa\r\n",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 1",
+    "line": 1
+   }
+  },
+  {
+   "input": "\"\r;bba \r\n;",
+   "delimiter": ";",
+   "error": {
+    "message": "Unterminated quoted field at line 1",
+    "line": 1
+   }
+  },
+  {
+   "input": "\"7\"\"aaa\",b,\"ax\"\n\"\r\naba\",7\r\n,\"x\n,\",\"\raax\",\"\nbax\"\r\n\"a\"\r\"a,b\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "7\"aaa",
+     "b",
+     "ax"
+    ],
+    [
+     "\r\naba",
+     "7"
+    ],
+    [
+     "",
+     "x\n,",
+     "\raax",
+     "\nbax"
+    ],
+    [
+     "a"
+    ],
+    [
+     "a,b"
+    ]
+   ]
+  },
+  {
+   "input": "\"b\u00e9\na\",\"a\r\"\r\n\"a\"\"\"\"\na\",\"\"\"a\",,\",b\"\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "b\u00e9\na",
+     "a\r"
+    ],
+    [
+     "a\"\"\na",
+     "\"a",
+     "",
+     ",b"
+    ]
+   ]
+  },
+  {
+   "input": " \r\"\r\";;",
+   "delimiter": ";",
+   "records": [
+    [
+     " "
+    ],
+    [
+     "\r",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\r\n",
+   "delimiter": ",",
+   "records": [
+    []
+   ]
+  },
+  {
+   "input": "\tb\n\n",
+   "delimiter": "\t",
+   "records": [
+    [
+     "",
+     "b"
+    ],
+    []
+   ]
+  },
+  {
+   "input": "\",\"\"\"\" a\",,\"\"\"x\u00e97b\",\r\n\"aa\",\"ax\r\nba\",\r\n,\"\",,ax\r\n\"\na7,\n\",\"\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     ",\"\" a",
+     "",
+     "\"x\u00e97b",
+     ""
+    ],
+    [
+     "aa",
+     "ax\r\nba",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "ax"
+    ],
+    [
+     "\na7,\n",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "b7\r\n",
+   "delimiter": ";",
+   "records": [
+    [
+     "b7"
+    ]
+   ]
+  },
+  {
+   "input": "bxba,bbbaa\r\"bab\",a\r\r\u00e9bba,\"\"\"\"\"\"xa\"\r\n\r\n",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 4",
+    "line": 4
+   }
+  },
+  {
+   "input": "\" aa\"\"\"\n,ab,,\"a,\n\r\n\"\r\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     " aa\""
+    ],
+    [
+     "",
+     "ab",
+     "",
+     "a,\n\r\n"
+    ],
+    [
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\r,\"aaax \",a",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "",
+     "aaax ",
+     "a"
+    ]
+   ]
+  },
+  {
+   "input": "\"\u00e9\";\"\"\n",
+   "delimiter": ";",
+   "records": [
+    [
+     "\u00e9",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"bxx\n\",ba\r\n,\"\"\"aa \",\"b\"\"abb\"\na\u00e9bx\u00e9,\"x\n\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "bxx\n",
+     "ba"
+    ],
+    [
+     "",
+     "\"aa ",
+     "b\"abb"
+    ],
+    [
+     "a\u00e9bx\u00e9",
+     "x\n"
+    ]
+   ]
+  },
+  {
+   "input": "\r\n\" 7a\",\"a\"\"\",\",\",\r\n\n\"\"\"x\", a7\rbaabx,\"\rabx\n\",\"a,\na\",\n\"\"",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     " 7a",
+     "a\"",
+     ",",
+     ""
+    ],
+    [],
+    [
+     "\"x",
+     " a7"
+    ],
+    [
+     "baabx",
+     "\rabx\n",
+     "a,\na",
+     ""
+    ],
+    [
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"\"\"\"\r\n,,\"xx,\"\"\"\"a\",\r\n\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "\"\""
+    ],
+    [
+     "",
+     "",
+     "xx,\"\"a",
+     ""
+    ],
+    []
+   ]
+  },
+  {
+   "input": "\r\n\"7\rax\r\n\"\r\n,a,\"\"\"\"\"\"\n,\"\"\r\",bxx\",xx,a   a,bb\n",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "7\rax\r\n"
+    ],
+    [
+     "",
+     "a",
+     "\"\""
+    ],
+    [
+     "",
+     ""
+    ],
+    [
+     ",bxx",
+     "xx",
+     "a   a",
+     "bb"
+    ]
+   ]
+  },
+  {
+   "input": ",\"bbba\"\"\"\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "bbba\""
+    ]
+   ]
+  },
+  {
+   "input": ",\"ba\"\"\n\"\n\"\"\r\n, b aa\r\r\n\"\"\"\",\",,,\",\"\rb\",\"abxb\"\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "ba\"\n"
+    ],
+    [
+     ""
+    ],
+    [
+     "",
+     " b aa"
+    ],
+    [],
+    [
+     "\"",
+     ",,,",
+     "\rb",
+     "abxb"
+    ]
+   ]
+  },
+  {
+   "input": "\r\"\";;",
+   "delimiter": ";",
+   "records": [
+    [],
+    [
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "aa\t7ab\r\r\n\"\r\"\t\"bx \n\"",
+   "delimiter": "\t",
+   "records": [
+    [
+     "aa",
+     "7ab"
+    ],
+    [],
+    [
+     "\r",
+     "bx \n"
+    ]
+   ]
+  },
+  {
+   "input": "\"a,\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "a,"
+    ]
+   ]
+  },
+  {
+   "input": "a7b,\"7\n\",\",\",\"bxa\"\r\n,xa\r7,\",\",\"\"\"axa,\",xx\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "a7b",
+     "7\n",
+     ",",
+     "bxa"
+    ],
+    [
+     "",
+     "xa"
+    ],
+    [
+     "7",
+     ",",
+     "\"axa,",
+     "xx"
+    ]
+   ]
+  },
+  {
+   "input": "\"\r\na\"\"\"\"\"\"\",\"a\"\"\n7\"\r\"\"\"\"\"\rx \",\"\"\"\",\"7x\"\"bb\",",
+   "delimiter": ",",
+   "records": [
+    [
+     "\r\na\"\"\"",
+     "a\"\n7"
+    ],
+    [
+     "\"\"\rx ",
+     "\"",
+     "7x\"bb",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\",\" 7\r\"\r\n\"\",\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     " 7\r"
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"a\"\t\t\"\t\"\r\n\"\"\tx\t\"a\"\"a \"",
+   "delimiter": "\t",
+   "records": [
+    [
+     "a",
+     "",
+     "\t"
+    ],
+    [
+     "",
+     "x",
+     "a\"a "
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"\"\"\"\"\"\"77\"\r\n,a x a,,\"a7\r\n\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "\"\"\"\"77"
+    ],
+    [
+     "",
+     "a x a",
+     "",
+     "a7\r\n"
+    ]
+   ]
+  },
+  {
+   "input": "\"\r\"\"\"\" \"\t\"\"\t\"\r\"\t\n\"a\r\n\r\n\"\"z\r\n\"b\"\"\"\r\"\"\"x\"\t\"xa\"\"\"\"\"\"\t\"\t\"aa\"\"\t7\"\t",
+   "delimiter": "\t",
+   "error": {
+    "message": "Unexpected character after closing quote at line 7",
+    "line": 7
+   }
+  },
+  {
+   "input": "\"b ,b \",\"bb\"\"\r\n\",,aab\n\"aaab\"\"\",\"ba,\u00e9\",\",,a\r \",\"\"\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "b ,b ",
+     "bb\"\r\n",
+     "",
+     "aab"
+    ],
+    [
+     "aaab\"",
+     "ba,\u00e9",
+     ",,a\r ",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "a\t\"xb\r\nax\"\n\"7a\"\t\"x\r\n\"\n\"\"\t\"7\u00e9\u00e9ab\"\t\"\n\"\"\"\r\t\"a\"\t\t",
+   "delimiter": "\t",
+   "records": [
+    [
+     "a",
+     "xb\r\nax"
+    ],
+    [
+     "7a",
+     "x\r\n"
+    ],
+    [
+     "",
+     "7\u00e9\u00e9ab",
+     "\n\""
+    ],
+    [
+     "",
+     "a",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\n\n\n\"\"",
+   "delimiter": ",",
+   "records": [
+    [],
+    [],
+    [],
+    [
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "x\r\n\",a\r\"b7\"\"b\",\r,,\"a\nxb7\"\r\n,b\r\n\"\"\"\"",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 3",
+    "line": 3
+   }
+  },
+  {
+   "input": "\"\"\r\"\"\t\"7a a\"\t\"\tba7\r\"\t \r\n\"\"\"\"\"b\"\t\"xb\"\r\n\r\"\t 77\"\t\"aa\"\" \"\t\"x\"\"b\r\n\"",
+   "delimiter": "\t",
+   "records": [
+    [
+     ""
+    ],
+    [
+     "",
+     "7a a",
+     "\tba7\r",
+     " "
+    ],
+    [
+     "\"\"b",
+     "xb"
+    ],
+    [],
+    [
+     "\t 77",
+     "aa\" ",
+     "x\"b\r\n"
+    ]
+   ]
+  },
+  {
+   "input": "\"bx;\"\n",
+   "delimiter": ";",
+   "records": [
+    [
+     "bx;"
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"\"\r\"\"",
+   "delimiter": "\t",
+   "records": [
+    [
+     "\""
+    ],
+    [
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"a\n\"\"\"\t\"\"\"ab\"\taba\n\"\tx\t\"\"\"\t\"xb\tx\"\r\n\"a\tb\"",
+   "delimiter": "\t",
+   "records": [
+    [
+     "a\n\"",
+     "\"ab",
+     "aba"
+    ],
+    [
+     "\tx\t\"",
+     "xb\tx"
+    ],
+    [
+     "a\tb"
+    ]
+   ]
+  },
+  {
+   "input": "\"\nba\"\r\n\"\"\"\"\"aa\n\",abbb,\"b\n\r\nx\n\"\n\n\"\"\"\"\"\",\"a\",aa77\r,\"a\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "\nba"
+    ],
+    [
+     "\"\"aa\n",
+     "abbb",
+     "b\n\r\nx\n"
+    ],
+    [],
+    [
+     "\"\"",
+     "a",
+     "aa77"
+    ],
+    [
+     "",
+     "a"
+    ]
+   ]
+  },
+  {
+   "input": "\r\n\u00e9,b\u00e9,\"\rbaba\"\r\n\"\"\"z,\"\r\nx\u00e9\"\"\"\n\"\",aabb,a\u00e9aa,ab",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "\u00e9",
+     "b\u00e9",
+     "\rbaba"
+    ],
+    [
+     "\"z,"
+    ],
+    [
+     "x\u00e9\"\"\""
+    ],
+    [
+     "",
+     "aabb",
+     "a\u00e9aa",
+     "ab"
+    ]
+   ]
+  },
+  {
+   "input": "\"\",\"xb\"\"\",\"a\"\"\"\n\",\",,\n\rabbaa,\"\r\",bx\u00e9,\"7\n \"\raxa",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "xb\"",
+     "a\""
+    ],
+    [
+     ",",
+     "",
+     ""
+    ],
+    [],
+    [
+     "abbaa",
+     "\r",
+     "bx\u00e9",
+     "7\n "
+    ],
+    [
+     "axa"
+    ]
+   ]
+  },
+  {
+   "input": "bbxa\r\"\r\n\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "bbxa"
+    ],
+    [
+     "\r\n"
+    ]
+   ]
+  },
+  {
+   "input": "bbb;\"b\r\n\r\na\";\"a\u00e9\"\"\"\"\";\";;\"\r\n\"\";\" \";;a\r\n\"\"\"\";bb a7;\"\r7\u00e9\";\"\nx\"\n\"xa\";\";\"\r",
+   "delimiter": ";",
+   "records": [
+    [
+     "bbb",
+     "b\r\n\r\na",
+     "a\u00e9\"\"",
+     ";;"
+    ],
+    [
+     "",
+     " ",
+     "",
+     "a"
+    ],
+    [
+     "\"",
+     "bb a7",
+     "\r7\u00e9",
+     "\nx"
+    ],
+    [
+     "xa",
+     ";"
+    ]
+   ]
+  },
+  {
+   "input": "\"b;a\";\"x\";\"7a;b\"\n\n;\"\u00e9\"\" \";\"7b \";\r\";bb7\r\n\";;;a\u00e9\n\"\"\"\"",
+   "delimiter": ";",
+   "records": [
+    [
+     "b;a",
+     "x",
+     "7a;b"
+    ],
+    [],
+    [
+     "",
+     "\u00e9\" ",
+     "7b ",
+     ""
+    ],
+    [
+     ";bb7\r\n",
+     "",
+     "",
+     "a\u00e9"
+    ],
+    [
+     "\""
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\r  \nb\"\r \"\r a",
+   "delimiter": ",",
+   "records": [
+    [
+     ""
+    ],
+    [
+     "  "
+    ],
+    [
+     "b\""
+    ],
+    [
+     " \""
+    ],
+    [
+     " a"
+    ]
+   ]
+  },
+  {
+   "input": ",\"\u00e9\r7\",\"\"\r\n,bbaa7,\"x\"\"\"\"\"\"\"\r\"\"\"\"\"\",\"\"\"\",\"aabb\r\n\"\r\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "\u00e9\r7",
+     ""
+    ],
+    [
+     "",
+     "bbaa7",
+     "x\"\"\""
+    ],
+    [
+     "\"\"",
+     "\"",
+     "aabb\r\n"
+    ],
+    [
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "a x;\"a a;\";7;b\r bx;\"b;b7a\";b\n;\"bb77b\"\n\r\n\"\"\"b\"",
+   "delimiter": ";",
+   "records": [
+    [
+     "a x",
+     "a a;",
+     "7",
+     "b"
+    ],
+    [
+     " bx",
+     "b;b7a",
+     "b"
+    ],
+    [
+     "",
+     "bb77b"
+    ],
+    [],
+    [
+     "\"b"
+    ]
+   ]
+  },
+  {
+   "input": "\t\"\"\"b\na\"\"\r\n\r",
+   "delimiter": "\t",
+   "error": {
+    "message": "Unterminated quoted field at line 1",
+    "line": 1
+   }
+  },
+  {
+   "input": "\"\"\r\"\"\"b\",b\u00e9,\"\"\",b7\",\"\"\"\r\nb\"\r\n\"\",b\r\nx,\"a\ra\r\n\",,a \r\"\"\"\"\"\"\"x\",a ,\"b\r\n\r\"\"\",a7",
+   "delimiter": ",",
+   "records": [
+    [
+     ""
+    ],
+    [
+     "\"b",
+     "b\u00e9",
+     "\",b7",
+     "\"\r\nb"
+    ],
+    [
+     "",
+     "b"
+    ],
+    [
+     "x",
+     "a\ra\r\n",
+     "",
+     "a "
+    ],
+    [
+     "\"\"\"x",
+     "a ",
+     "b\r\n\r\"",
+     "a7"
+    ]
+   ]
+  },
+  {
+   "input": "\"\r\"\rb \n\t\"b\"\t\r\"\ta\"\"aa\"\n\"\"\"\"\"xxx\"\t\n",
+   "delimiter": "\t",
+   "records": [
+    [
+     "\r"
+    ],
+    [
+     "b "
+    ],
+    [
+     "",
+     "b",
+     ""
+    ],
+    [
+     "\ta\"aa"
+    ],
+    [
+     "\"\"xxx",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "aa,\"b \",\"x7b\na\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "aa",
+     "b ",
+     "x7b\na"
+    ]
+   ]
+  },
+  {
+   "input": "\"a\r\n\",\"a\"\r\n\n\"xax\"\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "a\r\n",
+     "a"
+    ],
+    [],
+    [
+     "xax"
+    ]
+   ]
+  },
+  {
+   "input": "\"x7,b,x b\n\n ,\"\"\"b\rx\",\"\"\"   \"\r\n,,a\u00e9,ab",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 3",
+    "line": 3
+   }
+  },
+  {
+   "input": "\"\r\"\"\"\"\" \r\r\n\"\";;\"x\"\"\"\nbb;\n\"\r\n\"",
+   "delimiter": ";",
+   "error": {
+    "message": "Unexpected character after closing quote at line 2",
+    "line": 2
+   }
+  },
+  {
+   "input": "bb\r\"abx\r\r\n\"\r\n\"",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 5",
+    "line": 5
+   }
+  },
+  {
+   "input": "\" \r\n\r\n \"\" \r\n\r\r",
+   "delimiter": "\t",
+   "error": {
+    "message": "Unterminated quoted field at line 1",
+    "line": 1
+   }
+  },
+  {
+   "input": "\"\r\nabx\"\t\"\"\t\"a\r\n\"\"\r\na\"\n\"a\"\t\"7b\r\n7\"\t\"ba\ta\"\n\t\"a\r\n\tx\"\n\"ab\"\t\"\r\n\t\"\"\r \"\t\"7x\u00e9x\t\"\t\"b\ta\"\r",
+   "delimiter": "\t",
+   "records": [
+    [
+     "\r\nabx",
+     "",
+     "a\r\n\"\r\na"
+    ],
+    [
+     "a",
+     "7b\r\n7",
+     "ba\ta"
+    ],
+    [
+     "",
+     "a\r\n\tx"
+    ],
+    [
+     "ab",
+     "\r\n\t\"\r ",
+     "7x\u00e9x\t",
+     "b\ta"
+    ]
+   ]
+  },
+  {
+   "input": "\r\"\n\t\t",
+   "delimiter": "\t",
+   "error": {
+    "message": "Unterminated quoted field at line 2",
+    "line": 2
+   }
+  },
+  {
+   "input": "\"\r\na\"\"a\"\r\n\"x \"\"xb\"\na7;bb;\"x\u00e9a\na\"\ra;\"\r\n7xb\"\"\";\"ax b\"\r",
+   "delimiter": ";",
+   "records": [
+    [
+     "\r\na\"a"
+    ],
+    [
+     "x \"xb"
+    ],
+    [
+     "a7",
+     "bb",
+     "x\u00e9a\na"
+    ],
+    [
+     "a",
+     "\r\n7xb\"",
+     "ax b"
+    ]
+   ]
+  },
+  {
+   "input": "a7,\"xa\u00e9x\"\"\"\"\"\n\n\r\n\"\r\u00e9\",\"\rxb\"\"\"\"\",a,\"\"\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "a7",
+     "xa\u00e9x\"\""
+    ],
+    [],
+    [],
+    [
+     "\r\u00e9",
+     "\rxb\"\"",
+     "a",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\rx,\"\"\n\"\"\n,\"aba\",\" ,7\",\"\"\"axb\"\r\" ba\"",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "x",
+     ""
+    ],
+    [
+     ""
+    ],
+    [
+     "",
+     "aba",
+     " ,7",
+     "\"axb"
+    ],
+    [
+     " ba"
+    ]
+   ]
+  },
+  {
+   "input": "\"a b\u00e9b,a a,,\r\n",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 1",
+    "line": 1
+   }
+  },
+  {
+   "input": "\"\",\"abbb\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "abbb"
+    ]
+   ]
+  },
+  {
+   "input": ",\"\"\"ba7a\",\"\"\" ,\",\"\"\r\n\"\r\nbb\",\"\",b,\"b\n\rab\"\r\n,\n\"xxba\",\"x\n7aa\"\r\n\"b\",\" a\"\"\"\"\r\",",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "\"ba7a",
+     "\" ,",
+     ""
+    ],
+    [
+     "\r\nbb",
+     "",
+     "b",
+     "b\n\rab"
+    ],
+    [
+     "",
+     ""
+    ],
+    [
+     "xxba",
+     "x\n7aa"
+    ],
+    [
+     "b",
+     " a\"\"\r",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"\"\"ba\n\",\"7\rb\"\r\n,,,\"\na\n7\"\n\"x,\",\"bx\"\"\rb\",\"\n\"\"b b\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "\"\"ba\n",
+     "7\rb"
+    ],
+    [
+     "",
+     "",
+     "",
+     "\na\n7"
+    ],
+    [
+     "x,",
+     "bx\"\rb",
+     "\n\"b b"
+    ]
+   ]
+  },
+  {
+   "input": "\n\r \"\r\nb\r\n\na",
+   "delimiter": ",",
+   "records": [
+    [],
+    [],
+    [
+     " \""
+    ],
+    [
+     "b"
+    ],
+    [],
+    [
+     "a"
+    ]
+   ]
+  },
+  {
+   "input": "\"xa\",\"x \n\",a7,\" aa\r\n\"\r\n,",
+   "delimiter": ",",
+   "records": [
+    [
+     "xa",
+     "x \n",
+     "a7",
+     " aa\r\n"
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\"x\n\r\n\"\"\"\"",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 1",
+    "line": 1
+   }
+  },
+  {
+   "input": "b\"\r\n\"\r",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 2",
+    "line": 2
+   }
+  },
+  {
+   "input": "\r\naab\r",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "aab"
+    ]
+   ]
+  },
+  {
+   "input": "\"\";\"7a7\"\n\"\"\" \"\r\"\";\"a;\"",
+   "delimiter": ";",
+   "records": [
+    [
+     "",
+     "7a7"
+    ],
+    [
+     "\" "
+    ],
+    [
+     "",
+     "a;"
+    ]
+   ]
+  },
+  {
+   "input": "\n\r\n\"\"\"\"\r\n\t",
+   "delimiter": "\t",
+   "records": [
+    [],
+    [],
+    [
+     "\""
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\n\r\n a \"b\"\n,",
+   "delimiter": ",",
+   "records": [
+    [],
+    [],
+    [
+     " a \"b\""
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\r\ra\na\"\r\n",
+   "delimiter": ",",
+   "records": [
+    [],
+    [],
+    [
+     "a"
+    ],
+    [
+     "a\""
+    ]
+   ]
+  },
+  {
+   "input": ",\"a ,\",\"x\r\nb\"\n,a,\",\n\r\na\",x b\n\" x\"\"\",,\"ba\",\u00e9\n\" \u00e9,\",a ab7,\"\",\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "a ,",
+     "x\r\nb"
+    ],
+    [
+     "",
+     "a",
+     ",\n\r\na",
+     "x b"
+    ],
+    [
+     " x\"",
+     "",
+     "ba",
+     "\u00e9"
+    ],
+    [
+     " \u00e9,",
+     "a ab7",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "ba\t \r\t\"\nb\"\"",
+   "delimiter": "\t",
+   "error": {
+    "message": "Unterminated quoted field at line 2",
+    "line": 2
+   }
+  },
+  {
+   "input": "\"\r\n\r\n\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "\r\n\r\n"
+    ]
+   ]
+  },
+  {
+   "input": "a,\"ab\",xa\r\n7x,\"aa\",,\"\u00e9\n\"\"\u00e9\"\r\n\"\",",
+   "delimiter": ",",
+   "records": [
+    [
+     "a",
+     "ab",
+     "xa"
+    ],
+    [
+     "7x",
+     "aa",
+     "",
+     "\u00e9\n\"\u00e9"
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "7aba;\"x\n\r\";b7ba\r\n\r",
+   "delimiter": ";",
+   "records": [
+    [
+     "7aba",
+     "x\n\r",
+     "b7ba"
+    ],
+    []
+   ]
+  },
+  {
+   "input": " \" \n\"\ra\"\"\"\"\r\n",
+   "delimiter": "\t",
+   "error": {
+    "message": "Unterminated quoted field at line 2",
+    "line": 2
+   }
+  },
+  {
+   "input": "bb\r\n ,,a\r, \"",
+   "delimiter": ",",
+   "records": [
+    [
+     "bb"
+    ],
+    [
+     " ",
+     "",
+     "a"
+    ],
+    [
+     "",
+     " \""
+    ]
+   ]
+  },
+  {
+   "input": "\"bb,\"\r\n\"\",xbaab,,\u00e9aa",
+   "delimiter": ",",
+   "records": [
+    [
+     "bb,"
+    ],
+    [
+     "",
+     "xbaab",
+     "",
+     "\u00e9aa"
+    ]
+   ]
+  },
+  {
+   "input": ",\"x\"\"\"\"\r\n7\",x,\"bx\r\n\"\r\n\"\",\n\"\",\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "x\"\"\r\n7",
+     "x",
+     "bx\r\n"
+    ],
+    [
+     "",
+     ""
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": ",bx7\r\"b\r\n\",7abx,\u00e9a,\"\"\"b\nab\"\r\n\"b\",,\"\"\"\"\"aa\",\"x,x\"\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "bx7"
+    ],
+    [
+     "b\r\n",
+     "7abx",
+     "\u00e9a",
+     "\"b\nab"
+    ],
+    [
+     "b",
+     "",
+     "\"\"aa",
+     "x,x"
+    ]
+   ]
+  },
+  {
+   "input": "\na,\" abx,\", \u00e9ba\r",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "a",
+     " abx,",
+     " \u00e9ba"
+    ]
+   ]
+  },
+  {
+   "input": ";\n",
+   "delimiter": ";",
+   "records": [
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": ",\"\",\"a,\"\r\"\r\nb\r\nx\"\n\n\r\n\r",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "",
+     "a,"
+    ],
+    [
+     "\r\nb\r\nx"
+    ],
+    [],
+    [],
+    []
+   ]
+  },
+  {
+   "input": "\nba\n\r\n",
+   "delimiter": ",",
+   "records": [
+    [],
+    [
+     "ba"
+    ],
+    []
+   ]
+  },
+  {
+   "input": "\",\",\",b7a\"\rx7,\n7\u00e9,a,\"ab\n\"\r\n\"b\"\" \"\"\"\r,",
+   "delimiter": ",",
+   "records": [
+    [
+     ",",
+     ",b7a"
+    ],
+    [
+     "x7",
+     ""
+    ],
+    [
+     "7\u00e9",
+     "a",
+     "ab\n"
+    ],
+    [
+     "b\" \""
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": ",\"\"\r\n\"\",,\"bx\",\"aba,\"\r\nx7\u00e9,a,\"a\r,b\"\"\",\"xxxax\"\n\"\"\"\u00e9 ,\",\"7\"\"ax\",\"bxab\",\"bb\r \"\r\n\"b x7\",\"\n\",\",a\",\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "bx",
+     "aba,"
+    ],
+    [
+     "x7\u00e9",
+     "a",
+     "a\r,b\"",
+     "xxxax"
+    ],
+    [
+     "\"\u00e9 ,",
+     "7\"ax",
+     "bxab",
+     "bb\r "
+    ],
+    [
+     "b x7",
+     "\n",
+     ",a",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": " \"bb\"\r\n\n b\n",
+   "delimiter": ",",
+   "records": [
+    [
+     " \"bb\""
+    ],
+    [],
+    [
+     " b"
+    ]
+   ]
+  },
+  {
+   "input": "\"abaa\r\"\n\" ba\"\"\"\r\n\"\"\r\n,\"ab\",\"b7\"\" \u00e9\n\"a,b\"",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 6",
+    "line": 6
+   }
+  },
+  {
+   "input": ";a\n\na ",
+   "delimiter": ";",
+   "records": [
+    [
+     "",
+     "a"
+    ],
+    [],
+    [
+     "a "
+    ]
+   ]
+  },
+  {
+   "input": "\", \",\",x\"\"x\",\"\",",
+   "delimiter": ",",
+   "records": [
+    [
+     ", ",
+     ",x\"x",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": ", \"\r\"",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 2",
+    "line": 2
+   }
+  },
+  {
+   "input": "\"\t",
+   "delimiter": "\t",
+   "error": {
+    "message": "Unterminated quoted field at line 1",
+    "line": 1
+   }
+  },
+  {
+   "input": "\"xa\",\"a\"\r,\"7\"\"\"\"x\n\",\"\"\"\"\"\"\"\"\"\r\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "xa",
+     "a"
+    ],
+    [
+     "",
+     "7\"\"x\n",
+     "\"\"\"\"\r"
+    ]
+   ]
+  },
+  {
+   "input": "\r\r\na\r\n\t\rbb\r\n\"\r",
+   "delimiter": "\t",
+   "error": {
+    "message": "Unterminated quoted field at line 6",
+    "line": 6
+   }
+  },
+  {
+   "input": ";xa;\"\r\n;\";\"b\"\"\"\"\"\n\"\";\" ;\"\r\n\";ba\";\"a\";\"bx\r\";\"bab\"\"\"\"\"",
+   "delimiter": ";",
+   "records": [
+    [
+     "",
+     "xa",
+     "\r\n;",
+     "b\"\""
+    ],
+    [
+     "",
+     " ;"
+    ],
+    [
+     ";ba",
+     "a",
+     "bx\r",
+     "bab\"\""
+    ]
+   ]
+  },
+  {
+   "input": "\"\r\n\r\n\", ",
+   "delimiter": ",",
+   "records": [
+    [
+     "\r\n\r\n",
+     " "
+    ]
+   ]
+  },
+  {
+   "input": "\"xab\",a,\"\",a\u00e9\r\"\",bb ,\"aaa, \",\"\"\r\n,\"b,\",a,\"x\"\"\"\"7a\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "xab",
+     "a",
+     "",
+     "a\u00e9"
+    ],
+    [
+     "",
+     "bb ",
+     "aaa, ",
+     ""
+    ],
+    [
+     "",
+     "b,",
+     "a",
+     "x\"\"7a"
+    ]
+   ]
+  },
+  {
+   "input": "\"\",\"axx\",\"bba\"\"\"\r\n\"a,b\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "axx",
+     "bba\""
+    ],
+    [
+     "a,b"
+    ]
+   ]
+  },
+  {
+   "input": "b,b\na\u00e9",
+   "delimiter": ",",
+   "records": [
+    [
+     "b",
+     "b"
+    ],
+    [
+     "a\u00e9"
+    ]
+   ]
+  },
+  {
+   "input": "a,\",b7\u00e9\"\r\"\"\n\"\r\nb a\",,\r\n\"ab\u00e97\",\"\",\"\"\r\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "a",
+     ",b7\u00e9"
+    ],
+    [
+     ""
+    ],
+    [
+     "\r\nb a",
+     "",
+     ""
+    ],
+    [
+     "ab\u00e97",
+     "",
+     ""
+    ],
+    [
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\n\n\"\r\n\" \r\"",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 4",
+    "line": 4
+   }
+  },
+  {
+   "input": "\"\ra\r\n\"",
+   "delimiter": "\t",
+   "records": [
+    [
+     "\ra\r\n"
+    ]
+   ]
+  },
+  {
+   "input": "\"bb\"\"\",\",7xbx\"\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "bb\"",
+     ",7xbx"
+    ]
+   ]
+  },
+  {
+   "input": ",\"7bx \",\"\"\" b\"\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "7bx ",
+     "\" b"
+    ]
+   ]
+  },
+  {
+   "input": "\" aa\n\"\r\nabbxa\n\"xb7\"\"\"\"\"\"\";\"aa\"\"\"\"\";7aa\r\"7\"\"b7\";\"xbx\";\"b\r\na\";\"\raa\"\n",
+   "delimiter": ";",
+   "records": [
+    [
+     " aa\n"
+    ],
+    [
+     "abbxa"
+    ],
+    [
+     "xb7\"\"\"",
+     "aa\"\"",
+     "7aa"
+    ],
+    [
+     "7\"b7",
+     "xbx",
+     "b\r\na",
+     "\raa"
+    ]
+   ]
+  },
+  {
+   "input": ",\"7b\r\n\",,bx\r\n\"\r\nbx\r\nb\"\r\n\n\"\",\"xbx\n\"\"\",\"\r\n\"\r\"\",\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "7b\r\n",
+     "",
+     "bx"
+    ],
+    [
+     "\r\nbx\r\nb"
+    ],
+    [],
+    [
+     "",
+     "xbx\n\"",
+     "\r\n"
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "",
+   "delimiter": ";",
+   "records": []
+  },
+  {
+   "input": " bxb \ta\t b\r\nxaabx\t\"ax\"\"\"\"a\"\r\n\"\"\t\"xxx\t\"\t\"7b\"\t",
+   "delimiter": "\t",
+   "records": [
+    [
+     " bxb ",
+     "a",
+     " b"
+    ],
+    [
+     "xaabx",
+     "ax\"\"a"
+    ],
+    [
+     "",
+     "xxx\t",
+     "7b",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"\"\t\" bxa\"\ta  x\r\n\"\"\r\n",
+   "delimiter": "\t",
+   "records": [
+    [
+     "\"",
+     " bxa",
+     "a  x"
+    ],
+    [
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "b\n\"b",
+   "delimiter": ",",
+   "error": {
+    "message": "Unterminated quoted field at line 2",
+    "line": 2
+   }
+  },
+  {
+   "input": "\",\rb\n7\",bb\r",
+   "delimiter": ",",
+   "records": [
+    [
+     ",\rb\n7",
+     "bb"
+    ]
+   ]
+  },
+  {
+   "input": "\"\"\"b\"\t \r\r\nb\r\n\n\"\r\n",
+   "delimiter": "\t",
+   "error": {
+    "message": "Unterminated quoted field at line 5",
+    "line": 5
+   }
+  },
+  {
+   "input": "\" x \r\",\"\u00e9b7\"\"\"\"\"\n\"\"\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     " x \r",
+     "\u00e9b7\"\""
+    ],
+    [
+     "\""
+    ]
+   ]
+  },
+  {
+   "input": "\"\",\"\"",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\u00e9 ,\",\"a\"\"\"\"\",a\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "\u00e9 ,",
+     "a\"\"",
+     "a"
+    ]
+   ]
+  },
+  {
+   "input": "\t\"\r\n\"\t\nxax\txx\t\"a\n\"\r\n\"aa\n\u00e9\"\t\"\"\r\n",
+   "delimiter": "\t",
+   "records": [
+    [
+     "",
+     "\r\n",
+     ""
+    ],
+    [
+     "xax",
+     "xx",
+     "a\n"
+    ],
+    [
+     "aa\n\u00e9",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\n\"; ;\"aa\"\"\";\";xb\"\n\" 7x\";\"x\r\n\";\";b;\"\n7x\n\"a \"\"\"",
+   "delimiter": ";",
+   "records": [
+    [
+     "\n",
+     " ",
+     "aa\"",
+     ";xb"
+    ],
+    [
+     " 7x",
+     "x\r\n",
+     ";b;"
+    ],
+    [
+     "7x"
+    ],
+    [
+     "a \""
+    ]
+   ]
+  },
+  {
+   "input": "\r\n\"\t\"\t\" \r \"\t\"\r7\"\t\"ba\"\"a\"\r\n\"\t\"\n\"\r \"\"\"\"\n\"\t\n\"bax\tx\"\t\r",
+   "delimiter": "\t",
+   "records": [
+    [],
+    [
+     "\t",
+     " \r ",
+     "\r7",
+     "ba\"a"
+    ],
+    [
+     "\t"
+    ],
+    [
+     "\r \"\"\n",
+     ""
+    ],
+    [
+     "bax\tx",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\nb\r\n\r ",
+   "delimiter": ";",
+   "records": [
+    [],
+    [
+     "b"
+    ],
+    [],
+    [
+     " "
+    ]
+   ]
+  },
+  {
+   "input": "\"ab\r b\"\r\n\"a\r\n\"\t\t\"b\"\r\n\"\"\"\"\t\t\"bba\"\"\"\"\r\n\"\t\r\n\"b\"\t\" \"\t",
+   "delimiter": "\t",
+   "records": [
+    [
+     "ab\r b"
+    ],
+    [
+     "a\r\n",
+     "",
+     "b"
+    ],
+    [
+     "\"",
+     "",
+     "bba\"\"\r\n",
+     ""
+    ],
+    [
+     "b",
+     " ",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": "\"\t\"\t\taa\u00e9xx\t\"a\"\"\"\"\"\n\" \tbxx\"\t\u00e9\t\" x b7\"\r\t",
+   "delimiter": "\t",
+   "records": [
+    [
+     "\t",
+     "",
+     "aa\u00e9xx",
+     "a\"\""
+    ],
+    [
+     " \tbxx",
+     "\u00e9",
+     " x b7"
+    ],
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": ",\"ab\",\"\r\n\"\"aa\"\n\"\"\"\"\"b\"\"x\",\" 7\"\"b\"\r\n\",,\",7aba,\"7bb\",\r\"baa\",\"a\u00e9\"\naxbb",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "ab",
+     "\r\n\"aa"
+    ],
+    [
+     "\"\"b\"x",
+     " 7\"b"
+    ],
+    [
+     ",,",
+     "7aba",
+     "7bb",
+     ""
+    ],
+    [
+     "baa",
+     "a\u00e9"
+    ],
+    [
+     "axbb"
+    ]
+   ]
+  },
+  {
+   "input": ",b  \r\n\"\r\r\n\"\n \n ",
+   "delimiter": ",",
+   "records": [
+    [
+     "",
+     "b  "
+    ],
+    [
+     "\r\r\n"
+    ],
+    [
+     " "
+    ],
+    [
+     " "
+    ]
+   ]
+  },
+  {
+   "input": "  a,\",\" b\r7,\",\"7x\"\r\n,",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 1",
+    "line": 1
+   }
+  },
+  {
+   "input": "\r\n\tba\t\"aaa\t\n\"aa7xa\"\t\rx\t\"7\ta\u00e9b\"\n",
+   "delimiter": "\t",
+   "error": {
+    "message": "Unexpected character after closing quote at line 3",
+    "line": 3
+   }
+  },
+  {
+   "input": "\"\";\"\"\"\"\"b7b\r\"\r\n\"\u00e9 \"\"\"\"\"\"b\"\na;;b;\";;\na\"\r\n\r",
+   "delimiter": ";",
+   "records": [
+    [
+     "",
+     "\"\"b7b\r"
+    ],
+    [
+     "\u00e9 \"\"\"b"
+    ],
+    [
+     "a",
+     "",
+     "b",
+     ";;\na"
+    ],
+    []
+   ]
+  },
+  {
+   "input": "\"a,\",\"ba7x\",\"b\r\n xa\",b\nx bba,,\"\"\"\"\"a\"\r\n",
+   "delimiter": ",",
+   "records": [
+    [
+     "a,",
+     "ba7x",
+     "b\r\n xa",
+     "b"
+    ],
+    [
+     "x bba",
+     "",
+     "\"\"a"
+    ]
+   ]
+  },
+  {
+   "input": "axa,a,\"a7a\"\"\"\r\r\n\"7\"\"\"\"\u00e9a7\",\"a,a\"\"7\",\"xa\"\"\r\n\" ",
+   "delimiter": ",",
+   "error": {
+    "message": "Unexpected character after closing quote at line 4",
+    "line": 4
+   }
+  },
+  {
+   "input": "\"ba\"\"\"\"\"\t\"x\"\r\n\"\"\"\"\"\"\"\"\"\"\tbxaax\t\"x\r\n\"\"b\"\ta\n\"a\r\"\t\"\"\"\"\"\u00e9ba\"\t\r\n\"\"\"a\"\t",
+   "delimiter": "\t",
+   "records": [
+    [
+     "ba\"\"",
+     "x"
+    ],
+    [
+     "\"\"\"\"",
+     "bxaax",
+     "x\r\n\"b",
+     "a"
+    ],
+    [
+     "a\r",
+     "\"\"\u00e9ba",
+     ""
+    ],
+    [
+     "\"a",
+     ""
+    ]
+   ]
+  },
+  {
+   "input": ";\" \r\n\";\";\u00e9\r\n\u00e9x\";\"a\r\n7\"\r\"\"",
+   "delimiter": ";",
+   "records": [
+    [
+     "",
+     " \r\n",
+     ";\u00e9\r\n\u00e9x",
+     "a\r\n7"
+    ],
+    [
+     ""
+    ]
+   ]
+  }
+ ],
+ "stringify": [
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [],
+    [
+     "\"x"
+    ],
+    [
+     "axb\u00e9",
+     ",aaa",
+     " a7\""
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\r\n\"\"\"x\"\r\naxb\u00e9,\",aaa\",\" a7\"\"\"\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [
+     " axb\"",
+     "ab\"\"x"
+    ],
+    [
+     "\"7\"\"\"\u00e9",
+     "xb\na\"",
+     ""
+    ],
+    [
+     "abb"
+    ],
+    [
+     "\"b",
+     ""
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\" axb\"\"\",\"ab\"\"\"\"x\"\r\n\"\"\"7\"\"\"\"\"\"\u00e9\",\"xb\na\"\"\",\r\nabb\r\n\"\"\"b\",\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [
+     ""
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\"\"\r\n"
+  },
+  {
+   "records": [
+    [
+     "\"\"\"7",
+     ""
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\"\"\"\"\"\"\"7\",\r\n"
+  },
+  {
+   "records": [
+    [
+     "a"
+    ],
+    []
+   ],
+   "delimiter": "\t",
+   "output": "a\r\n\r\n"
+  },
+  {
+   "records": [
+    [
+     ""
+    ],
+    [
+     "\"\"a\r\n7 "
+    ],
+    []
+   ],
+   "delimiter": "\t",
+   "output": "\"\"\r\n\"\"\"\"\"a\r\n7 \"\r\n\r\n"
+  },
+  {
+   "records": [
+    [
+     "",
+     "7aaa7"
+    ],
+    [
+     "a\"\"\rx"
+    ],
+    [],
+    [
+     "ax\r\n\"",
+     " aa",
+     ""
+    ]
+   ],
+   "delimiter": ",",
+   "output": ",7aaa7\r\n\"a\"\"\"\"\rx\"\r\n\r\n\"ax\r\n\"\"\", aa,\r\n"
+  },
+  {
+   "records": [
+    [
+     "ax"
+    ],
+    [
+     ""
+    ],
+    []
+   ],
+   "delimiter": "\t",
+   "output": "ax\r\n\"\"\r\n\r\n"
+  },
+  {
+   "records": [
+    [
+     "bb",
+     ""
+    ],
+    [
+     ""
+    ],
+    [
+     ",\u00e9x\""
+    ]
+   ],
+   "delimiter": ",",
+   "output": "bb,\r\n\"\"\r\n\",\u00e9x\"\"\"\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [
+     "ax\"\"7\r",
+     "bx"
+    ],
+    [
+     "abab\r",
+     "a,\r "
+    ],
+    [],
+    [
+     ",a"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\"ax\"\"\"\"7\r\",bx\r\n\"abab\r\",\"a,\r \"\r\n\r\n\",a\"\r\n"
+  },
+  {
+   "records": [
+    [
+     "a",
+     "a\",7",
+     ""
+    ],
+    [
+     "a\u00e97,"
+    ],
+    [
+     ""
+    ]
+   ],
+   "delimiter": ",",
+   "output": "a,\"a\"\",7\",\r\n\"a\u00e97,\"\r\n\"\"\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [
+     "x,7ax",
+     "a\u00e9"
+    ],
+    [
+     "ab\u00e9a",
+     ", \"b"
+    ],
+    [],
+    [
+     " a\"\"\u00e9\r",
+     "baa"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\"x,7ax\",a\u00e9\r\nab\u00e9a,\", \"\"b\"\r\n\r\n\" a\"\"\"\"\u00e9\r\",baa\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [],
+    [],
+    [
+     ",\"\"xx",
+     "7,"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\r\n\r\n\",\"\"\"\"xx\",\"7,\"\r\n"
+  },
+  {
+   "records": [
+    [
+     " \r\n\r\n\u00e9a"
+    ],
+    [
+     "a\"xx",
+     "aa"
+    ],
+    [],
+    [
+     "a\n"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\" \r\n\r\n\u00e9a\"\r\n\"a\"\"xx\",aa\r\n\r\n\"a\n\"\r\n"
+  },
+  {
+   "records": [
+    [
+     "b\"",
+     ",7",
+     "b,7b7"
+    ],
+    [
+     "ab",
+     "a7\"b7"
+    ],
+    [
+     "bxaba"
+    ],
+    [
+     "",
+     "b"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\"b\"\"\",\",7\",\"b,7b7\"\r\nab,\"a7\"\"b7\"\r\nbxaba\r\n,b\r\n"
+  },
+  {
+   "records": [
+    [
+     "xb\"aa",
+     "\"\"7"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\"xb\"\"aa\",\"\"\"\"\"7\"\r\n"
+  },
+  {
+   "records": [
+    [
+     "bb,\r\n\u00e9"
+    ],
+    [
+     "b",
+     "7\na ",
+     "\"\""
+    ],
+    [
+     "\"\",a",
+     ""
+    ],
+    [
+     ""
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\"bb,\r\n\u00e9\"\r\nb,\"7\na \",\"\"\"\"\"\"\r\n\"\"\"\"\",a\",\r\n\"\"\r\n"
+  },
+  {
+   "records": [
+    [],
+    [
+     ""
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\r\n\"\"\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [
+     "\na a",
+     "",
+     ""
+    ],
+    [
+     "xa"
+    ],
+    []
+   ],
+   "delimiter": ",",
+   "output": "\"\na a\",,\r\nxa\r\n\r\n"
+  },
+  {
+   "records": [
+    [
+     "",
+     "\u00e9",
+     ""
+    ],
+    [
+     "",
+     ""
+    ],
+    [
+     "\u00e9a\"\t ",
+     "x7\rb\u00e9"
+    ],
+    []
+   ],
+   "delimiter": "\t",
+   "output": "\t\u00e9\t\r\n\t\r\n\"\u00e9a\"\"\t \"\t\"x7\rb\u00e9\"\r\n\r\n"
+  },
+  {
+   "records": [
+    [
+     "\u00e9",
+     ""
+    ],
+    [
+     "",
+     "axa\u00e9x"
+    ],
+    []
+   ],
+   "delimiter": ";",
+   "output": "\u00e9;\r\n;axa\u00e9x\r\n\r\n"
+  },
+  {
+   "records": [
+    [
+     "b",
+     "ab",
+     "bxb\n\r"
+    ],
+    [
+     ""
+    ],
+    [
+     "ba7a"
+    ],
+    [
+     ""
+    ]
+   ],
+   "delimiter": ";",
+   "output": "b;ab;\"bxb\n\r\"\r\n\"\"\r\nba7a\r\n\"\"\r\n"
+  },
+  {
+   "records": [
+    [
+     "\u00e9\u00e9xbb",
+     " ",
+     "xb\n"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\u00e9\u00e9xbb, ,\"xb\n\"\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [
+     "",
+     "",
+     "a \"b"
+    ],
+    [
+     "bx ba",
+     ""
+    ],
+    [
+     "xb,b7"
+    ],
+    []
+   ],
+   "delimiter": ",",
+   "output": ",,\"a \"\"b\"\r\nbx ba,\r\n\"xb,b7\"\r\n\r\n"
+  },
+  {
+   "records": [
+    [
+     "\n7"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\"\n7\"\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [
+     "bba"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "bba\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": "\t",
+   "output": ""
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [
+     "",
+     ""
+    ]
+   ],
+   "delimiter": "\t",
+   "output": "\t\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [
+     ","
+    ],
+    [],
+    [],
+    []
+   ],
+   "delimiter": ",",
+   "output": "\",\"\r\n\r\n\r\n\r\n"
+  },
+  {
+   "records": [
+    [
+     "a\u00e9b",
+     ""
+    ]
+   ],
+   "delimiter": ",",
+   "output": "a\u00e9b,\r\n"
+  },
+  {
+   "records": [
+    [
+     "",
+     "\"\"a\r\n"
+    ],
+    [
+     "ba\"a "
+    ],
+    [],
+    []
+   ],
+   "delimiter": ",",
+   "output": ",\"\"\"\"\"a\r\n\"\r\n\"ba\"\"a \"\r\n\r\n\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": ";",
+   "output": ""
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [
+     "\" x",
+     "a"
+    ],
+    [
+     " \r a",
+     ""
+    ],
+    [
+     "7",
+     " ",
+     "bxa"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\"\"\" x\",a\r\n\" \r a\",\r\n7, ,bxa\r\n"
+  },
+  {
+   "records": [
+    [],
+    [
+     " ",
+     "baa",
+     "ba\t\t"
+    ]
+   ],
+   "delimiter": "\t",
+   "output": "\r\n \tbaa\t\"ba\t\t\"\r\n"
+  },
+  {
+   "records": [
+    [
+     ""
+    ],
+    [
+     "xa"
+    ],
+    [
+     ";x\"\""
+    ],
+    [
+     "\"b\"\r\na"
+    ]
+   ],
+   "delimiter": ";",
+   "output": "\"\"\r\nxa\r\n\";x\"\"\"\"\"\r\n\"\"\"b\"\"\r\na\"\r\n"
+  },
+  {
+   "records": [
+    [
+     ",xa7b"
+    ],
+    [],
+    [
+     "bxabb"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\",xa7b\"\r\n\r\nbxabb\r\n"
+  },
+  {
+   "records": [
+    [
+     "\r\n7"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\"\r\n7\"\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [
+     "\r\n"
+    ],
+    [
+     "aa"
+    ],
+    [
+     "\u00e9"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\"\r\n\"\r\naa\r\n\u00e9\r\n"
+  },
+  {
+   "records": [
+    [
+     " ",
+     "b\nb",
+     "b"
+    ],
+    [
+     ""
+    ],
+    [
+     "\nab;"
+    ],
+    [
+     "a",
+     "\ra\"\u00e9b"
+    ]
+   ],
+   "delimiter": ";",
+   "output": " ;\"b\nb\";b\r\n\"\"\r\n\"\nab;\"\r\na;\"\ra\"\"\u00e9b\"\r\n"
+  },
+  {
+   "records": [
+    [
+     ""
+    ],
+    []
+   ],
+   "delimiter": ",",
+   "output": "\"\"\r\n\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [
+     "\n;b7\r"
+    ],
+    [
+     ""
+    ]
+   ],
+   "delimiter": ";",
+   "output": "\"\n;b7\r\"\r\n\"\"\r\n"
+  },
+  {
+   "records": [
+    [
+     "xaaa",
+     "\na\r7x",
+     "bb"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "xaaa,\"\na\r7x\",bb\r\n"
+  },
+  {
+   "records": [
+    [
+     ""
+    ],
+    [],
+    []
+   ],
+   "delimiter": "\t",
+   "output": "\"\"\r\n\r\n\r\n"
+  },
+  {
+   "records": [
+    [
+     "\"aa\"",
+     ",a",
+     ""
+    ],
+    [],
+    [
+     "\"\"a",
+     "bb",
+     "a"
+    ],
+    [
+     "a",
+     "",
+     "\"\",\"\""
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\"\"\"aa\"\"\",\",a\",\r\n\r\n\"\"\"\"\"a\",bb,a\r\na,,\"\"\"\"\",\"\"\"\"\"\r\n"
+  },
+  {
+   "records": [
+    [
+     "\r\nb\u00e9",
+     "aa"
+    ],
+    [
+     "a;"
+    ],
+    [
+     "\"\"bb",
+     "7",
+     "\"\"bb"
+    ]
+   ],
+   "delimiter": ";",
+   "output": "\"\r\nb\u00e9\";aa\r\n\"a;\"\r\n\"\"\"\"\"bb\";7;\"\"\"\"\"bb\"\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [
+     "a\rx;"
+    ],
+    [
+     "\u00e9",
+     ""
+    ],
+    [
+     "a\r\naax"
+    ]
+   ],
+   "delimiter": ";",
+   "output": "\"a\rx;\"\r\n\u00e9;\r\n\"a\r\naax\"\r\n"
+  },
+  {
+   "records": [
+    [
+     "\"\"a"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\"\"\"\"\"a\"\r\n"
+  },
+  {
+   "records": [
+    [
+     " aaax"
+    ],
+    [
+     "axaa "
+    ],
+    [
+     ""
+    ]
+   ],
+   "delimiter": ",",
+   "output": " aaax\r\naxaa \r\n\"\"\r\n"
+  },
+  {
+   "records": [
+    [],
+    [
+     ",,aa7"
+    ],
+    [
+     "",
+     "a7\n"
+    ],
+    [
+     "",
+     ""
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\r\n\",,aa7\"\r\n,\"a7\n\"\r\n,\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": ",",
+   "output": ""
+  },
+  {
+   "records": [
+    [],
+    [
+     "7",
+     "ab"
+    ],
+    []
+   ],
+   "delimiter": ",",
+   "output": "\r\n7,ab\r\n\r\n"
+  },
+  {
+   "records": [
+    [
+     "a"
+    ],
+    [
+     "",
+     "b\"\""
+    ]
+   ],
+   "delimiter": ",",
+   "output": "a\r\n,\"b\"\"\"\"\"\r\n"
+  },
+  {
+   "records": [
+    [
+     ",\"x\u00e9"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\",\"\"x\u00e9\"\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": "\t",
+   "output": ""
+  },
+  {
+   "records": [
+    [],
+    [],
+    [],
+    [
+     "",
+     "\"\"",
+     "abb\""
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\r\n\r\n\r\n,\"\"\"\"\"\",\"abb\"\"\"\r\n"
+  },
+  {
+   "records": [
+    [
+     "a\rx7",
+     "a\"\"777"
+    ],
+    []
+   ],
+   "delimiter": ",",
+   "output": "\"a\rx7\",\"a\"\"\"\"777\"\r\n\r\n"
+  },
+  {
+   "records": [
+    [
+     "\nb\r\n",
+     "",
+     " xab"
+    ],
+    [
+     "\r\na ,a"
+    ],
+    [
+     "",
+     " a"
+    ],
+    [
+     "a",
+     ",\r\n ,",
+     "\r"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\"\nb\r\n\",, xab\r\n\"\r\na ,a\"\r\n, a\r\na,\",\r\n ,\",\"\r\"\r\n"
+  },
+  {
+   "records": [
+    [
+     "",
+     "b\n\r\n",
+     ""
+    ],
+    []
+   ],
+   "delimiter": "\t",
+   "output": "\t\"b\n\r\n\"\t\r\n\r\n"
+  },
+  {
+   "records": [],
+   "delimiter": ";",
+   "output": ""
+  },
+  {
+   "records": [
+    [],
+    [
+     "7b"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "\r\n7b\r\n"
+  },
+  {
+   "records": [
+    [
+     " "
+    ],
+    [
+     "x\" x\"\"",
+     "\"\"\" a7",
+     ""
+    ]
+   ],
+   "delimiter": ",",
+   "output": " \r\n\"x\"\" x\"\"\"\"\",\"\"\"\"\"\"\" a7\",\r\n"
+  },
+  {
+   "records": [
+    [
+     ",bb ",
+     "\"ab7",
+     ""
+    ],
+    [],
+    []
+   ],
+   "delimiter": ",",
+   "output": "\",bb \",\"\"\"ab7\",\r\n\r\n\r\n"
+  },
+  {
+   "records": [
+    [
+     "ba"
+    ]
+   ],
+   "delimiter": ",",
+   "output": "ba\r\n"
+  },
+  {
+   "records": [
+    [],
+    [
+     "x",
+     ";7ax"
+    ],
+    [
+     "",
+     "\" bx"
+    ],
+    [
+     "\u00e9 7;\"",
+     ""
+    ]
+   ],
+   "delimiter": ";",
+   "output": "\r\nx;\";7ax\"\r\n;\"\"\" bx\"\r\n\"\u00e9 7;\"\"\";\r\n"
+  }
+ ]
+}

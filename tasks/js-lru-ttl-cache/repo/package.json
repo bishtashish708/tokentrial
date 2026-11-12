@@ -1,0 +1,11 @@
+{
+  "name": "lrucache",
+  "version": "2.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Small dependency-free LRU cache with memoize helper",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/lru.test.js test/ttl.test.js test/memoize.test.js"
+  }
+}

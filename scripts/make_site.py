@@ -23,8 +23,24 @@ ARM_INFO = {
     "noop-hook": ("Control: a do-nothing SessionStart hook", "control"),
     "rtk": ("rtk: compresses shell command output", "tool"),
     "caveman": ("caveman: terse-answer plugin", "tool"),
+    "noop-baseurl": ("Control: ANTHROPIC_BASE_URL set to Anthropic's URL", "control"),
+    "headroom-passthrough": ("Control: headroom proxy with optimization off", "control"),
+    "rtk-v1.2.0": ("rtk v1.2.0", "tool"),
+    "caveman-v4.1.0": ("caveman v4.1.0", "tool"),
+    "headroom": ("headroom: context-compression proxy", "tool"),
 }
-ARM_ORDER = ["baseline", "noop", "noop-hook", "rtk", "caveman"]
+ARM_ORDER = [
+    "baseline",
+    "noop",
+    "noop-hook",
+    "noop-baseurl",
+    "headroom-passthrough",
+    "rtk",
+    "rtk-v1.2.0",
+    "caveman",
+    "caveman-v4.1.0",
+    "headroom",
+]
 
 
 def pct(x: float) -> str:

@@ -1,0 +1,11 @@
+prompt = """
+This repository has an LRU cache (`src/lru.js`) and a `memoize` helper built on it
+(`src/memoize.js`). Add per-entry TTL support as specified in SPEC.md: the parts marked
+**(new)** (default and per-entry `ttl`, an injectable `now()` clock, expiry rules, `prune()`,
+and how expiry interacts with `size`, recency, eviction and `onEvict`). Existing LRU
+behaviour must keep working. Do not modify the tests. Run them with
+`node --test test/lru.test.js test/ttl.test.js test/memoize.test.js`.
+Your implementation will also be checked against additional cases derived from SPEC.md.
+"""
+timeout_s = 1200
+tags = ["javascript", "node-test", "spec", "feature-from-spec", "data-structure", "hard"]
