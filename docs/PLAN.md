@@ -344,7 +344,7 @@ across models. That is not documented and is the main uncertainty, which is why 
 |---|---|---|---|---|
 | A (Haiku, 810) | $9–11 (≈$0.012/run) | ≈40–45 points in total, spread over the run; never near the limit | ≈3–7% | ≈13 h (mean ≈60 s per run) |
 | B0 (Sonnet, 10) | ≈$2 | ≈8 points | <1% | ≈15 min |
-| B (Sonnet, 324) | ≈$50–70 (≈$0.15–0.20/run) | ≈210–290 points: **4–5 windows** at a 60% pause threshold | ≈20–25% (could be 10–45% if usage is not proportional to price) | ≈7 h of runs plus pauses: **1.5–3 days** |
+| B (Sonnet, 324), superseded by the B0 result below | ≈$50–70 (≈$0.15–0.20/run) | ≈210–290 points: **4–5 windows** at a 60% pause threshold | ≈20–25% (could be 10–45% if usage is not proportional to price) | ≈7 h of runs plus pauses: **1.5–3 days** |
 
 Per-run Sonnet cost assumes the same tokens as Haiku priced at Sonnet rates (20× for input,
 cache writes and output, 10× for cache reads), which gives ≈16×. Sonnet often takes fewer turns,
@@ -353,7 +353,26 @@ rose from 5% to 15% during this prep while tokentrial used about 1 point.
 
 Caps: `--max-usd 20` for A and `--max-usd 90 --max-usd-per-run 2` for B (API-equivalent).
 
-### Commands (not run)
+### B0 result: Sonnet calibration (2026-11-12, done)
+
+10 runs (2 tasks × 5 arms, Sonnet 5.5): 10 of 10 solved, **$0.66 API-equivalent, mean $0.066
+per run**, 5 minutes. Raw data: [`results/v0.3-sonnet-calib/`](../results/v0.3-sonnet-calib/).
+
+- **Cost per run is about 4–8× Haiku, not 16×.** On the same tasks Sonnet averaged $0.061
+  (cart pricing) and $0.072 (CSV) against Haiku's $0.008 and $0.019. Sonnet took fewer turns
+  (7.7 against 8.8 on cart) and wrote much less output (about 2.4K tokens against 5–20K).
+- **Usage.** The five-hour window went from 17% to 19% across the first 9 runs ($0.60), about
+  **3.3 points per $1** (1.7–5 given 1-point granularity, and an upper bound because the
+  compact-diff project ran at the same time). That is in line with Haiku's 4.2 points per $1,
+  so usage looks roughly proportional to API-equivalent cost. Per Sonnet run: about **0.2
+  points** of the five-hour window. The weekly window did not move (8%).
+
+**Corrected phase B estimate (324 runs):** about **$21 API-equivalent** ($14–28), about **70
+points of the five-hour window** (35–110), so 1–2 windows at the 60% pause threshold, about
+**7% of the weekly window** (4–15%), and about 3 hours of runs plus any pauses. That is roughly a
+third of the earlier estimate.
+
+### Commands
 
 ```
 uv run tokentrial run --model claude-haiku-5-5 --repeats 5 --seed 3 --max-usd 20 \

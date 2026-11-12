@@ -1,0 +1,317 @@
+{
+  "n_records": 10,
+  "bootstrap": {
+    "resamples": 10000,
+    "seed": 0,
+    "method": "tasks, then runs within task"
+  },
+  "noise_floor_noop_vs_baseline": null,
+  "arms": {
+    "baseline": {
+      "runs": 2,
+      "solved": 2,
+      "solve_rate": 1.0,
+      "solved_by_task": {
+        "js-csv-quoted-fields": 1,
+        "py-pytest-cart-pricing": 1
+      },
+      "cost_per_solved": 0.061435,
+      "cost_per_solved_ci95": [
+        0.052563,
+        0.070307
+      ],
+      "mean_cost_per_run": 0.061435,
+      "mean_cost_by_type": {
+        "input": 0.001023,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.028964,
+        "cache_read": 0.0068605,
+        "output": 0.024587499999999998
+      },
+      "mean_tokens_by_type": {
+        "input": 9.0,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 7241.0,
+        "cache_read": 68605.0,
+        "output": 2451.0
+      },
+      "mean_background_cost": 0.0010824999999999967,
+      "runs_with_background_calls": 2,
+      "main_model_cost_per_solved": 0.0603525,
+      "main_model_cost_per_solved_ci95": [
+        0.051502,
+        0.069203
+      ],
+      "mean_turns": 6.0,
+      "mean_duration_s": 34.849999999999994
+    },
+    "caveman-v4.1.0": {
+      "runs": 2,
+      "solved": 2,
+      "solve_rate": 1.0,
+      "solved_by_task": {
+        "js-csv-quoted-fields": 1,
+        "py-pytest-cart-pricing": 1
+      },
+      "cost_per_solved": 0.06538205,
+      "cost_per_solved_ci95": [
+        0.0638962,
+        0.0668679
+      ],
+      "mean_cost_per_run": 0.06538205,
+      "mean_cost_by_type": {
+        "input": 1.8e-05,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.034215999999999996,
+        "cache_read": 0.0073380500000000005,
+        "output": 0.023809999999999998
+      },
+      "mean_tokens_by_type": {
+        "input": 9.0,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 8554.0,
+        "cache_read": 73380.5,
+        "output": 2381.0
+      },
+      "mean_background_cost": 0.0,
+      "runs_with_background_calls": 0,
+      "main_model_cost_per_solved": 0.06538205,
+      "main_model_cost_per_solved_ci95": [
+        0.0638962,
+        0.0668679
+      ],
+      "mean_turns": 8.0,
+      "mean_duration_s": 29.085,
+      "vs_baseline": {
+        "point": 0.06424757874175957,
+        "ci95": [
+          -0.09118295475557192,
+          0.2721477084641286
+        ]
+      },
+      "main_model_vs_baseline": {
+        "point": 0.08333623296466586,
+        "ci95": [
+          -0.07668453679753773,
+          0.29835540367364355
+        ]
+      },
+      "vs_noop_hook": {
+        "point": 0.11897987422567669,
+        "ci95": [
+          0.1021012606904872,
+          0.1372061152935733
+        ]
+      },
+      "matched_control": "noop-hook",
+      "vs_matched_control": {
+        "point": 0.11897987422567669,
+        "ci95": [
+          0.1021012606904872,
+          0.1372061152935733
+        ]
+      }
+    },
+    "headroom": {
+      "runs": 2,
+      "solved": 2,
+      "solve_rate": 1.0,
+      "solved_by_task": {
+        "js-csv-quoted-fields": 1,
+        "py-pytest-cart-pricing": 1
+      },
+      "cost_per_solved": 0.0743586,
+      "cost_per_solved_ci95": [
+        0.0415054,
+        0.1072118
+      ],
+      "mean_cost_per_run": 0.0743586,
+      "mean_cost_by_type": {
+        "input": 1.6e-05,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.047278,
+        "cache_read": 0.0051346000000000004,
+        "output": 0.021929999999999998
+      },
+      "mean_tokens_by_type": {
+        "input": 8.0,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 11819.5,
+        "cache_read": 51346.0,
+        "output": 2193.0
+      },
+      "mean_background_cost": 0.0,
+      "runs_with_background_calls": 0,
+      "main_model_cost_per_solved": 0.0743586,
+      "main_model_cost_per_solved_ci95": [
+        0.0415054,
+        0.1072118
+      ],
+      "mean_turns": 7.0,
+      "mean_duration_s": 30.314999999999998,
+      "vs_baseline": {
+        "point": 0.21036217140066737,
+        "ci95": [
+          -0.2103685101687499,
+          0.5249093262406304
+        ]
+      },
+      "main_model_vs_baseline": {
+        "point": 0.23207157947061008,
+        "ci95": [
+          -0.19410119995339992,
+          0.5492363047844746
+        ]
+      },
+      "vs_noop_hook": {
+        "point": 0.2726088716336885,
+        "ci95": [
+          -0.31591759774924966,
+          0.9081246551693452
+        ]
+      }
+    },
+    "noop-hook": {
+      "runs": 2,
+      "solved": 2,
+      "solve_rate": 1.0,
+      "solved_by_task": {
+        "js-csv-quoted-fields": 1,
+        "py-pytest-cart-pricing": 1
+      },
+      "cost_per_solved": 0.05843005,
+      "cost_per_solved_ci95": [
+        0.056187,
+        0.0606731
+      ],
+      "mean_cost_per_run": 0.05843005,
+      "mean_cost_by_type": {
+        "input": 1.4e-05,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.030406,
+        "cache_read": 0.00503505,
+        "output": 0.022975000000000002
+      },
+      "mean_tokens_by_type": {
+        "input": 7.0,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 7601.5,
+        "cache_read": 50350.5,
+        "output": 2297.5
+      },
+      "mean_background_cost": 0.0,
+      "runs_with_background_calls": 0,
+      "main_model_cost_per_solved": 0.05843005,
+      "main_model_cost_per_solved_ci95": [
+        0.056187,
+        0.0606731
+      ],
+      "mean_turns": 7.5,
+      "mean_duration_s": 29.11,
+      "vs_baseline": {
+        "point": -0.04891267192968174,
+        "ci95": [
+          -0.20083348741946028,
+          0.1542929437056486
+        ]
+      },
+      "main_model_vs_baseline": {
+        "point": -0.031853692887618634,
+        "ci95": [
+          -0.1880843316041212,
+          0.17807269620597266
+        ]
+      }
+    },
+    "rtk-v1.2.0": {
+      "runs": 2,
+      "solved": 2,
+      "solve_rate": 1.0,
+      "solved_by_task": {
+        "js-csv-quoted-fields": 1,
+        "py-pytest-cart-pricing": 1
+      },
+      "cost_per_solved": 0.07218215,
+      "cost_per_solved_ci95": [
+        0.0623203,
+        0.08204399999999999
+      ],
+      "mean_cost_per_run": 0.07218215,
+      "mean_cost_by_type": {
+        "input": 0.001029,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.034308,
+        "cache_read": 0.00990515,
+        "output": 0.02694
+      },
+      "mean_tokens_by_type": {
+        "input": 12.0,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 8577.0,
+        "cache_read": 99051.5,
+        "output": 2686.5
+      },
+      "mean_background_cost": 0.001080000000000001,
+      "runs_with_background_calls": 2,
+      "main_model_cost_per_solved": 0.07110215,
+      "main_model_cost_per_solved_ci95": [
+        0.0612163,
+        0.08098799999999999
+      ],
+      "mean_turns": 10.0,
+      "mean_duration_s": 30.065,
+      "vs_baseline": {
+        "point": 0.1749352974688696,
+        "ci95": [
+          -0.1135975080717424,
+          0.5608698133668168
+        ]
+      },
+      "main_model_vs_baseline": {
+        "point": 0.17811441116772286,
+        "ci95": [
+          -0.11540973657211395,
+          0.5725214554774569
+        ]
+      },
+      "vs_noop_hook": {
+        "point": 0.23536005873690002,
+        "ci95": [
+          0.10915870219089818,
+          0.3522302305304985
+        ]
+      },
+      "matched_control": "baseline",
+      "vs_matched_control": {
+        "point": 0.1749352974688696,
+        "ci95": [
+          -0.1135975080717424,
+          0.5608698133668168
+        ]
+      }
+    }
+  },
+  "complete": true,
+  "manifest": {
+    "mode": "subscription",
+    "provider": "anthropic",
+    "model": "claude-sonnet-5-5",
+    "arms": [
+      "baseline",
+      "noop-hook",
+      "rtk-v1.2.0",
+      "caveman-v4.1.0",
+      "headroom"
+    ],
+    "task_ids": [
+      "py-pytest-cart-pricing",
+      "js-csv-quoted-fields"
+    ],
+    "repeats": 1,
+    "seed": 3,
+    "max_usd": 5.0,
+    "max_usd_per_run": 2.0,
+    "pause_at_utilization": 0.6,
+    "name": "v0.3-sonnet-calib"
+  }
+}

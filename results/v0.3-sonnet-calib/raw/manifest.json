@@ -1,0 +1,21 @@
+{
+  "mode": "subscription",
+  "provider": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "arms": [
+    "baseline",
+    "noop-hook",
+    "rtk-v1.2.0",
+    "caveman-v4.1.0",
+    "headroom"
+  ],
+  "task_ids": [
+    "py-pytest-cart-pricing",
+    "js-csv-quoted-fields"
+  ],
+  "repeats": 1,
+  "seed": 3,
+  "max_usd": 5.0,
+  "max_usd_per_run": 2.0,
+  "pause_at_utilization": 0.6
+}
