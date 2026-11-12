@@ -60,6 +60,7 @@ select = ["E", "F", "I", "B", "UP"]
 "scripts/make_cron_task.py" = ["E501"]
 "scripts/make_cron_tz_task.py" = ["E501"]
 "scripts/power_from_pilot.py" = ["E501"]
+"scripts/make_site.py" = ["E501"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

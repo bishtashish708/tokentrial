@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TokenTrial leaderboard</title>
+<meta name="description" content="Dollars per correctly solved task, with and without token-saving tools for coding agents.">
+<style>
+:root {
+  --bg:#fbfbfa; --fg:#1d1d1b; --muted:#6b6b66; --line:#e4e3df; --card:#ffffff;
+  --tool:#2f5fb3; --control:#8a8a84; --ref:#1d1d1b; --band:rgba(138,138,132,.13); --accent:#2f5fb3;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#161615; --fg:#ecebe7; --muted:#9b9a94; --line:#2e2e2b; --card:#1d1d1b;
+    --tool:#7aa2e8; --control:#8a8a84; --ref:#ecebe7; --band:rgba(160,160,152,.14); --accent:#7aa2e8;
+    color-scheme: dark; }
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+  font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+main { max-width:1040px; margin:0 auto; padding:40px 20px 64px; }
+h1 { font-size:28px; margin:0 0 4px; letter-spacing:-.01em; }
+h2 { font-size:18px; margin:40px 0 12px; }
+.sub { color:var(--muted); margin:0 0 24px; }
+a { color:var(--accent); }
+code { font:13px ui-monospace,SFMono-Regular,Menlo,monospace; }
+.facts { display:flex; flex-wrap:wrap; gap:8px 24px; padding:14px 16px; border:1px solid var(--line);
+  border-radius:8px; background:var(--card); font-size:14px; }
+.facts b { font-weight:600; }
+.scroll { overflow-x:auto; border:1px solid var(--line); border-radius:8px; background:var(--card); }
+table { border-collapse:collapse; width:100%; min-width:820px; font-size:14px; }
+th, td { padding:10px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+thead th { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); font-weight:600; }
+tbody tr:last-child th, tbody tr:last-child td { border-bottom:0; }
+td.num { font-variant-numeric:tabular-nums; white-space:nowrap; }
+.ci { color:var(--muted); font-size:12.5px; }
+.desc { color:var(--muted); font-size:12.5px; font-weight:400; }
+tbody th { min-width:200px; }
+.muted { color:var(--muted); }
+tr.tool th code { color:var(--tool); font-weight:600; }
+.verdict { font-size:13px; }
+.forest { width:100%; max-width:680px; height:auto; display:block; }
+.forest .band { fill:var(--band); }
+.forest .grid { stroke:var(--line); }
+.forest .zero { stroke:var(--muted); stroke-dasharray:3 3; }
+.forest .tick { fill:var(--muted); font-size:11px; text-anchor:middle; }
+.forest .label { fill:var(--fg); font:12px ui-monospace,Menlo,monospace; text-anchor:end; }
+.forest .ci { stroke-width:2.5; stroke-linecap:round; }
+.forest .ci.tool { stroke:var(--tool); } .forest .pt.tool { fill:var(--tool); }
+.forest .ci.control { stroke:var(--control); } .forest .pt.control { fill:var(--control); }
+.forest .ci.reference { stroke:var(--ref); } .forest .pt.reference { fill:var(--ref); }
+.note { color:var(--muted); font-size:13.5px; }
+ul { padding-left:20px; } li { margin:4px 0; }
+footer { margin-top:48px; color:var(--muted); font-size:13px; border-top:1px solid var(--line); padding-top:16px; }
+</style>
+</head>
+<body>
+<main>
+<h1>TokenTrial leaderboard</h1>
+<p class="sub">Does a token-saving tool lower what a coding agent costs per <em>correctly solved</em> task?
+Results for run <code>v0.2</code>.</p>
+
+<div class="facts">
+  <span><b>Date</b> 2026-11-12</span>
+  <span><b>Agent</b> Claude Code 2.1.252, headless</span>
+  <span><b>Model</b> <code>claude-haiku-5-5</code></span>
+  <span><b>Design</b> 10 tasks × 5 arms × 8 repeats = 400 runs</span>
+  <span><b>Solved</b> 396/400</span>
+  <span><b>Total cost</b> $2.87 API-equivalent (verified list prices)</span>
+</div>
+
+<h2>Cost per solved task</h2>
+<div class="scroll">
+<table>
+<thead><tr><th>Arm</th><th>Version</th><th>Solved</th><th>Cost per solved task (95% CI)</th>
+<th>vs <code>baseline</code></th><th>vs <code>noop-hook</code></th><th>Verdict</th></tr></thead>
+<tbody>
+<tr class="reference"><th scope="row"><code>baseline</code><div class="desc">Unmodified Claude Code</div></th><td class="num">—</td><td class="num">80/80</td><td class="num">$0.0068 <span class="ci">($0.0045–$0.0100)</span></td><td class="num muted">—</td><td class="num muted">—</td><td class="verdict">reference</td></tr>
+<tr class="control"><th scope="row"><code>noop</code><div class="desc">Control: same install steps, changes nothing</div></th><td class="num">—</td><td class="num">80/80</td><td class="num">$0.0076 <span class="ci">($0.0047–$0.0116)</span></td><td class="num">+11% <span class="ci">(−2% to +24%)</span></td><td class="num muted">—</td><td class="verdict">control</td></tr>
+<tr class="control"><th scope="row"><code>noop-hook</code><div class="desc">Control: a do-nothing SessionStart hook</div></th><td class="num">—</td><td class="num">79/80</td><td class="num">$0.0062 <span class="ci">($0.0035–$0.0103)</span></td><td class="num">−9% <span class="ci">(−24% to +7%)</span></td><td class="num muted">—</td><td class="verdict">control</td></tr>
+<tr class="tool"><th scope="row"><code>rtk</code><div class="desc">rtk: compresses shell command output</div></th><td class="num">v1.1.0</td><td class="num">80/80</td><td class="num">$0.0093 <span class="ci">($0.0057–$0.0138)</span></td><td class="num">+36% <span class="ci">(+17% to +53%)</span></td><td class="num">+49% <span class="ci">(+26% to +81%)</span></td><td class="verdict">more expensive than baseline, beyond the noise floor</td></tr>
+<tr class="tool"><th scope="row"><code>caveman</code><div class="desc">caveman: terse-answer plugin</div></th><td class="num">v4.0.1</td><td class="num">77/80</td><td class="num">$0.0062 <span class="ci">($0.0036–$0.0101)</span></td><td class="num">−9% <span class="ci">(−21% to +5%)</span></td><td class="num">±0% <span class="ci">(−10% to +11%)</span></td><td class="verdict">inconclusive (CI includes no change or overlaps the noise floor)</td></tr>
+</tbody>
+</table>
+</div>
+<p class="note">Noise floor (<code>noop</code> vs <code>baseline</code>): +11%
+(−2% to +24%). A tool counts as saving money only if its interval
+excludes zero and its point estimate lies outside the noise floor.</p>
+
+<h2>Relative to baseline</h2>
+<svg viewBox="0 0 640 194" role="img" aria-labelledby="fp-title" class="forest">
+<title id="fp-title">Cost per solved task relative to baseline, with 95% confidence intervals</title>
+<rect x="287.4" y="20" width="120.6" height="140" class="band"><title>Noise floor: noop vs baseline CI</title></rect>
+<line x1="110.0" x2="110.0" y1="18" y2="172" class="grid"/>
+<text x="110.0" y="188" class="tick">−40%</text>
+<line x1="202.7" x2="202.7" y1="18" y2="172" class="grid"/>
+<text x="202.7" y="188" class="tick">−20%</text>
+<line x1="295.5" x2="295.5" y1="18" y2="172" class="zero"/>
+<text x="295.5" y="188" class="tick">±0%</text>
+<line x1="388.2" x2="388.2" y1="18" y2="172" class="grid"/>
+<text x="388.2" y="188" class="tick">+20%</text>
+<line x1="480.9" x2="480.9" y1="18" y2="172" class="grid"/>
+<text x="480.9" y="188" class="tick">+40%</text>
+<line x1="573.6" x2="573.6" y1="18" y2="172" class="grid"/>
+<text x="573.6" y="188" class="tick">+60%</text>
+<text x="98" y="43.0" class="label">noop</text>
+<line x1="287.4" x2="408.0" y1="39.0" y2="39.0" class="ci control"/>
+<circle cx="345.6" cy="39.0" r="5" class="pt control"><title>noop: +11% (−2% to +24%)</title></circle>
+<text x="98" y="77.0" class="label">noop-hook</text>
+<line x1="183.0" x2="327.1" y1="73.0" y2="73.0" class="ci control"/>
+<circle cx="255.1" cy="73.0" r="5" class="pt control"><title>noop-hook: −9% (−24% to +7%)</title></circle>
+<text x="98" y="111.0" class="label">rtk</text>
+<line x1="375.8" x2="540.6" y1="107.0" y2="107.0" class="ci tool"/>
+<circle cx="461.6" cy="107.0" r="5" class="pt tool"><title>rtk: +36% (+17% to +53%)</title></circle>
+<text x="98" y="145.0" class="label">caveman</text>
+<line x1="198.6" x2="318.6" y1="141.0" y2="141.0" class="ci tool"/>
+<circle cx="253.7" cy="141.0" r="5" class="pt tool"><title>caveman: −9% (−21% to +5%)</title></circle>
+</svg>
+<p class="note">Dots are point estimates; lines are 95% CIs. The shaded band is the noise floor.</p>
+
+<h2>What is behind the numbers</h2>
+<ul>
+<li><b>rtk</b> compressed pytest and git output. On the tasks where it compressed the most, the agent
+re-ran commands with <code>rtk bypass</code> and took more turns, and each extra turn re-reads the
+cached context. See <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/FINDINGS.md#why-rtk-cost-more">FINDINGS</a>.</li>
+<li><b>caveman</b>: Claude Code 2.1.252 skips a small background title-generation call whenever
+<em>any</em> SessionStart hook is configured. caveman registers one, which explains its apparent
+saving in the pilot. The <code>noop-hook</code> arm reproduces that side effect; against it caveman's
+effect is about zero. See <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/FINDINGS.md#why-cavemans-pilot-saving-disappeared">FINDINGS</a>.</li>
+</ul>
+
+<h2>Limitations</h2>
+<ul>
+<li>One model (Haiku 5.5) and one Claude Code version, which does not recognize this model ID. That is the same for every arm.</li>
+<li>Small-to-medium synthetic tasks. Haiku solved nearly all of them, so the comparison rests on cost, not solve rate.</li>
+<li>Pinned tool versions (rtk v1.1.0, caveman v4.0.1); newer releases were not tested.</li>
+<li>Costs are API-equivalent: runs used a Claude Code subscription and usage was priced at list prices.</li>
+</ul>
+
+<h2>Data and method</h2>
+<ul>
+<li><a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/FINDINGS.md">Findings write-up</a> ·
+<a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/summary.md">summary.md</a> · <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/summary.json">summary.json</a></li>
+<li><a href="https://github.com/bishtashish708/tokentrial/tree/main/results/v0.2/raw">Raw data</a>: <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/raw/records.jsonl">records.jsonl</a> (one line per run),
+<a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/raw/manifest.json">manifest.json</a>, <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/raw/logs.tar.gz">logs.tar.gz</a> (agent transcripts; home path and username scrubbed)</li>
+<li><a href="https://github.com/bishtashish708/tokentrial/blob/main/src/tokentrial/data/pricing.toml">Price table</a> with source URLs and check dates</li>
+<li>CIs: tasks, then runs within task bootstrap, 10,000 resamples, paired by task.</li>
+<li>Reproduce: <code>uv sync &amp;&amp; uv run tokentrial install-arms &amp;&amp; uv run tokentrial run --repeats 8 --seed 2 --out runs/v0.2 --arm baseline --arm noop --arm noop-hook --arm rtk --arm caveman</code>
+then <code>uv run tokentrial report --runs runs/v0.2</code>.</li>
+</ul>
+
+<footer>Generated by <code>scripts/make_site.py</code> from <code>results/v0.2/summary.json</code>.
+<a href="https://github.com/bishtashish708/tokentrial">Source on GitHub</a> · MIT license.</footer>
+</main>
+</body>
+</html>

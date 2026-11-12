@@ -15,11 +15,13 @@ It runs the same coding tasks with and without each tool and reports the number 
 >   reproduces a Claude Code side effect it triggers.
 > - A do-nothing arm alone moved cost by +11%.
 >
-> Details: [`results/v0.2/FINDINGS.md`](results/v0.2/FINDINGS.md). Pilot:
+> Leaderboard: https://bishtashish708.github.io/tokentrial/ · Details:
+> [`results/v0.2/FINDINGS.md`](results/v0.2/FINDINGS.md). Pilot:
 > [`results/pilot-v0.1/FINDINGS.md`](results/pilot-v0.1/FINDINGS.md).
 
 > Status: alpha. The runner, the arms, verified prices and `report` work. v0.1 and v0.2 have run.
-> There is no leaderboard site yet. See [docs/PLAN.md](docs/PLAN.md).
+> A static leaderboard is generated from `results/v0.2/summary.json` by `scripts/make_site.py`
+> into `docs/`. See [docs/PLAN.md](docs/PLAN.md).
 
 ## Why
 
@@ -92,7 +94,8 @@ scrubbed raw data to `results/<exp>/`.
 
 ## Leaderboard
 
-Results will be published as a static site on GitHub Pages from this repository.
+Published on GitHub Pages from `docs/`: https://bishtashish708.github.io/tokentrial/. Regenerate
+it with `uv run python scripts/make_site.py results/<exp> docs/index.html`.
 
 ## Roadmap
 
