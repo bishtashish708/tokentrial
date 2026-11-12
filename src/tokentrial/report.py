@@ -18,7 +18,7 @@ from pathlib import Path
 from tokentrial.pricing import TOKEN_TYPES
 from tokentrial.runner import FINAL_STATUSES
 
-BASELINE, CONTROL = "baseline", "noop"
+BASELINE, CONTROL, HOOK_CONTROL = "baseline", "noop", "noop-hook"
 
 
 def load_records(exp_dir: Path) -> list[dict]:
@@ -141,9 +141,20 @@ def summarize(records: list[dict], n_boot: int = 10_000, seed: int = 0) -> dict:
         if CONTROL in arms:
             noise = arms[CONTROL]["vs_baseline"]
 
+    # Tools that install a SessionStart hook also trigger Claude Code's side effect of
+    # skipping its session-title call; comparing with the noop-hook control removes it.
+    if HOOK_CONTROL in samples:
+        h = arms[HOOK_CONTROL]
+        for arm, info in arms.items():
+            if arm in (BASELINE, CONTROL, HOOK_CONTROL):
+                continue
+            info["vs_noop_hook"] = _vs(
+                samples[arm], samples[HOOK_CONTROL], info["cost_per_solved"], h["cost_per_solved"]
+            )
+
     for arm, info in arms.items():
         vs = info.get("vs_baseline")
-        if arm in (BASELINE, CONTROL) or not vs or not noise:
+        if arm in (BASELINE, CONTROL, HOOK_CONTROL) or not vs or not noise:
             continue
         lo, hi = vs["ci95"]
         nlo, nhi = noise["ci95"]
@@ -197,7 +208,10 @@ def to_markdown(summary: dict, manifest: dict) -> str:
         vs_s = (
             f"{_rel(vs['point'])} ({_rel(vs['ci95'][0])} to {_rel(vs['ci95'][1])})" if vs else "—"
         )
-        verdict = i.get("verdict") or ("noise floor" if a == CONTROL else "reference")
+        verdict = i.get("verdict") or {
+            CONTROL: "noise floor",
+            HOOK_CONTROL: "control: SessionStart-hook side effect",
+        }.get(a, "reference")
         out.append(
             f"| `{a}` | {i['solved']}/{i['runs']} | {_usd(i['cost_per_solved'])} "
             f"({_usd(lo)} to {_usd(hi)}) | {vs_s} | {_usd(i['mean_cost_per_run'])} | {verdict} |"
@@ -221,6 +235,21 @@ def to_markdown(summary: dict, manifest: dict) -> str:
             f"| `{a}` | {i['runs_with_background_calls']}/{i['runs']} "
             f"| {_usd(i['main_model_cost_per_solved'])} ({_usd(lo)} to {_usd(hi)}) | {vs_s} |"
         )
+    if any("vs_noop_hook" in arms[a] for a in order):
+        out += [
+            "",
+            "## Tools vs the `noop-hook` control",
+            "",
+            "Same SessionStart-hook side effect on both sides, so this isolates the tool itself.",
+            "",
+            "| Arm | Cost per solved task vs `noop-hook` (95% CI) |",
+            "|---|---|",
+        ]
+        for a in order:
+            vs = arms[a].get("vs_noop_hook")
+            if vs:
+                lo, hi = vs["ci95"]
+                out.append(f"| `{a}` | {_rel(vs['point'])} ({_rel(lo)} to {_rel(hi)}) |")
     out += [
         "",
         "## Mean tokens per run, by type",

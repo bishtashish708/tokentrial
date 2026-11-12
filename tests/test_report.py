@@ -80,3 +80,26 @@ def test_export_raw_scrubs_home_path(tmp_path, monkeypatch):
         text = tar.extractfile("logs/a.jsonl").read().decode()
     assert home not in text and "~/.claude/projects/y" in text
     assert me not in text and "1 user  staff" in text
+
+
+def test_tools_compared_with_noop_hook_control():
+    from tokentrial.report import to_markdown
+
+    s = summarize(
+        _records({"baseline": 1.2, "noop": 1.2, "noop-hook": 1.0, "caveman": 1.0}), n_boot=300
+    )
+    vs = s["arms"]["caveman"]["vs_noop_hook"]
+    assert abs(vs["point"]) < 1e-9  # same as the hook control: no tool effect
+    assert s["arms"]["caveman"]["vs_baseline"]["point"] < -0.1
+    assert "verdict" not in s["arms"]["noop-hook"]
+    md = to_markdown(
+        s,
+        {
+            "model": "m",
+            "mode": "subscription",
+            "task_ids": list("abcde"),
+            "arms": list(s["arms"]),
+            "repeats": 3,
+        },
+    )
+    assert "vs the `noop-hook` control" in md
