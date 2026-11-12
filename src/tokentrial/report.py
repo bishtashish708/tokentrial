@@ -20,6 +20,16 @@ from tokentrial.runner import FINAL_STATUSES
 
 BASELINE, CONTROL, HOOK_CONTROL = "baseline", "noop", "noop-hook"
 
+# Each tool's matched control: an arm that reproduces the tool's known side effects on
+# Claude Code but not the tool itself, so tool vs control isolates the tool.
+MATCHED_CONTROL = {
+    "caveman": HOOK_CONTROL,  # SessionStart hook: Claude Code skips its title call
+    "caveman-v4.1.0": HOOK_CONTROL,
+    "headroom": "headroom-passthrough",  # local proxy: title call skipped; MCP tools added
+    "rtk": BASELINE,  # PreToolUse hook only: no known side effect
+    "rtk-v1.2.0": BASELINE,
+}
+
 
 def load_records(exp_dir: Path) -> list[dict]:
     latest: dict[str, dict] = {}
@@ -153,8 +163,24 @@ def summarize(records: list[dict], n_boot: int = 10_000, seed: int = 0) -> dict:
             )
 
     for arm, info in arms.items():
+        control = MATCHED_CONTROL.get(arm)
+        if control and control in samples:
+            info["matched_control"] = control
+            info["vs_matched_control"] = (
+                info["vs_baseline"]
+                if control == BASELINE
+                else _vs(
+                    samples[arm],
+                    samples[control],
+                    info["cost_per_solved"],
+                    arms[control]["cost_per_solved"],
+                )
+            )
+
+    controls = {BASELINE, CONTROL, HOOK_CONTROL, *MATCHED_CONTROL.values(), "noop-baseurl"}
+    for arm, info in arms.items():
         vs = info.get("vs_baseline")
-        if arm in (BASELINE, CONTROL, HOOK_CONTROL) or not vs or not noise:
+        if arm in controls or not vs or not noise:
             continue
         lo, hi = vs["ci95"]
         nlo, nhi = noise["ci95"]
@@ -185,7 +211,20 @@ def _rel(x: float) -> str:
 def to_markdown(summary: dict, manifest: dict) -> str:
     arms = summary["arms"]
     order = [
-        a for a in ("baseline", "noop", "noop-hook", "rtk", "caveman", "headroom") if a in arms
+        a
+        for a in (
+            "baseline",
+            "noop",
+            "noop-hook",
+            "noop-baseurl",
+            "headroom-passthrough",
+            "rtk",
+            "rtk-v1.2.0",
+            "caveman",
+            "caveman-v4.1.0",
+            "headroom",
+        )
+        if a in arms
     ]
     order += [a for a in arms if a not in order]
     out = [
@@ -211,6 +250,8 @@ def to_markdown(summary: dict, manifest: dict) -> str:
         verdict = i.get("verdict") or {
             CONTROL: "noise floor",
             HOOK_CONTROL: "control: SessionStart-hook side effect",
+            "noop-baseurl": "control: ANTHROPIC_BASE_URL set",
+            "headroom-passthrough": "control: headroom proxy, optimization off",
         }.get(a, "reference")
         out.append(
             f"| `{a}` | {i['solved']}/{i['runs']} | {_usd(i['cost_per_solved'])} "
@@ -250,6 +291,25 @@ def to_markdown(summary: dict, manifest: dict) -> str:
             if vs:
                 lo, hi = vs["ci95"]
                 out.append(f"| `{a}` | {_rel(vs['point'])} ({_rel(lo)} to {_rel(hi)}) |")
+    if any("vs_matched_control" in arms[a] for a in order):
+        out += [
+            "",
+            "## Tools vs their matched control",
+            "",
+            "Each control reproduces the tool's known side effects on Claude Code (a "
+            "SessionStart hook, or routing through a local proxy) without the tool itself.",
+            "",
+            "| Arm | Matched control | Cost per solved task vs control (95% CI) |",
+            "|---|---|---|",
+        ]
+        for a in order:
+            vs = arms[a].get("vs_matched_control")
+            if vs:
+                lo, hi = vs["ci95"]
+                out.append(
+                    f"| `{a}` | `{arms[a]['matched_control']}` "
+                    f"| {_rel(vs['point'])} ({_rel(lo)} to {_rel(hi)}) |"
+                )
     out += [
         "",
         "## Mean tokens per run, by type",

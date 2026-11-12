@@ -103,3 +103,16 @@ def test_tools_compared_with_noop_hook_control():
         },
     )
     assert "vs the `noop-hook` control" in md
+
+
+def test_tools_are_compared_with_their_matched_control():
+    costs = {"baseline": 1.0, "noop": 1.0, "headroom-passthrough": 0.8, "headroom": 0.8}
+    costs |= {"rtk": 1.3, "caveman": 0.9}
+    s = summarize(_records(costs), n_boot=200)["arms"]
+    assert s["headroom"]["matched_control"] == "headroom-passthrough"
+    assert abs(s["headroom"]["vs_matched_control"]["point"]) < 1e-9
+    assert s["headroom"]["vs_baseline"]["point"] < -0.15
+    assert s["rtk"]["vs_matched_control"] == s["rtk"]["vs_baseline"]
+    # noop-hook absent: caveman has no matched comparison rather than a wrong one.
+    assert "vs_matched_control" not in s["caveman"]
+    assert "verdict" not in s["headroom-passthrough"]
