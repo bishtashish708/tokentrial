@@ -286,10 +286,17 @@ def report(
     ] = None,
     resamples: Annotated[int, typer.Option(min=100, help="Bootstrap resamples.")] = 10_000,
     seed: Annotated[int, typer.Option(help="Bootstrap seed.")] = 0,
+    export_raw: Annotated[
+        bool,
+        typer.Option(
+            "--export-raw", help="Also copy manifest, records and logs (home path scrubbed)."
+        ),
+    ] = False,
 ) -> None:
     """Cost per solved task per arm, with bootstrap CIs against baseline and the noop floor."""
     import json
 
+    from tokentrial.report import export_raw as _export_raw
     from tokentrial.report import load_records, summarize, to_markdown
 
     if not (runs / "records.jsonl").exists():
@@ -310,6 +317,9 @@ def report(
     (dest / "summary.md").write_text(md)
     typer.echo(md)
     typer.echo(f"wrote {dest}/summary.json and {dest}/summary.md")
+    if export_raw:
+        for path in _export_raw(runs, dest / "raw"):
+            typer.echo(f"wrote {path}")
 
 
 if __name__ == "__main__":

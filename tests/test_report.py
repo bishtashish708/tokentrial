@@ -54,3 +54,29 @@ def test_bootstrap_is_seeded_and_handles_no_solves():
     assert all(math.isinf(v) for v in s1["a"])
     by2 = {"a": {"t": [_rec("a", "t", 0, True, 1.0), _rec("a", "t", 1, True, 2.0)]}}
     assert bootstrap(by2, n=50, seed=3) == bootstrap(by2, n=50, seed=3)
+
+
+def test_export_raw_scrubs_home_path(tmp_path, monkeypatch):
+    import json
+    import tarfile
+    from pathlib import Path
+
+    from tokentrial.report import export_raw
+
+    home = str(Path.home())
+    exp = tmp_path / "exp"
+    (exp / "logs").mkdir(parents=True)
+    (exp / "manifest.json").write_text(json.dumps({"x": 1}))
+    (exp / "records.jsonl").write_text(json.dumps({"p": f"{home}/.cache/x"}) + "\n")
+    import getpass
+
+    me = getpass.getuser()
+    (exp / "logs" / "a.jsonl").write_text(
+        f'{{"path": "{home}/.claude/projects/y", "ls": "-rw-r--r--  1 {me}  staff  29"}}\n'
+    )
+    out = export_raw(exp, tmp_path / "raw")
+    assert home not in (tmp_path / "raw" / "records.jsonl").read_text()
+    with tarfile.open(out[-1]) as tar:
+        text = tar.extractfile("logs/a.jsonl").read().decode()
+    assert home not in text and "~/.claude/projects/y" in text
+    assert me not in text and "1 user  staff" in text

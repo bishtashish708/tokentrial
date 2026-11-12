@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import os
 import random
+import re
 import shutil
 import subprocess
 import tempfile
@@ -48,6 +50,20 @@ class Config:
         cells = [(t, a, r) for r in range(self.repeats) for t in self.task_ids for a in self.arms]
         random.Random(self.seed).shuffle(cells)
         return cells
+
+
+def _remove_claude_project_dirs(tmp: Path) -> None:
+    """Delete the per-project directory Claude Code creates for a run's workspace.
+
+    Claude Code stores large tool outputs (and session data) under
+    `<config dir>/projects/<sanitised workspace path>/`, outside the workspace.
+    The run's temp dir name is unique, so only that run's directory matches.
+    """
+    projects = Path(os.environ.get("CLAUDE_CONFIG_DIR") or Path.home() / ".claude") / "projects"
+    key = re.sub(r"[^A-Za-z0-9]", "-", tmp.name)
+    if projects.is_dir() and key.startswith("tokentrial-"):
+        for d in projects.glob(f"*{key}*"):
+            shutil.rmtree(d, ignore_errors=True)
 
 
 def run_id(task: str, arm: str, rep: int) -> str:
@@ -239,6 +255,7 @@ def _run_one(
         if runtime and runtime.cleanup:
             runtime.cleanup()
         shutil.rmtree(tmp, ignore_errors=True)
+        _remove_claude_project_dirs(tmp)
 
     usage = parser.state.usage
     result = parser.state.result or {}

@@ -1,0 +1,22 @@
+{
+  "mode": "subscription",
+  "provider": "anthropic",
+  "model": "claude-haiku-5-5",
+  "arms": [
+    "baseline",
+    "noop",
+    "rtk",
+    "caveman"
+  ],
+  "task_ids": [
+    "js-chunk-remainder",
+    "log-link-failure",
+    "py-duration-spec",
+    "py-ledger-parens",
+    "read-audit-writer"
+  ],
+  "repeats": 3,
+  "seed": 0,
+  "max_usd": 30.0,
+  "max_usd_per_run": 1.0
+}

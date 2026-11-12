@@ -30,9 +30,18 @@ def load_records(exp_dir: Path) -> list[dict]:
     return [r for r in latest.values() if r["status"] in FINAL_STATUSES]
 
 
-def _cost_per_solved(runs: list[dict]) -> float:
+def _total_cost(r: dict) -> float:
+    return r["cost_usd"]["total"]
+
+
+def _main_cost(r: dict) -> float:
+    """Benchmarked model only, excluding Claude Code's background calls on other models."""
+    return r.get("cost_main_usd", r["cost_usd"]["total"])
+
+
+def _cost_per_solved(runs: list[dict], cost=_total_cost) -> float:
     solved = sum(r["solved"] for r in runs)
-    return sum(r["cost_usd"]["total"] for r in runs) / solved if solved else math.inf
+    return sum(cost(r) for r in runs) / solved if solved else math.inf
 
 
 def _pct(sorted_vals: list[float], q: float) -> float:
@@ -49,7 +58,10 @@ def _ci(vals: list[float]) -> tuple[float, float]:
 
 
 def bootstrap(
-    by_arm_task: dict[str, dict[str, list[dict]]], n: int = 10_000, seed: int = 0
+    by_arm_task: dict[str, dict[str, list[dict]]],
+    n: int = 10_000,
+    seed: int = 0,
+    cost=_total_cost,
 ) -> dict[str, list[float]]:
     """Cost-per-solved samples per arm, from a task-then-run hierarchical bootstrap."""
     rng = random.Random(seed)
@@ -63,7 +75,7 @@ def bootstrap(
             for t in picked:
                 pool = by_arm_task[a].get(t, [])
                 runs.extend(rng.choice(pool) for _ in pool)
-            samples[a].append(_cost_per_solved(runs))
+            samples[a].append(_cost_per_solved(runs, cost))
     return samples
 
 
@@ -72,6 +84,7 @@ def summarize(records: list[dict], n_boot: int = 10_000, seed: int = 0) -> dict:
     for r in records:
         by_arm_task[r["arm"]][r["task"]].append(r)
     samples = bootstrap(by_arm_task, n_boot, seed)
+    main_samples = bootstrap(by_arm_task, n_boot, seed, cost=_main_cost)
 
     arms: dict[str, dict] = {}
     for arm, tasks in sorted(by_arm_task.items()):
@@ -94,24 +107,37 @@ def summarize(records: list[dict], n_boot: int = 10_000, seed: int = 0) -> dict:
             "mean_cost_per_run": mean(lambda r: r["cost_usd"]["total"]),
             "mean_cost_by_type": {t: mean(lambda r, t=t: r["cost_usd"][t]) for t in TOKEN_TYPES},
             "mean_tokens_by_type": {t: mean(lambda r, t=t: r["usage"][t]) for t in TOKEN_TYPES},
-            "mean_background_cost": mean(lambda r: r["cost_usd"]["total"] - r["cost_main_usd"]),
+            "mean_background_cost": mean(lambda r: _total_cost(r) - _main_cost(r)),
+            "runs_with_background_calls": sum(bool(r.get("usage_aux")) for r in runs),
+            "main_model_cost_per_solved": _cost_per_solved(runs, _main_cost),
+            "main_model_cost_per_solved_ci95": list(_ci(main_samples[arm])),
             "mean_turns": mean(lambda r: r.get("num_turns") or 0),
             "mean_duration_s": mean(lambda r: r.get("duration_s") or 0),
         }
 
-    base = samples.get(BASELINE)
+    def _vs(arm_samples, base_samples, point_arm, point_base):
+        rel = [
+            a / b - 1
+            for a, b in zip(arm_samples, base_samples, strict=True)
+            if math.isfinite(a) and math.isfinite(b)
+        ]
+        return {"point": point_arm / point_base - 1, "ci95": list(_ci(rel))}
+
     noise = None
-    if base:
+    if BASELINE in samples:
+        b = arms[BASELINE]
         for arm, info in arms.items():
             if arm == BASELINE:
                 continue
-            rel = [
-                a / b - 1
-                for a, b in zip(samples[arm], base, strict=True)
-                if math.isfinite(a) and math.isfinite(b)
-            ]
-            point = info["cost_per_solved"] / arms[BASELINE]["cost_per_solved"] - 1
-            info["vs_baseline"] = {"point": point, "ci95": list(_ci(rel))}
+            info["vs_baseline"] = _vs(
+                samples[arm], samples[BASELINE], info["cost_per_solved"], b["cost_per_solved"]
+            )
+            info["main_model_vs_baseline"] = _vs(
+                main_samples[arm],
+                main_samples[BASELINE],
+                info["main_model_cost_per_solved"],
+                b["main_model_cost_per_solved"],
+            )
         if CONTROL in arms:
             noise = arms[CONTROL]["vs_baseline"]
 
@@ -176,7 +202,28 @@ def to_markdown(summary: dict, manifest: dict) -> str:
         )
     out += [
         "",
+        "## Benchmarked model only (excluding Claude Code's background calls)",
+        "",
+        "| Arm | Runs with background call | Cost per solved task (95% CI) "
+        "| vs baseline (95% CI) |",
+        "|---|---|---|---|",
+    ]
+    for a in order:
+        i = arms[a]
+        lo, hi = i["main_model_cost_per_solved_ci95"]
+        vs = i.get("main_model_vs_baseline")
+        vs_s = (
+            f"{_rel(vs['point'])} ({_rel(vs['ci95'][0])} to {_rel(vs['ci95'][1])})" if vs else "—"
+        )
+        out.append(
+            f"| `{a}` | {i['runs_with_background_calls']}/{i['runs']} "
+            f"| {_usd(i['main_model_cost_per_solved'])} ({_usd(lo)} to {_usd(hi)}) | {vs_s} |"
+        )
+    out += [
+        "",
         "## Mean tokens per run, by type",
+        "",
+        "Benchmarked model only.",
         "",
         "| Arm | Fresh input | Cache write 5m | Cache write 1h | Cache read | Output | Turns |",
         "|---|---|---|---|---|---|---|",
@@ -191,6 +238,8 @@ def to_markdown(summary: dict, manifest: dict) -> str:
     out += [
         "",
         "## Mean cost per run, by type (USD, API-equivalent)",
+        "",
+        "Fresh input includes the background model's calls; the last column shows that part.",
         "",
         "| Arm | Fresh input | Cache write | Cache read | Output | of which background model |",
         "|---|---|---|---|---|---|",
@@ -214,3 +263,40 @@ def to_markdown(summary: dict, manifest: dict) -> str:
         cells = [f"{arms[a]['solved_by_task'].get(t, 0)}/{manifest['repeats']}" for a in order]
         out.append(f"| `{t}` | " + " | ".join(cells) + " |")
     return "\n".join(out) + "\n"
+
+
+def export_raw(exp_dir: Path, dest: Path) -> list[Path]:
+    """Copy manifest, records and raw logs for publishing, with the home path replaced by ~.
+
+    Raw stream logs can contain absolute paths under the user's home directory (e.g.
+    Claude Code's saved tool outputs, plugin paths) and the username itself (file owners
+    in `ls -l` output); both are scrubbed.
+    """
+    import getpass
+    import io
+    import re
+    import tarfile
+
+    home = str(Path.home())
+    user = re.compile(rf"\b{re.escape(getpass.getuser())}\b")
+
+    def scrub(text: str) -> str:
+        # Home path first (-> ~), then the bare username (e.g. file owners in `ls -l`).
+        return user.sub("user", text.replace(home, "~"))
+
+    dest.mkdir(parents=True, exist_ok=True)
+    written = []
+    for name in ("manifest.json", "records.jsonl"):
+        out = dest / name
+        out.write_text(scrub((exp_dir / name).read_text()))
+        written.append(out)
+    archive = dest / "logs.tar.gz"
+    with tarfile.open(archive, "w:gz") as tar:
+        for log in sorted((exp_dir / "logs").iterdir()):
+            data = scrub(log.read_text()).encode()
+            info = tarfile.TarInfo(f"logs/{log.name}")
+            info.size = len(data)
+            info.mtime = 0
+            tar.addfile(info, io.BytesIO(data))
+    written.append(archive)
+    return written

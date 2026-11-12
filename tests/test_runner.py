@@ -179,3 +179,26 @@ def test_rejected_rate_limit_event_pauses_without_recording(fake_env, tmp_path):
     assert outcome.stopped_reason == "usage_limit"
     assert outcome.reset_epoch == 1893456000
     assert not (tmp_path / "exp" / "records.jsonl").exists()
+
+
+def test_claude_project_dir_for_run_is_removed(fake_env, tmp_path):
+    import os
+
+    fake_env.setenv("FAKE_SCENARIO", "nothing")
+    projects = Path(os.environ["CLAUDE_CONFIG_DIR"]) / "projects"
+    projects.mkdir(parents=True)
+    keep = projects / "-Users-me-some-real-project"
+    keep.mkdir()
+    real_mkdtemp = __import__("tempfile").mkdtemp
+
+    def mkdtemp(prefix=""):
+        d = real_mkdtemp(prefix=prefix)
+        key = "".join(c if c.isalnum() else "-" for c in Path(d).name)
+        (projects / f"-private-var-T-{key}-ws").mkdir()  # what Claude Code would create
+        return d
+
+    fake_env.setattr("tokentrial.runner.tempfile.mkdtemp", mkdtemp)
+    cfg, ck = _config(arms=["baseline"], repeats=1), Checkpoint(tmp_path / "exp")
+    ck.create(cfg)
+    run_experiment(cfg, TASKS, PRICE, ck, FAKE, log=lambda *_: None)
+    assert [p.name for p in projects.iterdir()] == [keep.name]

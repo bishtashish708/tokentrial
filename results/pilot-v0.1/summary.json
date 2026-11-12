@@ -1,0 +1,248 @@
+{
+  "n_records": 60,
+  "bootstrap": {
+    "resamples": 10000,
+    "seed": 0,
+    "method": "tasks, then runs within task"
+  },
+  "noise_floor_noop_vs_baseline": {
+    "point": -0.09991329981780994,
+    "ci95": [
+      -0.29990528988114273,
+      0.05684450936569364
+    ]
+  },
+  "arms": {
+    "baseline": {
+      "runs": 15,
+      "solved": 15,
+      "solve_rate": 1.0,
+      "solved_by_task": {
+        "js-chunk-remainder": 3,
+        "log-link-failure": 3,
+        "py-duration-spec": 3,
+        "py-ledger-parens": 3,
+        "read-audit-writer": 3
+      },
+      "cost_per_solved": 0.005407908666666667,
+      "cost_per_solved_ci95": [
+        0.0036595674500000002,
+        0.007315879833333334
+      ],
+      "mean_cost_per_run": 0.005407908666666667,
+      "mean_cost_by_type": {
+        "input": 0.0009652133333333333,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.0022209066666666667,
+        "cache_read": 0.0008598553333333333,
+        "output": 0.0013619333333333332
+      },
+      "mean_tokens_by_type": {
+        "input": 10.133333333333333,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 11104.533333333333,
+        "cache_read": 85985.53333333334,
+        "output": 2593.866666666667
+      },
+      "mean_background_cost": 0.0010292,
+      "runs_with_background_calls": 15,
+      "main_model_cost_per_solved": 0.004378708666666667,
+      "main_model_cost_per_solved_ci95": [
+        0.0026529258000000003,
+        0.006266952933333334
+      ],
+      "mean_turns": 8.066666666666666,
+      "mean_duration_s": 15.24
+    },
+    "caveman": {
+      "runs": 15,
+      "solved": 15,
+      "solve_rate": 1.0,
+      "solved_by_task": {
+        "js-chunk-remainder": 3,
+        "log-link-failure": 3,
+        "py-duration-spec": 3,
+        "py-ledger-parens": 3,
+        "read-audit-writer": 3
+      },
+      "cost_per_solved": 0.0038290153333333334,
+      "cost_per_solved_ci95": [
+        0.0029080592333333337,
+        0.004780602983333333
+      ],
+      "mean_cost_per_run": 0.0038290153333333334,
+      "mean_cost_by_type": {
+        "input": 1e-06,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.0018184666666666669,
+        "cache_read": 0.0008314153333333333,
+        "output": 0.0011781333333333334
+      },
+      "mean_tokens_by_type": {
+        "input": 10.0,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 9092.333333333334,
+        "cache_read": 83141.53333333334,
+        "output": 2356.266666666667
+      },
+      "mean_background_cost": 0.0,
+      "runs_with_background_calls": 0,
+      "main_model_cost_per_solved": 0.0038290153333333334,
+      "main_model_cost_per_solved_ci95": [
+        0.0029080592333333337,
+        0.004780602983333333
+      ],
+      "mean_turns": 7.533333333333333,
+      "mean_duration_s": 15.44,
+      "vs_baseline": {
+        "point": -0.2919600589901481,
+        "ci95": [
+          -0.4590618097780187,
+          -0.13608735512740422
+        ]
+      },
+      "main_model_vs_baseline": {
+        "point": -0.12553777270406807,
+        "ci95": [
+          -0.3637438591464381,
+          0.1535640749152029
+        ]
+      },
+      "verdict": "inconclusive (CI includes no change or overlaps the noise floor)"
+    },
+    "noop": {
+      "runs": 15,
+      "solved": 15,
+      "solve_rate": 1.0,
+      "solved_by_task": {
+        "js-chunk-remainder": 3,
+        "log-link-failure": 3,
+        "py-duration-spec": 3,
+        "py-ledger-parens": 3,
+        "read-audit-writer": 3
+      },
+      "cost_per_solved": 0.004867586666666667,
+      "cost_per_solved_ci95": [
+        0.003729821616666667,
+        0.006142612083333331
+      ],
+      "mean_cost_per_run": 0.004867586666666667,
+      "mean_cost_by_type": {
+        "input": 0.0009651733333333333,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.0017978933333333334,
+        "cache_read": 0.00076832,
+        "output": 0.0013361999999999998
+      },
+      "mean_tokens_by_type": {
+        "input": 9.733333333333333,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 8989.466666666667,
+        "cache_read": 76832.0,
+        "output": 2536.4
+      },
+      "mean_background_cost": 0.0010322,
+      "runs_with_background_calls": 15,
+      "main_model_cost_per_solved": 0.003835386666666667,
+      "main_model_cost_per_solved_ci95": [
+        0.0027179044166666666,
+        0.0050972209833333336
+      ],
+      "mean_turns": 8.466666666666667,
+      "mean_duration_s": 15.247333333333334,
+      "vs_baseline": {
+        "point": -0.09991329981780994,
+        "ci95": [
+          -0.29990528988114273,
+          0.05684450936569364
+        ]
+      },
+      "main_model_vs_baseline": {
+        "point": -0.12408270139917954,
+        "ci95": [
+          -0.3559373623625903,
+          0.07479801920815038
+        ]
+      }
+    },
+    "rtk": {
+      "runs": 15,
+      "solved": 15,
+      "solve_rate": 1.0,
+      "solved_by_task": {
+        "js-chunk-remainder": 3,
+        "log-link-failure": 3,
+        "py-duration-spec": 3,
+        "py-ledger-parens": 3,
+        "read-audit-writer": 3
+      },
+      "cost_per_solved": 0.0045742073333333326,
+      "cost_per_solved_ci95": [
+        0.003781407883333333,
+        0.005373192166666666
+      ],
+      "mean_cost_per_run": 0.0045742073333333326,
+      "mean_cost_by_type": {
+        "input": 0.00096512,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.0015636266666666668,
+        "cache_read": 0.0007103273333333333,
+        "output": 0.0013351333333333332
+      },
+      "mean_tokens_by_type": {
+        "input": 9.2,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 7818.133333333333,
+        "cache_read": 71032.73333333334,
+        "output": 2537.6
+      },
+      "mean_background_cost": 0.001030533333333333,
+      "runs_with_background_calls": 15,
+      "main_model_cost_per_solved": 0.0035436739999999997,
+      "main_model_cost_per_solved_ci95": [
+        0.0027798744166666668,
+        0.004322367783333334
+      ],
+      "mean_turns": 7.4,
+      "mean_duration_s": 14.703333333333331,
+      "vs_baseline": {
+        "point": -0.15416335310396656,
+        "ci95": [
+          -0.3770330556193212,
+          0.10202499243750866
+        ]
+      },
+      "main_model_vs_baseline": {
+        "point": -0.1907034082955661,
+        "ci95": [
+          -0.4408077709311904,
+          0.13864556184188698
+        ]
+      },
+      "verdict": "inconclusive (CI includes no change or overlaps the noise floor)"
+    }
+  },
+  "complete": true,
+  "manifest": {
+    "mode": "subscription",
+    "provider": "anthropic",
+    "model": "claude-haiku-5-5",
+    "arms": [
+      "baseline",
+      "noop",
+      "rtk",
+      "caveman"
+    ],
+    "task_ids": [
+      "js-chunk-remainder",
+      "log-link-failure",
+      "py-duration-spec",
+      "py-ledger-parens",
+      "read-audit-writer"
+    ],
+    "repeats": 3,
+    "seed": 0,
+    "max_usd": 30.0,
+    "max_usd_per_run": 1.0
+  }
+}

@@ -8,6 +8,11 @@ TokenTrial is an open benchmark for the token-saving tools that coding agents us
 It runs the same coding tasks with and without each tool and reports the number that matters:
 **dollars per correctly solved task**.
 
+> **Pilot v0.1 results (2026-11-12):** neither rtk nor caveman showed a saving distinguishable
+> from the no-op control, on Haiku 5.5 with 5 small tasks. caveman's apparent −29% came mostly
+> from Claude Code skipping a background call when its plugin is loaded. Details:
+> [`results/pilot-v0.1/FINDINGS.md`](results/pilot-v0.1/FINDINGS.md).
+
 > Status: pre-alpha. The CLI is a stub and nothing has been measured yet. See
 > [docs/PLAN.md](docs/PLAN.md) for the first version.
 
