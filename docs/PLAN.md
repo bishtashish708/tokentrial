@@ -16,7 +16,8 @@ at API rates, so results are comparable. API-key mode is kept as an option for l
 | `tokentrial doctor` (install and login check, no model call) | Done |
 | Tasks | 5 of 5, all validated in CI (check fails on start, passes on reference) |
 | Arm adapters | All 4 done. rtk v1.1.0 and caveman v4.0.1 are pinned and installed with `tokentrial install-arms` |
-| Smoke run | ✅ baseline and noop: 2 of 2 solved, about $0.003 per run API-equivalent. Next: an arm smoke run once rtk and caveman are installed |
+| Smoke run | ✅ baseline and noop: 2 of 2 solved, about $0.003 per run API-equivalent |
+| Arm activation check | ✅ 2026-11-12, `js-chunk-remainder` × 4 arms: 4 of 4 solved, $0.013 in total. rtk's hook fired and rewrote commands. caveman's SessionStart and UserPromptSubmit hooks injected caveman mode. Ready for the pilot, pending the go-ahead |
 | `report`, bootstrap, leaderboard | Pending (week 2) |
 | Checked against real Claude Code output | ✅ Smoke runs on 2026-11-12: recorded usage matches Claude Code's totals exactly (findings below) |
 
@@ -135,6 +136,24 @@ is kept in `runs/<exp>/logs/<run_id>.jsonl`.
   `~/.claude/.caveman-active` and `~/.claude/.caveman-sessions/`. The adapter removes whatever a
   run created there.
 - Nothing is installed into the user's global Claude Code configuration.
+
+**Arm activation check (2026-11-12)**
+
+- **rtk.** A project-scoped `rtk init` registers no hook, so the adapter generates the global
+  install in a throwaway HOME and copies it into the workspace's project settings.
+  - rtk also checks the user's real Claude settings for its hook. When it's missing, rtk prints
+    "No hook installed" into every command's output, which the agent then reads. rtk is
+    therefore run through a per-run shim that shows it a config view containing the hook.
+  - Each run starts from fresh rtk state; `history.db` is reset. Telemetry is off.
+  - In the check, the hook fired on every Bash call and rewrote `ls`, `cat` and `grep` (inside a
+    pipe) to `rtk ls`, `rtk read` and `rtk grep`. `rtk gain` recorded 3 commands and 55 tokens
+    saved. `npm test` itself was not rewritten.
+- **caveman.** The SessionStart hook injected the caveman rules, and UserPromptSubmit added the
+  "CAVEMAN MODE ACTIVE" context on each prompt. The agent's replies were visibly terse.
+  - Its hooks leave files in `~/.claude`, including a one-time nudge marker that would change
+    later sessions. All `.caveman*` entries a run creates are removed afterwards.
+- Every record includes `hook_events` (hook activity from `--include-hook-events`) and
+  `arm_metrics` (e.g. `rtk gain`), as evidence that the arm was active.
 
 **What the smoke runs established (Claude Code 2.1.252, 2026-11-12)**
 
