@@ -9,8 +9,10 @@ from __future__ import annotations
 
 import json
 import os
+import platform
 import shutil
 import subprocess
+import tempfile
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -74,6 +76,8 @@ class ArmRuntime:
     path_prefix: list[str] = field(default_factory=list)
     version: str | None = None
     cleanup: Callable[[], None] | None = None
+    # Filled by cleanup with arm-specific evidence (e.g. rtk's own command count).
+    metrics: dict = field(default_factory=dict)
 
     def apply_env(self, env: dict[str, str]) -> dict[str, str]:
         out = {**env, **self.env}
@@ -97,30 +101,111 @@ def _setup_noop(workspace: Path) -> ArmRuntime:
     return ArmRuntime()
 
 
-# `rtk init` without -g is project-scoped: it writes ./.claude/settings.json (the
-# Bash PreToolUse hook), ./RTK.md and an @RTK.md reference in ./CLAUDE.md.
-RTK_INIT_ARGS = ["init"]
+# rtk's Claude Code hook is only installed by the global `rtk init -g` (a project-scoped
+# `rtk init` adds instructions but registers no hook). So the global install is generated
+# in a throwaway HOME and its output copied into the workspace's project settings:
+#   ~/.claude/settings.json  (PreToolUse/Bash -> `rtk hook claude`) -> ws/.claude/settings.json
+#   ~/.claude/RTK.md, referenced by @RTK.md in ~/.claude/CLAUDE.md   -> ws/CLAUDE.md (inlined)
+RTK_INIT_ARGS = ["init", "-g", "--auto-patch", "--no-trust-filters"]
+RTK_MARKER = ".tokentrial-managed"
+
+
+def rtk_state_dirs() -> list[Path]:
+    """Where rtk keeps history.db and user filters for the real HOME."""
+    home = Path.home()
+    if platform.system() == "Darwin":
+        return [home / "Library" / "Application Support" / "rtk"]
+    data = Path(os.environ.get("XDG_DATA_HOME") or home / ".local" / "share")
+    config = Path(os.environ.get("XDG_CONFIG_HOME") or home / ".config")
+    return [data / "rtk", config / "rtk"]
+
+
+def _reset_rtk_state() -> None:
+    """Give each run a fresh rtk state, refusing to touch rtk data tokentrial didn't create."""
+    for d in rtk_state_dirs():
+        if d.exists() and not (d / RTK_MARKER).exists():
+            raise ArmSetupError(
+                f"{d} holds rtk data tokentrial did not create (your own rtk install?). "
+                "Move it aside before running the rtk arm."
+            )
+        shutil.rmtree(d, ignore_errors=True)
+        d.mkdir(parents=True)
+        (d / RTK_MARKER).write_text("rtk state for tokentrial runs; reset before every run\n")
+
+
+def _generate_rtk_global_install(rtk: Path) -> tuple[dict, str]:
+    with tempfile.TemporaryDirectory(prefix="tokentrial-rtk-home-") as tmp:
+        home = Path(tmp)
+        (home / ".claude").mkdir()
+        env = {
+            **os.environ,
+            "HOME": str(home),
+            "CLAUDE_CONFIG_DIR": str(home / ".claude"),
+            "XDG_CONFIG_HOME": str(home / ".config"),
+            "XDG_DATA_HOME": str(home / ".local" / "share"),
+            "RTK_TELEMETRY_DISABLED": "1",
+        }
+        proc = subprocess.run(
+            [str(rtk), *RTK_INIT_ARGS],
+            cwd=home,
+            env=env,
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        settings_path = home / ".claude" / "settings.json"
+        if proc.returncode != 0 or not settings_path.exists():
+            raise ArmSetupError(
+                f"rtk init -g failed (exit {proc.returncode}): "
+                f"{(proc.stderr or proc.stdout).strip()[:300]}"
+            )
+        settings = json.loads(settings_path.read_text())
+        rtk_md = home / ".claude" / "RTK.md"
+        instructions = rtk_md.read_text() if rtk_md.exists() else ""
+    hooks = json.dumps(settings.get("hooks", {}))
+    if "rtk hook" not in hooks:
+        raise ArmSetupError(f"rtk init -g registered no rtk hook: {hooks[:300]}")
+    return {"hooks": settings["hooks"]}, instructions
 
 
 def _setup_rtk(workspace: Path) -> ArmRuntime:
     bin_dir = tools.rtk_bin_dir()
-    runtime = ArmRuntime(path_prefix=[str(bin_dir)], version=tools.RTK.version)
-    env = runtime.apply_env(dict(os.environ))
-    proc = subprocess.run(
-        [str(bin_dir / "rtk"), *RTK_INIT_ARGS],
-        cwd=workspace,
-        env=env,
-        stdin=subprocess.DEVNULL,
-        capture_output=True,
-        text=True,
-        timeout=60,
+    rtk = bin_dir / "rtk"
+    _reset_rtk_state()
+    settings, instructions = _generate_rtk_global_install(rtk)
+    (workspace / ".claude").mkdir(exist_ok=True)
+    (workspace / ".claude" / "settings.json").write_text(json.dumps(settings, indent=2) + "\n")
+    if instructions:
+        (workspace / "CLAUDE.md").write_text(instructions)
+
+    runtime = ArmRuntime(
+        path_prefix=[str(bin_dir)],
+        # Telemetry off: no effect on what the agent sees; no usage data leaves the machine.
+        env={"RTK_TELEMETRY_DISABLED": "1"},
+        version=tools.RTK.version,
     )
-    settings = workspace / ".claude" / "settings.json"
-    if proc.returncode != 0 or not settings.exists() or "rtk" not in settings.read_text():
-        raise ArmSetupError(
-            f"rtk init did not install a project hook (exit {proc.returncode}): "
-            f"{(proc.stderr or proc.stdout).strip()[:300]}"
+
+    def cleanup() -> None:
+        proc = subprocess.run(
+            [str(rtk), "gain", "-f", "json"],
+            cwd=workspace,
+            env=runtime.apply_env(dict(os.environ)),
+            capture_output=True,
+            text=True,
+            timeout=60,
         )
+        try:
+            runtime.metrics["rtk_gain"] = json.loads(proc.stdout)
+        except json.JSONDecodeError:
+            runtime.metrics["rtk_gain_error"] = (proc.stderr or proc.stdout).strip()[:300]
+        for d in rtk_state_dirs():
+            if (d / RTK_MARKER).exists():
+                for p in d.iterdir():
+                    if p.name != RTK_MARKER:
+                        shutil.rmtree(p) if p.is_dir() else p.unlink()
+
+    runtime.cleanup = cleanup
     return runtime
 
 

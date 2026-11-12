@@ -12,12 +12,15 @@ import json
 import os
 import platform
 import shutil
+import ssl
 import subprocess
 import tarfile
 import tempfile
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
+
+import certifi
 
 
 def cache_root() -> Path:
@@ -80,8 +83,11 @@ def rtk_asset_name() -> str:
 
 
 def _download(url: str, dest: Path) -> None:
+    # Verify TLS against certifi's CA bundle: some Python builds (e.g. python.org on
+    # macOS) ship without system CA certificates.
+    ctx = ssl.create_default_context(cafile=certifi.where())
     req = urllib.request.Request(url, headers={"User-Agent": "tokentrial-installer"})
-    with urllib.request.urlopen(req, timeout=120) as resp, dest.open("wb") as f:
+    with urllib.request.urlopen(req, timeout=120, context=ctx) as resp, dest.open("wb") as f:
         shutil.copyfileobj(resp, f)
 
 

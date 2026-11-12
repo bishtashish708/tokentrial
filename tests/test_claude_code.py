@@ -262,3 +262,23 @@ def test_unpriced_background_model_is_reported():
         )
     )
     assert p.state.unpriced_models == ["mystery-model"]
+
+
+def test_hook_events_are_counted():
+    p = StreamParser(PRICE)
+    for _ in range(2):
+        p.feed(
+            json.dumps(
+                {
+                    "type": "system",
+                    "subtype": "hook_response",
+                    "hook_event": "PreToolUse",
+                    "hook_name": "PreToolUse:Bash",
+                }
+            )
+        )
+    assert p.state.hook_events == {"hook_response:PreToolUse": 2}
+
+
+def test_command_logs_hook_events():
+    assert "--include-hook-events" in build_command(["claude"], "m")

@@ -71,6 +71,9 @@ def build_command(
         "--output-format",
         "stream-json",
         "--verbose",
+        # Log hook activity (no effect on the agent's context): evidence that a tool
+        # arm's hooks actually fired.
+        "--include-hook-events",
         "--model",
         model,
         "--permission-mode",
@@ -129,6 +132,7 @@ class StreamResult:
     init: dict | None = None
     rate_limit: dict | None = None
     aux: dict[str, Usage] = field(default_factory=dict)  # other models Claude Code called
+    hook_events: dict[str, int] = field(default_factory=dict)
     unpriced_models: list[str] = field(default_factory=list)
 
     @property
@@ -216,6 +220,10 @@ class StreamParser:
                 k: event.get(k)
                 for k in ("model", "claude_code_version", "tools", "mcp_servers", "cwd")
             }
+        elif etype == "system" and "hook" in str(event.get("subtype") or ""):
+            name = event.get("hook_event") or event.get("hook_event_name") or event.get("hook_name")
+            key = f"{event.get('subtype')}:{name}"
+            self.state.hook_events[key] = self.state.hook_events.get(key, 0) + 1
         elif etype == "system" and event.get("subtype") == "thinking_tokens":
             delta = int(event.get("estimated_tokens_delta") or 0)
             return self._charge(delta * self.price.output / 1_000_000)

@@ -19,6 +19,7 @@ classifiers = [
     "Topic :: Software Development :: Testing",
 ]
 dependencies = [
+    "certifi>=2024.2.2",
     "typer>=0.12",
 ]
 

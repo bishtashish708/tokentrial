@@ -269,6 +269,8 @@ def _run_one(
         "duration_s": round(time.monotonic() - t0, 2),
         "started_at": started,
         "arm_version": runtime.version if runtime else None,
+        "arm_metrics": runtime.metrics if runtime else {},
+        "hook_events": parser.state.hook_events,
         "claude_init": parser.state.init,
         "stop_experiment": stop_experiment,
     }
