@@ -169,18 +169,36 @@ def _generate_rtk_global_install(rtk: Path) -> tuple[dict, str]:
     return {"hooks": settings["hooks"]}, instructions
 
 
+def _write_rtk_shim(rtk: Path, settings: dict) -> Path:
+    """An `rtk` wrapper that shows rtk a Claude config dir containing its global hook.
+
+    rtk checks the user's Claude settings for its hook and, when missing, prints a
+    "No hook installed" warning into every command's output, which the agent then
+    reads. A user with the real global install never sees it, so rtk alone is pointed
+    at a per-run config view that has the hook. Claude Code itself is unaffected.
+    """
+    root = Path(tempfile.mkdtemp(prefix="tokentrial-rtk-"))
+    (root / "claude-view").mkdir()
+    (root / "claude-view" / "settings.json").write_text(json.dumps(settings) + "\n")
+    (root / "bin").mkdir()
+    shim = root / "bin" / "rtk"
+    shim.write_text(f"#!/bin/sh\nCLAUDE_CONFIG_DIR='{root / 'claude-view'}' exec '{rtk}' \"$@\"\n")
+    shim.chmod(0o755)
+    return root
+
+
 def _setup_rtk(workspace: Path) -> ArmRuntime:
-    bin_dir = tools.rtk_bin_dir()
-    rtk = bin_dir / "rtk"
+    rtk = tools.rtk_bin_dir() / "rtk"
     _reset_rtk_state()
     settings, instructions = _generate_rtk_global_install(rtk)
     (workspace / ".claude").mkdir(exist_ok=True)
     (workspace / ".claude" / "settings.json").write_text(json.dumps(settings, indent=2) + "\n")
     if instructions:
         (workspace / "CLAUDE.md").write_text(instructions)
+    shim_root = _write_rtk_shim(rtk, settings)
 
     runtime = ArmRuntime(
-        path_prefix=[str(bin_dir)],
+        path_prefix=[str(shim_root / "bin")],
         # Telemetry off: no effect on what the agent sees; no usage data leaves the machine.
         env={"RTK_TELEMETRY_DISABLED": "1"},
         version=tools.RTK.version,
@@ -188,7 +206,7 @@ def _setup_rtk(workspace: Path) -> ArmRuntime:
 
     def cleanup() -> None:
         proc = subprocess.run(
-            [str(rtk), "gain", "-f", "json"],
+            [str(shim_root / "bin" / "rtk"), "gain", "-f", "json"],
             cwd=workspace,
             env=runtime.apply_env(dict(os.environ)),
             capture_output=True,
@@ -204,6 +222,7 @@ def _setup_rtk(workspace: Path) -> ArmRuntime:
                 for p in d.iterdir():
                     if p.name != RTK_MARKER:
                         shutil.rmtree(p) if p.is_dir() else p.unlink()
+        shutil.rmtree(shim_root, ignore_errors=True)
 
     runtime.cleanup = cleanup
     return runtime
@@ -218,22 +237,21 @@ def _setup_caveman(workspace: Path) -> ArmRuntime:
     if not (plugin / ".claude-plugin" / "plugin.json").exists():
         raise ArmSetupError(f"caveman plugin not found at {plugin}")
 
-    # caveman's hooks keep state in the Claude config dir. Remember what exists
-    # so the run's own state files can be removed afterwards.
+    # caveman's hooks keep state in the Claude config dir (.caveman-active,
+    # .caveman-sessions/, .caveman-mode-log.jsonl, .caveman-nudge-shown, ...). Some of it
+    # changes later sessions (e.g. a one-time nudge), so everything a run creates is
+    # removed afterwards; entries that existed before the run are left alone.
     claude_dir = _claude_dir()
-    flag = claude_dir / ".caveman-active"
     sessions = claude_dir / ".caveman-sessions"
-    had_flag = flag.exists()
-    had_sessions = sessions.exists()
-    before = set(sessions.iterdir()) if had_sessions else set()
+    before = {p.name for p in claude_dir.glob(".caveman*")}
+    sessions_before = set(sessions.iterdir()) if sessions.is_dir() else set()
 
     def cleanup() -> None:
-        if not had_flag:
-            flag.unlink(missing_ok=True)
-        if not had_sessions:
-            shutil.rmtree(sessions, ignore_errors=True)
-        elif sessions.exists():
-            for p in set(sessions.iterdir()) - before:
+        for p in claude_dir.glob(".caveman*"):
+            if p.name not in before:
+                shutil.rmtree(p, ignore_errors=True) if p.is_dir() else p.unlink(missing_ok=True)
+        if sessions.name in before and sessions.is_dir():
+            for p in set(sessions.iterdir()) - sessions_before:
                 shutil.rmtree(p, ignore_errors=True) if p.is_dir() else p.unlink(missing_ok=True)
 
     return ArmRuntime(

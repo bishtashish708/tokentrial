@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import pytest
 
@@ -28,8 +29,11 @@ def test_rtk_copies_global_install_into_project_scope(fake_tools, tmp_path):
     assert hook["matcher"] == "Bash" and hook["hooks"][0]["command"] == "rtk hook claude"
     assert "rtk" in (ws / "CLAUDE.md").read_text()  # RTK.md inlined, no @import
     env = rt.apply_env({"PATH": "/usr/bin"})
-    assert env["PATH"].split(os.pathsep)[0] == str(tools.rtk_bin_dir())
+    shim = Path(env["PATH"].split(os.pathsep)[0]) / "rtk"
+    # The shim shows rtk (only) a config view that has its global hook.
+    assert "CLAUDE_CONFIG_DIR=" in shim.read_text() and str(tools.rtk_bin_dir()) in shim.read_text()
     assert env["RTK_TELEMETRY_DISABLED"] == "1"
+    assert "CLAUDE_CONFIG_DIR" not in rt.env  # Claude Code's own config is unchanged
     assert rt.version == tools.RTK.version
     # The real Claude config dir is untouched.
     assert not (tmp_path / "claude-config" / "settings.json").exists()
@@ -72,13 +76,21 @@ def test_caveman_loads_plugin_per_session_and_cleans_up_state(fake_tools, tmp_pa
     (claude_dir / ".caveman-sessions").mkdir(parents=True)
     (claude_dir / ".caveman-sessions" / "keep").write_text("pre-existing")
     rt = setup_arm("caveman", tmp_path)
+    rt.cleanup()
     assert rt.extra_args == ["--plugin-dir", str(tools.caveman_plugin_dir())]
     assert rt.env["CAVEMAN_DEFAULT_MODE"] == "caveman"
-    # Simulate the hooks writing their state during the session.
+    (claude_dir / ".caveman-config-keep").write_text("pre-existing")
+    rt = setup_arm("caveman", tmp_path)
+    # Simulate the hooks writing their state during the session (names seen in real runs).
     (claude_dir / ".caveman-active").write_text("caveman")
+    (claude_dir / ".caveman-mode-log.jsonl").write_text("{}")
+    (claude_dir / ".caveman-nudge-shown").write_text("1")
     (claude_dir / ".caveman-sessions" / "new-session").write_text("caveman")
     rt.cleanup()
-    assert not (claude_dir / ".caveman-active").exists()
+    assert sorted(p.name for p in claude_dir.glob(".caveman*")) == [
+        ".caveman-config-keep",
+        ".caveman-sessions",
+    ]
     assert [p.name for p in (claude_dir / ".caveman-sessions").iterdir()] == ["keep"]
 
 
