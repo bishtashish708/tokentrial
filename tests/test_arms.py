@@ -8,10 +8,11 @@ from tokentrial.arms import ArmSetupError, setup_arm, unavailable_arms
 
 
 def test_tool_arms_unavailable_until_installed():
-    reasons = unavailable_arms(["baseline", "noop", "rtk", "caveman", "headroom"])
-    assert set(reasons) == {"rtk", "caveman", "headroom"}
-    assert "install-arms" in reasons["rtk"]
-    assert reasons["headroom"] == "no adapter yet"
+    arms = ["baseline", "noop", "rtk", "rtk-v1.2.0", "caveman", "caveman-v4.1.0", "headroom"]
+    reasons = unavailable_arms(arms)
+    assert set(reasons) == {"rtk", "rtk-v1.2.0", "caveman", "caveman-v4.1.0", "headroom"}
+    assert all("install-arms" in r for r in reasons.values())
+    assert unavailable_arms(["nope"]) == {"nope": "no adapter yet"}
 
 
 def test_tool_arms_available_after_install(fake_tools):
@@ -135,3 +136,53 @@ def test_noop_hook_installs_only_a_noop_sessionstart_hook(tmp_path):
         "hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "true"}]}]}
     }
     assert (rt.extra_args, rt.env, rt.path_prefix) == ([], {}, [])
+
+
+def test_versioned_arms_use_their_own_pins(fake_tools, tmp_path):
+    from tokentrial.arms import setup_arm
+
+    assert unavailable_arms(["rtk-v1.2.0", "caveman-v4.1.0"]) == {}
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    rt = setup_arm("rtk-v1.2.0", ws)
+    try:
+        assert rt.version == tools.RTK_V120.version
+        shim = Path(rt.path_prefix[0]) / "rtk"
+        assert str(tools.rtk_bin_dir(tools.RTK_V120)) in shim.read_text()
+    finally:
+        rt.cleanup()
+    ws2 = tmp_path / "ws2"
+    ws2.mkdir()
+    rt = setup_arm("caveman-v4.1.0", ws2)
+    assert rt.version == tools.CAVEMAN_V410.version
+    assert rt.extra_args == ["--plugin-dir", str(tools.caveman_plugin_dir(tools.CAVEMAN_V410))]
+    rt.cleanup()
+
+
+def test_headroom_runs_a_proxy_and_registers_its_mcp_server(fake_tools, tmp_path):
+    import json
+    import urllib.request
+
+    from tokentrial.arms import setup_arm
+
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    rt = setup_arm("headroom", ws)
+    url = rt.env["ANTHROPIC_BASE_URL"]
+    try:
+        assert url.startswith("http://127.0.0.1:")
+        assert rt.env["ENABLE_TOOL_SEARCH"] == "true"
+        assert rt.allowed_tools == ["mcp__headroom"]
+        cfg = json.loads(Path(rt.extra_args[1]).read_text())
+        server = cfg["mcpServers"]["headroom"]
+        assert server["args"] == ["mcp", "serve"]
+        assert server["env"]["HEADROOM_PROXY_URL"] == url
+        assert server["env"]["HEADROOM_TELEMETRY"] == "off"
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+        with opener.open(f"{url}/stats", timeout=5) as resp:
+            assert json.load(resp)["ok"] is True
+    finally:
+        rt.cleanup()
+    assert rt.metrics["headroom_stats"] == {"ok": True}
+    # Nothing was written into the workspace or the real HOME.
+    assert list(ws.iterdir()) == []

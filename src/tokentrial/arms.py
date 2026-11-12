@@ -11,8 +11,11 @@ import json
 import os
 import platform
 import shutil
+import socket
 import subprocess
 import tempfile
+import time
+import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -58,9 +61,23 @@ ARMS: dict[str, Arm] = {
             "https://github.com/JuliusBrussee/caveman",
         ),
         Arm(
+            "rtk-v1.2.0",
+            "tool",
+            "rtk v1.2.0, set up the same way as `rtk` (v1.1.0).",
+            "https://github.com/rtk-ai/rtk",
+        ),
+        Arm(
+            "caveman-v4.1.0",
+            "tool",
+            "caveman v4.1.0, set up the same way as `caveman` (v4.0.1).",
+            "https://github.com/JuliusBrussee/caveman",
+        ),
+        Arm(
             "headroom",
             "tool",
-            "Context compression layer.",
+            "Context compression proxy: Claude Code's API traffic goes through a local "
+            "`headroom proxy` (default settings), with headroom's MCP retrieve tool, as "
+            "`headroom wrap claude` sets it up.",
             "https://github.com/headroomlabs-ai/headroom",
         ),
     ]
@@ -70,6 +87,17 @@ ARMS: dict[str, Arm] = {
 PILOT_ARMS = ("baseline", "noop", "rtk", "caveman")
 # v0.2 adds a control for Claude Code's SessionStart-hook side effect.
 V02_ARMS = ("baseline", "noop", "noop-hook", "rtk", "caveman")
+# v0.3: newer tool releases next to the v0.2 pins, plus headroom.
+V03_ARMS = (
+    "baseline",
+    "noop",
+    "noop-hook",
+    "rtk",
+    "rtk-v1.2.0",
+    "caveman",
+    "caveman-v4.1.0",
+    "headroom",
+)
 
 
 class ArmSetupError(RuntimeError):
@@ -81,6 +109,8 @@ class ArmRuntime:
     """What an arm adds to one Claude Code session."""
 
     extra_args: list[str] = field(default_factory=list)
+    # Tools the arm brings itself (e.g. its MCP server's), pre-approved like the defaults.
+    allowed_tools: list[str] = field(default_factory=list)
     env: dict[str, str] = field(default_factory=dict)
     path_prefix: list[str] = field(default_factory=list)
     version: str | None = None
@@ -203,8 +233,8 @@ def _write_rtk_shim(rtk: Path, settings: dict) -> Path:
     return root
 
 
-def _setup_rtk(workspace: Path) -> ArmRuntime:
-    rtk = tools.rtk_bin_dir() / "rtk"
+def _setup_rtk(workspace: Path, pin: tools.Pin = tools.RTK) -> ArmRuntime:
+    rtk = tools.rtk_bin_dir(pin) / "rtk"
     _reset_rtk_state()
     settings, instructions = _generate_rtk_global_install(rtk)
     (workspace / ".claude").mkdir(exist_ok=True)
@@ -217,7 +247,7 @@ def _setup_rtk(workspace: Path) -> ArmRuntime:
         path_prefix=[str(shim_root / "bin")],
         # Telemetry off: no effect on what the agent sees; no usage data leaves the machine.
         env={"RTK_TELEMETRY_DISABLED": "1"},
-        version=tools.RTK.version,
+        version=pin.version,
     )
 
     def cleanup() -> None:
@@ -258,8 +288,8 @@ def _snapshot(root: Path, globs: tuple[str, ...]) -> set[Path]:
     return {p for g in globs for p in root.glob(g)}
 
 
-def _setup_caveman(workspace: Path) -> ArmRuntime:
-    plugin = tools.caveman_plugin_dir()
+def _setup_caveman(workspace: Path, pin: tools.Pin = tools.CAVEMAN) -> ArmRuntime:
+    plugin = tools.caveman_plugin_dir(pin)
     if not (plugin / ".claude-plugin" / "plugin.json").exists():
         raise ArmSetupError(f"caveman plugin not found at {plugin}")
 
@@ -296,9 +326,102 @@ def _setup_caveman(workspace: Path) -> ArmRuntime:
         extra_args=["--plugin-dir", str(plugin)],
         # Headless sessions start with caveman off unless a default mode is set.
         env={"CAVEMAN_DEFAULT_MODE": "caveman"},
-        version=tools.CAVEMAN.version,
+        version=pin.version,
         cleanup=cleanup,
     )
+
+
+def _free_port() -> int:
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]
+
+
+HEADROOM_MCP_TOOLS = ["mcp__headroom"]
+
+
+def _setup_headroom(workspace: Path) -> ArmRuntime:
+    """A per-run `headroom proxy` plus headroom's MCP retrieve server.
+
+    Mirrors what `headroom wrap claude` does for a session (start a proxy, point
+    ANTHROPIC_BASE_URL at it, register the `headroom` MCP server, set
+    ENABLE_TOOL_SEARCH=true) without writing to ~/.claude.json or project settings.
+    Proxy settings are headroom's defaults (cache mode, coding profile). Telemetry and
+    the usage beacon are off, and headroom's state lives in a per-run directory.
+    """
+    exe = tools.headroom_bin()
+    if not exe.exists():
+        raise ArmSetupError(f"headroom not found at {exe}")
+    root = Path(tempfile.mkdtemp(prefix="tokentrial-headroom-"))
+    henv = tools.headroom_env(root / "home")
+    port = _free_port()
+    proxy_url = f"http://127.0.0.1:{port}"
+    log = (root / "proxy.log").open("w")
+    proc_env = {
+        **{k: v for k, v in os.environ.items() if not k.startswith(("ANTHROPIC_", "CLAUDE"))},
+        **henv,
+    }
+    proc = subprocess.Popen(
+        [str(exe), "proxy", "--host", "127.0.0.1", "--port", str(port)],
+        env=proc_env,
+        cwd=root,
+        stdin=subprocess.DEVNULL,
+        stdout=log,
+        stderr=subprocess.STDOUT,
+        start_new_session=True,
+    )
+    deadline = time.monotonic() + 120
+    while True:
+        try:
+            with socket.create_connection(("127.0.0.1", port), timeout=0.5):
+                break
+        except OSError:
+            if proc.poll() is not None or time.monotonic() > deadline:
+                proc.kill()
+                log.close()
+                tail = (root / "proxy.log").read_text()[-500:]
+                shutil.rmtree(root, ignore_errors=True)
+                raise ArmSetupError(f"headroom proxy did not start: {tail}") from None
+            time.sleep(0.25)
+
+    mcp = {
+        "mcpServers": {
+            "headroom": {
+                "command": str(exe),
+                "args": ["mcp", "serve"],
+                "env": {**henv, "HEADROOM_PROXY_URL": proxy_url},
+            }
+        }
+    }
+    (root / "mcp.json").write_text(json.dumps(mcp, indent=2) + "\n")
+
+    runtime = ArmRuntime(
+        extra_args=["--mcp-config", str(root / "mcp.json")],
+        allowed_tools=HEADROOM_MCP_TOOLS,
+        env={"ANTHROPIC_BASE_URL": proxy_url, "ENABLE_TOOL_SEARCH": "true"},
+        version=tools.HEADROOM.version,
+    )
+
+    def cleanup() -> None:
+        # Direct to localhost: ignore any system HTTP proxy settings.
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+        try:
+            with opener.open(f"{proxy_url}/stats", timeout=5) as resp:
+                runtime.metrics["headroom_stats"] = json.load(resp)
+        except Exception as e:  # stats are evidence, not required
+            runtime.metrics["headroom_stats_error"] = str(e)[:300]
+        proc.terminate()
+        try:
+            proc.wait(timeout=20)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+        log.close()
+        text = (root / "proxy.log").read_text(errors="replace")
+        runtime.metrics["proxy_log_tail"] = text[-4000:]
+        shutil.rmtree(root, ignore_errors=True)
+
+    runtime.cleanup = cleanup
+    return runtime
 
 
 ADAPTERS: dict[str, Callable[[Path], ArmRuntime]] = {
@@ -306,11 +429,20 @@ ADAPTERS: dict[str, Callable[[Path], ArmRuntime]] = {
     "noop": _setup_noop,
     "noop-hook": _setup_noop_hook,
     "rtk": _setup_rtk,
+    "rtk-v1.2.0": lambda ws: _setup_rtk(ws, tools.RTK_V120),
     "caveman": _setup_caveman,
+    "caveman-v4.1.0": lambda ws: _setup_caveman(ws, tools.CAVEMAN_V410),
+    "headroom": _setup_headroom,
 }
 
-# Arms whose tool must be installed with `tokentrial install-arms` first.
-NEEDS_INSTALL = {"rtk": "rtk", "caveman": "caveman"}
+# Arms whose tool must be installed with `tokentrial install-arms` first (arm -> pin).
+NEEDS_INSTALL = {
+    "rtk": "rtk",
+    "rtk-v1.2.0": "rtk-v1.2.0",
+    "caveman": "caveman",
+    "caveman-v4.1.0": "caveman-v4.1.0",
+    "headroom": "headroom",
+}
 
 
 def unavailable_arms(arms: list[str]) -> dict[str, str]:

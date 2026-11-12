@@ -65,14 +65,19 @@ def parse_reset_epoch(text: str) -> int | None:
 
 
 def build_command(
-    claude_bin: list[str], model: str, extra_args: list[str] | None = None
+    claude_bin: list[str],
+    model: str,
+    extra_args: list[str] | None = None,
+    extra_allowed: list[str] | None = None,
 ) -> list[str]:
     """Headless invocation. The prompt is sent on stdin.
 
     User-level settings, MCP servers, and slash commands are excluded so every
     arm starts from the same Claude Code configuration; only the workspace's
-    own project settings (where an arm may install itself) apply.
+    own project settings (where an arm may install itself) apply. `extra_allowed`
+    pre-approves tools an arm brings itself (e.g. its own MCP server's tools).
     """
+    allowed = ",".join([ALLOWED_TOOLS, *(extra_allowed or [])])
     return [
         *claude_bin,
         "--print",
@@ -89,7 +94,7 @@ def build_command(
         "--tools",
         ALLOWED_TOOLS,
         "--allowedTools",
-        ALLOWED_TOOLS,
+        allowed,
         "--setting-sources",
         "project",
         "--strict-mcp-config",

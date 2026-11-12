@@ -44,6 +44,9 @@ class Config:
     seed: int
     max_usd: float | None
     max_usd_per_run: float | None
+    # Pause (like a usage limit) once Claude Code reports the subscription's five-hour
+    # window at or above this fraction, leaving room for other work on the account.
+    pause_at_utilization: float | None = None
 
     def plan(self) -> list[tuple[str, str, int]]:
         """All (task, arm, repeat) cells, interleaved in a seeded random order."""
@@ -164,6 +167,17 @@ def run_experiment(
         if record.get("stop_experiment"):
             outcome.stopped_reason = "budget"
             return outcome
+        util = (record.get("rate_limit_utilization") or {}).get("five_hour")
+        if config.pause_at_utilization is not None and util is not None:
+            if util >= config.pause_at_utilization:
+                outcome.stopped_reason = "usage_limit"
+                outcome.reset_epoch = (record.get("rate_limit_resets_at") or {}).get("five_hour")
+                outcome.message = (
+                    f"five-hour window at {util:.0%} (pause threshold "
+                    f"{config.pause_at_utilization:.0%})"
+                )
+                log(f"pausing: {outcome.message}")
+                return outcome
     return outcome
 
 
@@ -197,7 +211,7 @@ def _run_one(
             raise AgentFatalError(f"arm {arm!r} setup failed: {e}") from e
         with (log_dir / f"{rid}.stderr").open("w+") as err_log:
             proc = subprocess.Popen(
-                build_command(claude_bin, config.model, runtime.extra_args),
+                build_command(claude_bin, config.model, runtime.extra_args, runtime.allowed_tools),
                 cwd=workspace,
                 env=runtime.apply_env(task_path_env(child_env(config.mode))),
                 stdin=subprocess.PIPE,
@@ -284,6 +298,7 @@ def _run_one(
         # Claude Code's own figure; not used (it mis-prices models it doesn't recognise).
         "reported_cost_usd": result.get("total_cost_usd"),
         "rate_limit_utilization": {k: w.get("utilization") for k, w in windows.items()},
+        "rate_limit_resets_at": {k: w.get("resetsAt") for k, w in windows.items()},
         "duration_s": round(time.monotonic() - t0, 2),
         "started_at": started,
         "arm_version": runtime.version if runtime else None,

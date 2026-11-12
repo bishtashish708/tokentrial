@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import shlex
 import shutil
@@ -102,6 +103,19 @@ def doctor(
     typer.echo(f"ready for --mode {mode.value}")
 
 
+MODELS_FILE = "models.json"
+
+
+def _experiments(out: Path) -> list[Path]:
+    """Experiment directories under --out: itself, or one per model (see models.json)."""
+    if Checkpoint(out).exists():
+        return [out]
+    listing = out / MODELS_FILE
+    if listing.exists():
+        return [out / m for m in json.loads(listing.read_text())]
+    return []
+
+
 @app.command()
 def run(
     arms: Annotated[
@@ -119,9 +133,15 @@ def run(
         ),
     ] = Mode.subscription,
     provider: Annotated[str, typer.Option(help="Price table: anthropic | bedrock")] = "anthropic",
-    model: Annotated[str, typer.Option(help="Model ID priced in pricing.toml.")] = (
-        "claude-haiku-5-5"
-    ),
+    models: Annotated[
+        list[str] | None,
+        typer.Option(
+            "--model",
+            help="Model ID priced in pricing.toml (repeatable; default claude-haiku-5-5). "
+            "With several models each gets its own experiment in --out/<model>/, run in "
+            "the order given; caps apply per model.",
+        ),
+    ] = None,
     repeats: Annotated[int, typer.Option(min=1, help="Runs per (task, arm) pair.")] = 3,
     seed: Annotated[int, typer.Option(help="Seed for the interleaved run order.")] = 0,
     max_usd: Annotated[
@@ -132,6 +152,16 @@ def run(
         float | None,
         typer.Option(min=0, help="Abort a single agent run once its cost exceeds this."),
     ] = 1.0,
+    pause_at_utilization: Annotated[
+        float | None,
+        typer.Option(
+            min=0,
+            max=1,
+            help="Pause (exit 3, resumable) once Claude Code reports the subscription's "
+            "five-hour window at or above this fraction, e.g. 0.7. Leaves room for other "
+            "work on the same account.",
+        ),
+    ] = None,
     out: Annotated[Path, typer.Option(help="Experiment directory.")] = Path("runs/pilot"),
     resume: Annotated[
         bool,
@@ -141,63 +171,64 @@ def run(
     claude_bin: Annotated[str, typer.Option(help="Claude Code command.", hidden=True)] = "claude",
 ) -> None:
     """Run every task under every arm and record token usage and correctness."""
-    ckpt = Checkpoint(out)
     if resume:
-        if not ckpt.exists():
+        dirs = _experiments(out)
+        if not dirs:
             raise typer.BadParameter(f"nothing to resume in {out}/", param_hint="--out")
-        config = ckpt.load_config()
         typer.echo(f"resuming {out}/ with its saved configuration (other options ignored)")
+        plans = [(d, Checkpoint(d).load_config()) for d in dirs]
+        if pause_at_utilization is not None:
+            for _, c in plans:
+                c.pause_at_utilization = pause_at_utilization
+            typer.echo(f"pause threshold for this session: {pause_at_utilization:.0%}")
     else:
         all_tasks = [t.id for t in load_tasks(tasks_dir)] if tasks_dir.is_dir() else []
         selected_tasks = list(task_ids) if task_ids else all_tasks
         unknown_tasks = sorted(set(selected_tasks) - set(all_tasks))
         if unknown_tasks:
             raise typer.BadParameter(f"unknown task(s): {', '.join(unknown_tasks)}")
-        config = Config(
-            mode=mode.value,
-            provider=provider,
-            model=model,
-            arms=list(arms or PILOT_ARMS),
-            task_ids=selected_tasks,
-            repeats=repeats,
-            seed=seed,
-            max_usd=max_usd,
-            max_usd_per_run=max_usd_per_run,
-        )
+        model_list = list(dict.fromkeys(models or ["claude-haiku-5-5"]))
+        plans = [
+            (
+                out if len(model_list) == 1 else out / m,
+                Config(
+                    mode=mode.value,
+                    provider=provider,
+                    model=m,
+                    arms=list(arms or PILOT_ARMS),
+                    task_ids=selected_tasks,
+                    repeats=repeats,
+                    seed=seed,
+                    max_usd=max_usd,
+                    max_usd_per_run=max_usd_per_run,
+                    pause_at_utilization=pause_at_utilization,
+                ),
+            )
+            for m in model_list
+        ]
+        if not dry_run:
+            existing = [d for d, _ in plans if Checkpoint(d).exists()]
+            if existing or (out / MODELS_FILE).exists():
+                typer.echo(
+                    f"{out}/ already has an experiment. Use --resume to continue it, "
+                    "or choose a new --out.",
+                    err=True,
+                )
+                raise typer.Exit(code=EXIT_NOT_READY)
 
-    unknown = [a for a in config.arms if a not in ARMS]
-    if unknown:
-        raise typer.BadParameter(f"unknown arm(s): {', '.join(unknown)}", param_hint="--arm")
-    if config.mode == Mode.subscription and config.provider != "anthropic":
-        raise typer.BadParameter("subscription mode is priced against the anthropic table")
     prices = load_prices()
-    key = (
-        config.provider,
-        config.model if config.provider == "anthropic" else f"anthropic.{config.model}",
-    )
-    if key not in prices:
-        raise typer.BadParameter(f"no price for {key[0]}/{key[1]}")
-
-    cost_label = "API-equivalent cost" if config.mode == Mode.subscription else "billed cost"
-    n_runs = len(config.task_ids) * len(config.arms) * config.repeats
-    typer.echo(
-        f"mode={config.mode} provider={config.provider} model={config.model} "
-        f"repeats={config.repeats}"
-    )
-    typer.echo(f"arms: {', '.join(config.arms)}")
-    typer.echo(f"tasks: {', '.join(config.task_ids) or '(none)'}")
-    typer.echo(f"planned agent runs: {n_runs}")
-    typer.echo(f"caps ({cost_label}): total ${config.max_usd}, per run ${config.max_usd_per_run}")
-    if not prices[key].verified:
-        typer.echo("warning: price entry is unverified; results cannot be published.")
-    not_ready = unavailable_arms(config.arms)
+    for _, config in plans:
+        _validate(config, prices)
+    for d, config in plans:
+        _describe(d, config, prices)
+    not_ready = unavailable_arms(sorted({a for _, c in plans for a in c.arms}))
     for arm_name, reason in not_ready.items():
         typer.echo(f"warning: arm {arm_name}: {reason}")
-
     if dry_run:
         return
 
-    if n_runs == 0:
+    n_total = sum(len(c.task_ids) * len(c.arms) * c.repeats for _, c in plans)
+    if n_total == 0:
         typer.echo("No runs planned (no tasks found).", err=True)
         raise typer.Exit(code=EXIT_NOT_READY)
     if not_ready:
@@ -207,8 +238,8 @@ def run(
             err=True,
         )
         raise typer.Exit(code=EXIT_NOT_READY)
-    tasks_by_id = {t.id: t for t in load_tasks(tasks_dir)}
-    unready = [t for t in config.task_ids if not tasks_by_id[t].ready]
+    tasks = {t.id: t for t in load_tasks(tasks_dir)}
+    unready = sorted({t for _, c in plans for t in c.task_ids if not tasks[t].ready})
     if unready:
         typer.echo(
             f"Task(s) {', '.join(unready)} need tools that are not installed "
@@ -216,30 +247,72 @@ def run(
             err=True,
         )
         raise typer.Exit(code=EXIT_NOT_READY)
-    if not resume and ckpt.exists():
-        typer.echo(
-            f"{out}/ already has an experiment. Use --resume to continue it, "
-            "or choose a new --out.",
-            err=True,
-        )
-        raise typer.Exit(code=EXIT_NOT_READY)
     cmd = _claude_bin(claude_bin)
-    problems = _preflight(Mode(config.mode), cmd)
+    problems = _preflight(Mode(plans[0][1].mode), cmd)
     if problems:
         for p in problems:
             typer.echo(f"problem: {p}", err=True)
         raise typer.Exit(code=EXIT_NOT_READY)
 
     if not resume:
-        ckpt.create(config)
-    tasks = {t.id: t for t in load_tasks(tasks_dir)}
+        if len(plans) > 1:
+            out.mkdir(parents=True, exist_ok=True)
+            (out / MODELS_FILE).write_text(json.dumps([c.model for _, c in plans]) + "\n")
+        for d, config in plans:
+            Checkpoint(d).create(config)
+
+    for d, config in plans:
+        if len(plans) > 1:
+            typer.echo(f"== {config.model} ({d}/)")
+        _run_and_report(d, config, prices, tasks, cmd, resume_hint=out)
+
+
+def _price_key(config: Config) -> tuple[str, str]:
+    return (
+        config.provider,
+        config.model if config.provider == "anthropic" else f"anthropic.{config.model}",
+    )
+
+
+def _validate(config: Config, prices: dict) -> None:
+    unknown = [a for a in config.arms if a not in ARMS]
+    if unknown:
+        raise typer.BadParameter(f"unknown arm(s): {', '.join(unknown)}", param_hint="--arm")
+    if config.mode == Mode.subscription and config.provider != "anthropic":
+        raise typer.BadParameter("subscription mode is priced against the anthropic table")
+    key = _price_key(config)
+    if key not in prices:
+        raise typer.BadParameter(f"no price for {key[0]}/{key[1]}")
+
+
+def _describe(d: Path, config: Config, prices: dict) -> None:
+    key = _price_key(config)
+    cost_label = "API-equivalent cost" if config.mode == Mode.subscription else "billed cost"
+    n_runs = len(config.task_ids) * len(config.arms) * config.repeats
+    typer.echo(
+        f"[{d}] mode={config.mode} provider={config.provider} model={config.model} "
+        f"repeats={config.repeats}"
+    )
+    typer.echo(f"arms: {', '.join(config.arms)}")
+    typer.echo(f"tasks: {', '.join(config.task_ids) or '(none)'}")
+    typer.echo(f"planned agent runs: {n_runs}")
+    typer.echo(f"caps ({cost_label}): total ${config.max_usd}, per run ${config.max_usd_per_run}")
+    if config.pause_at_utilization is not None:
+        typer.echo(f"pause when the five-hour window reaches {config.pause_at_utilization:.0%}")
+    if not prices[key].verified:
+        typer.echo("warning: price entry is unverified; results cannot be published.")
+
+
+def _run_and_report(
+    d: Path, config: Config, prices: dict, tasks: dict, cmd: list[str], resume_hint: Path
+) -> None:
+    key = _price_key(config)
     aux_prices = {
         m: p for (prov, m), p in prices.items() if prov == config.provider and m != key[1]
     }
     outcome = run_experiment(
-        config, tasks, prices[key], ckpt, cmd, log=typer.echo, aux_prices=aux_prices
+        config, tasks, prices[key], Checkpoint(d), cmd, log=typer.echo, aux_prices=aux_prices
     )
-
     typer.echo(f"finished {outcome.finished} run(s), skipped {outcome.skipped} already done")
     if outcome.stopped_reason == "usage_limit":
         when = (
@@ -248,14 +321,14 @@ def run(
             else "later"
         )
         typer.echo(
-            f"Paused: usage limit reached. Progress is saved. Continue after {when} with:\n"
-            f"  tokentrial run --resume --out {out}"
+            f"Paused: {outcome.message or 'usage limit reached'}. Progress is saved. "
+            f"Continue after {when} with:\n  tokentrial run --resume --out {resume_hint}"
         )
         raise typer.Exit(code=EXIT_USAGE_LIMIT)
     if outcome.stopped_reason == "fatal":
         typer.echo(
             f"Stopped: {outcome.message}\nIf this is an auth error, run `claude auth login` in a "
-            f"terminal, then: tokentrial run --resume --out {out}",
+            f"terminal, then: tokentrial run --resume --out {resume_hint}",
             err=True,
         )
         raise typer.Exit(code=EXIT_FATAL)
@@ -303,8 +376,6 @@ def report(
     ] = False,
 ) -> None:
     """Cost per solved task per arm, with bootstrap CIs against baseline and the noop floor."""
-    import json
-
     from tokentrial.report import export_raw as _export_raw
     from tokentrial.report import load_records, summarize, to_markdown
 
@@ -312,13 +383,16 @@ def report(
         typer.echo(f"no records in {runs}/", err=True)
         raise typer.Exit(code=EXIT_NOT_READY)
     manifest = json.loads((runs / "manifest.json").read_text())
-    manifest.setdefault("name", runs.name)
+    # A per-model experiment (runs/<exp>/<model>/) is named <exp>/<model>.
+    multi = (runs.parent / MODELS_FILE).exists()
+    rel = Path(runs.parent.name) / runs.name if multi else Path(runs.name)
+    manifest.setdefault("name", rel.as_posix())
     records = load_records(runs)
     summary = summarize(records, n_boot=resamples, seed=seed)
     expected = len(manifest["task_ids"]) * len(manifest["arms"]) * manifest["repeats"]
     summary["complete"] = len(records) == expected
     summary["manifest"] = manifest
-    dest = out or Path("results") / runs.name
+    dest = out or Path("results") / rel
     dest.mkdir(parents=True, exist_ok=True)
     (dest / "summary.json").write_text(json.dumps(summary, indent=2, default=str) + "\n")
     md = to_markdown(summary, manifest)

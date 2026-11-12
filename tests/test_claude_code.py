@@ -282,3 +282,11 @@ def test_hook_events_are_counted():
 
 def test_command_logs_hook_events():
     assert "--include-hook-events" in build_command(["claude"], "m")
+
+
+def test_build_command_pre_approves_arm_tools():
+    cmd = build_command(["claude"], "m", ["--mcp-config", "x.json"], ["mcp__headroom"])
+    allowed = cmd[cmd.index("--allowedTools") + 1]
+    assert allowed.split(",")[-1] == "mcp__headroom"
+    assert cmd[cmd.index("--tools") + 1] == "Read,Edit,Write,Glob,Grep,Bash"
+    assert cmd[-2:] == ["--mcp-config", "x.json"]

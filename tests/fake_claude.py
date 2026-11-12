@@ -62,7 +62,12 @@ def main():
                 "status": "rejected" if scenario == "rate_limited" else "allowed",
                 "resetsAt": 1893456000,
                 "rateLimitType": "five_hour",
-                "unifiedWindows": {"five_hour": {"utilization": 0.1}},
+                "unifiedWindows": {
+                    "five_hour": {
+                        "utilization": float(os.environ.get("FAKE_UTILIZATION", "0.1")),
+                        "resetsAt": 1893456000,
+                    }
+                },
             },
         }
     )

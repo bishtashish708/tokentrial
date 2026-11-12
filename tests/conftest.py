@@ -1,4 +1,6 @@
 import json
+import shutil
+import sys
 
 import pytest
 
@@ -43,4 +45,29 @@ def fake_tools(isolated_tool_cache):
     (cav_dir / "src" / ".claude-plugin").mkdir(parents=True)
     (cav_dir / "src" / ".claude-plugin" / "plugin.json").write_text('{"name": "caveman"}')
     (cav_dir / "install.json").write_text(json.dumps({"version": tools.CAVEMAN.version}))
+
+    # Newer pins: same stand-ins in their own directories.
+    for old, new in ((tools.RTK, tools.RTK_V120), (tools.CAVEMAN, tools.CAVEMAN_V410)):
+        shutil.copytree(tools.tool_dir(old), tools.tool_dir(new))
+        (tools.tool_dir(new) / "install.json").write_text(json.dumps({"version": new.version}))
+
+    # headroom stand-in: `proxy --port N` serves {"ok": true} on every GET.
+    hr = tools.headroom_bin()
+    hr.parent.mkdir(parents=True)
+    hr.write_text(
+        f"#!{sys.executable}\n"
+        "import http.server, json, socketserver, sys\n"
+        "if sys.argv[1] == 'proxy':\n"
+        "    port = int(sys.argv[sys.argv.index('--port') + 1])\n"
+        "    class H(http.server.BaseHTTPRequestHandler):\n"
+        "        def do_GET(self):\n"
+        "            body = json.dumps({'ok': True}).encode()\n"
+        "            self.send_response(200); self.end_headers(); self.wfile.write(body)\n"
+        "        def log_message(self, *a): pass\n"
+        "    socketserver.TCPServer(('127.0.0.1', port), H).serve_forever()\n"
+    )
+    hr.chmod(0o755)
+    (tools.tool_dir(tools.HEADROOM) / "install.json").write_text(
+        json.dumps({"version": tools.HEADROOM.version})
+    )
     return isolated_tool_cache
