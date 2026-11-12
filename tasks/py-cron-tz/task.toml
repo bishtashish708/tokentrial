@@ -1,0 +1,10 @@
+prompt = """
+`cronnext` computes when cron expressions fire (SPEC.md). Implement `next_fire_tz` in
+cronnext/__init__.py, which evaluates expressions in a time zone, as specified in SPEC_TZ.md.
+Do not modify the tests. Run them with `python3 -m pytest tests`. Your implementation will
+also be checked against a larger set of cases derived from the specs, including daylight
+saving transitions in several time zones.
+"""
+timeout_s = 1500
+requires = ["pytest"]
+tags = ["python", "pytest", "spec", "timezones", "hard"]

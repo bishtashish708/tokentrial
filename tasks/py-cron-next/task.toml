@@ -1,0 +1,9 @@
+prompt = """
+`cronnext.next_fire` computes the next time a cron expression fires, but it has bugs and
+its tests fail. SPEC.md defines the required behaviour. Fix cronnext/__init__.py so that
+it implements SPEC.md exactly. Do not modify the tests. Run them with `python3 -m pytest tests`.
+Your fix will also be checked against a larger set of cases derived from SPEC.md.
+"""
+timeout_s = 1500
+requires = ["pytest"]
+tags = ["python", "pytest", "spec", "multi-bug", "hard"]
