@@ -1,0 +1,7 @@
+prompt = """
+The test suite in this repository is failing. Run it with
+`python3 -m unittest discover -s tests -v`, find the bug in the source code, and fix it.
+Do not modify the tests.
+"""
+timeout_s = 600
+tags = ["python", "fix-failing-test", "verbose-test-output"]

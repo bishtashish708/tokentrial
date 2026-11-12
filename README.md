@@ -57,20 +57,27 @@ TokenTrial makes this kind of check repeatable, public, and applicable to any to
 
 ## Usage
 
+TokenTrial runs on your **Claude Code subscription by default**. No API key is needed. It
+drives `claude --print --output-format stream-json` headlessly, records token usage for every API
+call, and prices that usage at API rates. This gives an API-equivalent cost for each run.
+
 ```bash
 uv sync
-uv run tokentrial --help
-uv run tokentrial run --dry-run                      # show the planned run matrix
-uv run tokentrial run --max-usd 10 --max-usd-per-run 0.5   # API key, hard spending caps
-uv run tokentrial run --mode subscription            # Claude Code login, API-equivalent cost
-uv run tokentrial report                             # aggregate runs and build the leaderboard
+uv run tokentrial doctor                          # checks claude is installed and logged in (no model call)
+uv run tokentrial run --dry-run                   # show the planned run matrix
+uv run tokentrial run --arm baseline --arm noop   # run on the subscription
+uv run tokentrial run --resume --out runs/pilot   # continue after a usage limit
+uv run tokentrial run --mode api                  # optional: bill ANTHROPIC_API_KEY instead
+uv run tokentrial report                          # aggregate runs and build the leaderboard (coming soon)
 ```
 
-Defaults are set for a low-cost pilot: Claude Haiku 5.5, 3 repeats, a $30 total cap and a $1 cap
-per run. If a cap is exceeded, the run or experiment stops. Subscription mode needs no API key.
-It prices Claude Code's reported usage at API rates. It's slower because usage limits apply.
+Defaults are set for a low-cost pilot: Claude Haiku 5.5, 3 repeats, and caps of $30 total and $1
+per run (API-equivalent). Subscription usage limits make runs slower. When one is hit, TokenTrial
+saves progress, prints when to come back, and exits with code 3. `--resume` continues without
+repeating finished runs.
 
-`run` and `report` only print a plan for now. Real execution comes in v0.1.
+`run` works for the `baseline` and `noop` arms. The `rtk` and `caveman` adapters and `report`
+are still in progress.
 
 ## Leaderboard
 
@@ -78,9 +85,10 @@ Results will be published as a static site on GitHub Pages from this repository.
 
 ## Roadmap
 
-- **v0.1 pilot (2 weeks, about $10–30 or less):** 5 tasks × 4 arms (`baseline`, `noop`, `rtk`,
-  `caveman`) × 3 repeats, so 60 runs on Claude Haiku 5.5. Budget caps, a subscription mode, bootstrap
-  CIs, and a static leaderboard. See [docs/PLAN.md](docs/PLAN.md).
+- **v0.1 pilot (2 weeks, on a Claude Code subscription):** 5 tasks × 4 arms (`baseline`, `noop`,
+  `rtk`, `caveman`) × 3 repeats, so 60 runs on Claude Haiku 5.5. API-equivalent cost, budget caps,
+  `--resume` across usage limits, bootstrap CIs, and a static leaderboard. See
+  [docs/PLAN.md](docs/PLAN.md).
 - **v0.2 scale-up:** 20 tasks, headroom added, 5 repeats, so 500 runs on Sonnet 5.5. Funded by
   cloud or API credit programs once the pilot gets traction.
 - **v0.3:** more tools (context-mode, CLAUDE.md variants), more agents and models, effort-level

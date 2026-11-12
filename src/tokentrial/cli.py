@@ -1,7 +1,12 @@
-"""Command-line entry point: `tokentrial run` and `tokentrial report`."""
+"""Command-line entry point: `tokentrial run`, `tokentrial report`, `tokentrial doctor`."""
 
 from __future__ import annotations
 
+import os
+import shlex
+import shutil
+import subprocess
+from datetime import datetime
 from enum import StrEnum
 from pathlib import Path
 from typing import Annotated
@@ -9,18 +14,25 @@ from typing import Annotated
 import typer
 
 from tokentrial import __version__
-from tokentrial.arms import ARMS, PILOT_ARMS
+from tokentrial.arms import ARMS, PILOT_ARMS, missing_adapters
+from tokentrial.claude_code import API_CREDENTIAL_VARS, auth_status
 from tokentrial.pricing import load_prices
+from tokentrial.runner import Checkpoint, Config, run_experiment
+from tokentrial.tasks import load_tasks
 
 app = typer.Typer(
     help="Measure whether token-saving tools reduce cost per correctly solved task.",
     no_args_is_help=True,
 )
 
+EXIT_NOT_READY = 2
+EXIT_USAGE_LIMIT = 3
+EXIT_BUDGET = 4
+
 
 class Mode(StrEnum):
-    api = "api"
     subscription = "subscription"
+    api = "api"
 
 
 def _version(value: bool) -> None:
@@ -38,72 +50,206 @@ def main(
     pass
 
 
+def _claude_bin(value: str) -> list[str]:
+    return shlex.split(value)
+
+
+def _preflight(mode: Mode, claude_bin: list[str]) -> list[str]:
+    """Problems that would stop a real run, as human-readable strings."""
+    if not shutil.which(claude_bin[0]):
+        return [f"`{claude_bin[0]}` not found on PATH. Install Claude Code first."]
+    problems = []
+    status = auth_status(claude_bin)
+    if mode is Mode.subscription:
+        if not status.get("loggedIn"):
+            problems.append("Claude Code is not logged in. Run: claude auth login")
+        elif status.get("authMethod") != "claude.ai":
+            problems.append(
+                f"Claude Code auth method is {status.get('authMethod')!r}, not a claude.ai "
+                "subscription. Run: claude auth login"
+            )
+    elif not os.environ.get("ANTHROPIC_API_KEY"):
+        problems.append("--mode api needs ANTHROPIC_API_KEY in the environment.")
+    return problems
+
+
+@app.command()
+def doctor(
+    mode: Annotated[Mode, typer.Option(help="Mode to check.")] = Mode.subscription,
+    claude_bin: Annotated[str, typer.Option(help="Claude Code command.", hidden=True)] = "claude",
+) -> None:
+    """Check that Claude Code is installed and logged in. Makes no model calls."""
+    cmd = _claude_bin(claude_bin)
+    if shutil.which(cmd[0]):
+        ver = subprocess.run([*cmd, "--version"], capture_output=True, text=True).stdout.strip()
+        typer.echo(f"claude: {ver}")
+        status = auth_status(cmd)
+        typer.echo(
+            f"auth: loggedIn={status.get('loggedIn')} method={status.get('authMethod')} "
+            f"plan={status.get('subscriptionType')}"
+        )
+    if mode is Mode.subscription and any(os.environ.get(v) for v in API_CREDENTIAL_VARS):
+        typer.echo(
+            "note: ANTHROPIC_API_KEY/ANTHROPIC_AUTH_TOKEN is set; it will be removed from "
+            "the agent's environment so runs use the subscription."
+        )
+    problems = _preflight(mode, cmd)
+    for p in problems:
+        typer.echo(f"problem: {p}", err=True)
+    if problems:
+        raise typer.Exit(code=EXIT_NOT_READY)
+    typer.echo(f"ready for --mode {mode.value}")
+
+
 @app.command()
 def run(
     arms: Annotated[
         list[str] | None, typer.Option("--arm", "-a", help="Arm to run (repeatable).")
     ] = None,
-    tasks: Annotated[Path, typer.Option(help="Directory of task definitions.")] = Path("tasks"),
+    tasks_dir: Annotated[Path, typer.Option("--tasks", help="Task directory.")] = Path("tasks"),
+    task_ids: Annotated[
+        list[str] | None, typer.Option("--task", "-t", help="Only these task IDs (repeatable).")
+    ] = None,
     mode: Annotated[
         Mode,
         typer.Option(
-            help="api: bill an API key. subscription: use a logged-in Claude Code "
-            "subscription and report API-equivalent cost."
+            help="subscription: logged-in Claude Code, API-equivalent cost (default). "
+            "api: bill ANTHROPIC_API_KEY."
         ),
-    ] = Mode.api,
+    ] = Mode.subscription,
     provider: Annotated[str, typer.Option(help="Price table: anthropic | bedrock")] = "anthropic",
     model: Annotated[str, typer.Option(help="Model ID priced in pricing.toml.")] = (
         "claude-haiku-5-5"
     ),
     repeats: Annotated[int, typer.Option(min=1, help="Runs per (task, arm) pair.")] = 3,
+    seed: Annotated[int, typer.Option(help="Seed for the interleaved run order.")] = 0,
     max_usd: Annotated[
         float | None,
-        typer.Option(min=0, help="Abort the whole experiment once total cost exceeds this."),
+        typer.Option(min=0, help="Stop the experiment once total cost exceeds this."),
     ] = 30.0,
     max_usd_per_run: Annotated[
         float | None,
         typer.Option(min=0, help="Abort a single agent run once its cost exceeds this."),
     ] = 1.0,
-    out: Annotated[Path, typer.Option(help="Where raw run records are written.")] = Path("runs"),
+    out: Annotated[Path, typer.Option(help="Experiment directory.")] = Path("runs/pilot"),
+    resume: Annotated[
+        bool,
+        typer.Option("--resume", help="Continue the experiment in --out, skipping finished runs."),
+    ] = False,
     dry_run: Annotated[bool, typer.Option("--dry-run", help="Print the plan and exit.")] = False,
+    claude_bin: Annotated[str, typer.Option(help="Claude Code command.", hidden=True)] = "claude",
 ) -> None:
     """Run every task under every arm and record token usage and correctness."""
-    selected = list(arms or PILOT_ARMS)
-    unknown = [a for a in selected if a not in ARMS]
+    ckpt = Checkpoint(out)
+    if resume:
+        if not ckpt.exists():
+            raise typer.BadParameter(f"nothing to resume in {out}/", param_hint="--out")
+        config = ckpt.load_config()
+        typer.echo(f"resuming {out}/ with its saved configuration (other options ignored)")
+    else:
+        all_tasks = [t.id for t in load_tasks(tasks_dir)] if tasks_dir.is_dir() else []
+        selected_tasks = list(task_ids) if task_ids else all_tasks
+        unknown_tasks = sorted(set(selected_tasks) - set(all_tasks))
+        if unknown_tasks:
+            raise typer.BadParameter(f"unknown task(s): {', '.join(unknown_tasks)}")
+        config = Config(
+            mode=mode.value,
+            provider=provider,
+            model=model,
+            arms=list(arms or PILOT_ARMS),
+            task_ids=selected_tasks,
+            repeats=repeats,
+            seed=seed,
+            max_usd=max_usd,
+            max_usd_per_run=max_usd_per_run,
+        )
+
+    unknown = [a for a in config.arms if a not in ARMS]
     if unknown:
         raise typer.BadParameter(f"unknown arm(s): {', '.join(unknown)}", param_hint="--arm")
-    if mode is Mode.subscription and provider != "anthropic":
+    if config.mode == Mode.subscription and config.provider != "anthropic":
         raise typer.BadParameter("subscription mode is priced against the anthropic table")
-
     prices = load_prices()
-    price_key = (provider, model if provider == "anthropic" else f"anthropic.{model}")
-    if price_key not in prices:
-        raise typer.BadParameter(f"no price for {price_key[0]}/{price_key[1]}")
+    key = (
+        config.provider,
+        config.model if config.provider == "anthropic" else f"anthropic.{config.model}",
+    )
+    if key not in prices:
+        raise typer.BadParameter(f"no price for {key[0]}/{key[1]}")
 
-    n_tasks = len(list(tasks.glob("*/task.toml"))) if tasks.is_dir() else 0
-    cost_label = "API-equivalent cost" if mode is Mode.subscription else "billed cost"
-    typer.echo(f"mode={mode.value} provider={provider} model={model} repeats={repeats}")
-    typer.echo(f"arms: {', '.join(selected)}")
-    typer.echo(f"tasks found in {tasks}/: {n_tasks}")
-    typer.echo(f"planned agent runs: {n_tasks * len(selected) * repeats}")
-    typer.echo(f"caps ({cost_label}): total ${max_usd}, per run ${max_usd_per_run}")
-    if not prices[price_key].verified:
+    cost_label = "API-equivalent cost" if config.mode == Mode.subscription else "billed cost"
+    n_runs = len(config.task_ids) * len(config.arms) * config.repeats
+    typer.echo(
+        f"mode={config.mode} provider={config.provider} model={config.model} "
+        f"repeats={config.repeats}"
+    )
+    typer.echo(f"arms: {', '.join(config.arms)}")
+    typer.echo(f"tasks: {', '.join(config.task_ids) or '(none)'}")
+    typer.echo(f"planned agent runs: {n_runs}")
+    typer.echo(f"caps ({cost_label}): total ${config.max_usd}, per run ${config.max_usd_per_run}")
+    if not prices[key].verified:
         typer.echo("warning: price entry is unverified; results cannot be published.")
+    no_adapter = missing_adapters(config.arms)
+    if no_adapter:
+        typer.echo(f"warning: no adapter yet for arm(s): {', '.join(no_adapter)}")
 
     if dry_run:
         return
-    typer.echo("Execution is not implemented yet (see docs/PLAN.md, week 1).", err=True)
-    raise typer.Exit(code=2)
+
+    if n_runs == 0:
+        typer.echo("No runs planned (no tasks found).", err=True)
+        raise typer.Exit(code=EXIT_NOT_READY)
+    if no_adapter:
+        typer.echo(
+            "Cannot run arms without an adapter. Pick others with --arm, e.g. "
+            "--arm baseline --arm noop.",
+            err=True,
+        )
+        raise typer.Exit(code=EXIT_NOT_READY)
+    if not resume and ckpt.exists():
+        typer.echo(
+            f"{out}/ already has an experiment. Use --resume to continue it, "
+            "or choose a new --out.",
+            err=True,
+        )
+        raise typer.Exit(code=EXIT_NOT_READY)
+    cmd = _claude_bin(claude_bin)
+    problems = _preflight(Mode(config.mode), cmd)
+    if problems:
+        for p in problems:
+            typer.echo(f"problem: {p}", err=True)
+        raise typer.Exit(code=EXIT_NOT_READY)
+
+    if not resume:
+        ckpt.create(config)
+    tasks = {t.id: t for t in load_tasks(tasks_dir)}
+    outcome = run_experiment(config, tasks, prices[key], ckpt, cmd, log=typer.echo)
+
+    typer.echo(f"finished {outcome.finished} run(s), skipped {outcome.skipped} already done")
+    if outcome.stopped_reason == "usage_limit":
+        when = (
+            datetime.fromtimestamp(outcome.reset_epoch).strftime("%Y-%m-%d %H:%M")
+            if outcome.reset_epoch
+            else "later"
+        )
+        typer.echo(
+            f"Paused: usage limit reached. Progress is saved. Continue after {when} with:\n"
+            f"  tokentrial run --resume --out {out}"
+        )
+        raise typer.Exit(code=EXIT_USAGE_LIMIT)
+    if outcome.stopped_reason == "budget":
+        typer.echo(f"Stopped: total budget ${config.max_usd} reached. Results so far are saved.")
+        raise typer.Exit(code=EXIT_BUDGET)
 
 
 @app.command()
 def report(
-    runs: Annotated[Path, typer.Option(help="Directory of raw run records.")] = Path("runs"),
+    runs: Annotated[Path, typer.Option(help="Experiment directory.")] = Path("runs/pilot"),
     out: Annotated[Path, typer.Option(help="Leaderboard output directory.")] = Path("site"),
 ) -> None:
     """Aggregate runs into cost per solved task with bootstrap CIs; build the leaderboard."""
     typer.echo("Reporting is not implemented yet (see docs/PLAN.md, week 2).", err=True)
-    raise typer.Exit(code=2)
+    raise typer.Exit(code=EXIT_NOT_READY)
 
 
 if __name__ == "__main__":

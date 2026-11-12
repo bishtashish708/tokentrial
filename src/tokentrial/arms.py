@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass(frozen=True)
@@ -46,3 +48,33 @@ ARMS: dict[str, Arm] = {
 
 # v0.1 pilot arms. headroom is defined but joins in the v0.2 scale-up.
 PILOT_ARMS = ("baseline", "noop", "rtk", "caveman")
+
+
+# --- Adapters: prepare a fresh workspace for an arm -------------------------
+
+NOOP_MARKER = ".tokentrial-noop"
+
+
+def _setup_baseline(workspace: Path) -> None:
+    return None
+
+
+def _setup_noop(workspace: Path) -> None:
+    # Runs a setup step like a real tool would, but changes nothing that affects
+    # the agent: a marker file that is never referenced.
+    (workspace / NOOP_MARKER).write_text("tokentrial no-op control arm\n")
+
+
+ADAPTERS: dict[str, Callable[[Path], None]] = {
+    "baseline": _setup_baseline,
+    "noop": _setup_noop,
+    # "rtk" and "caveman" adapters land on plan day 4, pinned to specific versions.
+}
+
+
+def missing_adapters(arms: list[str]) -> list[str]:
+    return [a for a in arms if a not in ADAPTERS]
+
+
+def setup_arm(name: str, workspace: Path) -> None:
+    ADAPTERS[name](workspace)

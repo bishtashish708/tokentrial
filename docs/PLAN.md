@@ -1,14 +1,29 @@
 # TokenTrial plan
 
-TokenTrial ships in tiers. **v0.1 is a low-budget pilot.** It proves the method end to end on
-a small set of tasks for about $10–30 or less, or for $0 extra on a Claude Code subscription.
-The full 20-task, 500-run benchmark comes later, once the pilot shows the approach is useful.
+TokenTrial ships in tiers. **v0.1 is a low-budget pilot.** It runs on a **Claude Code
+subscription by default**, so it costs nothing beyond the subscription. Every run is still priced
+at API rates, so results are comparable. API-key mode is kept as an option for later. The full
+20-task, 500-run benchmark comes later, once the pilot shows the approach is useful.
+
+## Status
+
+| Piece | State |
+|---|---|
+| Subscription runner (`claude --print`, stream-json, usage per call) | Done, tested against a fake `claude` |
+| API-equivalent cost by token type | Done |
+| Budget caps (`--max-usd`, `--max-usd-per-run`) | Done, enforced during each run |
+| Usage-limit detection, checkpointing, `--resume` | Done |
+| `tokentrial doctor` (install and login check, no model call) | Done |
+| Tasks | 1 of 5 (`py-ledger-parens`) |
+| Arm adapters | `baseline`, `noop` done. `rtk` and `caveman` are pending (day 4) |
+| `report`, bootstrap, leaderboard | Pending (week 2) |
+| Checked against real Claude Code output | **Not yet.** This is the first smoke run (below) |
 
 ## Tiers and cost estimates
 
 | Tier | Tasks | Arms | Repeats | Runs | Model | Estimated cost |
 |---|---|---|---|---|---|---|
-| **v0.1 pilot** | 5 | 4 | 3 | **60** | `claude-haiku-5-5` | **about $1–25 API, hard cap $30.** $0 extra on a subscription |
+| **v0.1 pilot** | 5 | 4 | 3 | **60** | `claude-haiku-5-5` | **$0 extra on a subscription (default).** About $1–25 API-equivalent, hard cap $30 |
 | v0.1 optional spot-check | 2 | 4 | 2 | 16 | `claude-sonnet-5-5` | about $5–15. Only if budget is left after the pilot |
 | v0.2 scale-up | 20 | 5 (+ headroom) | 5 | 500 | `claude-sonnet-5-5` | about $100–300 |
 | v0.3+ | 20+ | 5+ | 5 | 1,000+ | several models and agents | depends on scope. Fund with credits (see below) |
@@ -32,7 +47,7 @@ on day 6 and replaces this guess.
 |---|---|
 | Agent | Claude Code CLI, pinned version, headless mode |
 | Model | `claude-haiku-5-5` (CLI default) |
-| Modes | `api` (API key, billed) and `subscription` (logged-in Claude Code, API-equivalent cost) |
+| Modes | **`subscription` (default):** logged-in Claude Code, API-equivalent cost. `api` (API key, billed) is optional, for later |
 | Price tables | Anthropic (main). Bedrock prices filled in so the cost can also be shown at Bedrock rates |
 | Arms | `baseline`, `noop` (control), `rtk`, `caveman` |
 | Tasks | 5, each with a hidden check script |
@@ -55,21 +70,86 @@ Out of scope for v0.1: headroom, context-mode and CLAUDE.md arms; other agents; 
 - To run without a meaningful cap, pass a large value on purpose. The defaults are set so a
   mistake can't cost more than $30.
 
-## Subscription mode (no API key)
+## Subscription mode (default, no API key)
 
-`--mode subscription` runs Claude Code under the user's logged-in subscription instead of an API
-key.
+The runner drives the Claude Code CLI headlessly under the user's logged-in subscription.
 
-- **Cost:** Claude Code prints token usage in headless JSON output. TokenTrial splits that usage
-  by token type and prices it from its own `pricing.toml` to get an **API-equivalent cost**. It
-  does not rely on any cost figure Claude Code itself reports. The exact JSON fields will be
-  confirmed on day 2.
-- **Slower:** subscription usage limits mean the 60 runs will likely be spread over several
-  sessions or days. The runner pauses when it hits a limit and resumes, and it skips runs
-  that are already recorded.
-- **Less precise:** if Claude Code only reports totals for a session rather than for each call,
-  the long-prompt pricing of Haiku can only be estimated. The leaderboard labels these results
-  "API-equivalent (subscription)" and keeps them apart from API-billed results.
+**How each run works**
+
+1. Copy the task's `repo/` into a fresh temporary directory, `git init` it, and apply the arm's
+   setup.
+2. Start Claude Code headlessly and send the task prompt on stdin:
+
+   ```
+   claude --print --output-format stream-json --verbose --model <model> \
+     --permission-mode dontAsk --allowedTools Read,Edit,Write,Glob,Grep,Bash \
+     --setting-sources project --strict-mcp-config --disable-slash-commands \
+     --no-session-persistence
+   ```
+
+   The isolation flags make every arm start from the same Claude Code configuration. User-level
+   settings, MCP servers and slash commands are excluded. Only the workspace's own project
+   settings apply, and that is where a tool arm installs itself. `--bare` would isolate further,
+   but it can't use subscription login.
+3. For subscription runs, `ANTHROPIC_API_KEY` and `ANTHROPIC_AUTH_TOKEN` are removed from the
+   agent's environment, so it can't fall back to billing an API account. `tokentrial doctor`
+   checks that `claude auth status` reports a `claude.ai` login.
+4. Each `assistant` event in the stream carries the API usage for that call. The runner keys usage
+   by message ID, because Claude Code repeats it once per content block. It splits usage into
+   fresh input, cache write (5-minute or 1-hour TTL), cache read and output, and prices it from
+   `pricing.toml`. The budget caps are checked as each call arrives. If no per-call usage
+   appears, the session totals from the final `result` event are used instead.
+5. The run ends at the `result` event or the task timeout. The hidden `check.sh` runs on the
+   workspace, which is then deleted.
+
+Each record stores the usage by type, the cost by type (`cost_basis: api_equivalent`), the number
+of API calls and turns, the duration, Claude Code's own `total_cost_usd` (for comparison only),
+and the `init` event (model, tools, MCP servers) so fairness can be checked later. The raw stream
+is kept in `runs/<exp>/logs/<run_id>.jsonl`.
+
+**Usage limits, checkpointing and `--resume`**
+
+- Subscription usage limits make this slower than API mode. The 60 pilot runs will probably take
+  several sessions, possibly over a few days.
+- When Claude Code reports a usage or rate limit, the runner stops cleanly. It looks for this in
+  the `result` event, in an assistant error, or in stderr when there is no result. The
+  interrupted run is **not** recorded. The runner prints the reset time if one is reported and
+  exits with code 3.
+- Progress is kept in `runs/<exp>/manifest.json` (the config) and `runs/<exp>/records.jsonl` (one
+  line per finished run, appended). `tokentrial run --resume --out runs/<exp>` reloads the saved
+  config, skips every run whose status is final (`solved`, `unsolved`, `aborted_budget`,
+  `timeout`), retries runs that ended in `error`, and carries the spent budget forward.
+- Starting a new run with an `--out` that already holds an experiment is refused, so results are
+  never mixed by accident.
+
+**Caveats to check on the first smoke run**
+
+- The usage field names in Claude Code's stream-json output. The parser accepts the Messages API
+  `usage` shape. Fixture tests cover it, but it hasn't been run against real output yet.
+- Whether `--setting-sources project` also keeps out the user's own `~/.claude/CLAUDE.md` and
+  auto-memory. The `init` event and raw log will show this. If they leak in, the runner will need
+  an isolated config directory.
+- The wording of usage-limit messages. Detection uses a broad regex, which may need adjusting.
+- The leaderboard labels subscription results "API-equivalent (subscription)".
+
+## First smoke run
+
+This is the first real run. It uses one task, the two arms that have adapters, and one repeat, so
+it makes 2 Haiku sessions on the subscription. It goes to its own `--out` so it doesn't mix with
+the pilot:
+
+```bash
+uv run tokentrial doctor
+uv run tokentrial run --arm baseline --arm noop --repeats 1 --max-usd 2 --out runs/smoke
+```
+
+After it finishes, check `runs/smoke/records.jsonl`:
+
+- Usage by type is non-zero.
+- `cost_usd.total` is close to `reported_cost_usd`.
+- `claude_init` lists only the allowed tools and no MCP servers.
+
+Also check the raw logs for any trace of user-level CLAUDE.md or memory.
 
 ## Task set (pilot: 5)
 
@@ -118,9 +198,9 @@ Also reported: solve rate, cost per run, turns, wall time, and cost split by tok
 
 | Day | Deliverable |
 |---|---|
-| 1 | Task format, loader, `check.sh` contract. Tasks 1–2 |
-| 2 | Runner: isolated workspace per run, Claude Code headless, usage capture per call. Both `api` and `subscription` modes |
-| 3 | Pricing: Anthropic rows verified, Haiku long-prompt tier, Bedrock rows filled in. Budget caps wired into the runner |
+| 1 | ✅ Task format, loader, `check.sh` contract. ✅ Task 1. Task 2 |
+| 2 | ✅ Runner: isolated workspace, Claude Code headless (subscription by default), usage per call, checkpoint and `--resume`. Next: the smoke run to validate against real output |
+| 3 | Pricing: Anthropic rows verified, Haiku long-prompt tier, Bedrock rows filled in. ✅ Budget caps wired into the runner |
 | 4 | Arm adapters: `noop`, `rtk`, `caveman` at pinned versions |
 | 5 | Tasks 3–5. CI validates every check |
 
@@ -130,7 +210,7 @@ Also reported: solve rate, cost per run, turns, wall time, and cost split by tok
 |---|---|
 | 6 | Shakedown: 1 task × 4 arms × 1 repeat, capped at $2. Measure real cost per run and fix bugs |
 | 7 | Bootstrap module and `report` producing `summary.json` |
-| 8 | Full pilot of 60 runs, capped at $30. Spread over several days if using a subscription |
+| 8 | Full pilot of 60 runs on the subscription, capped at $30 API-equivalent. Use `--resume` across usage-limit windows |
 | 9 | Static leaderboard: table, CI plot, cost-by-token-type bars. Deploy to GitHub Pages |
 | 10 | Write-up, invite tool authors to review their arm configs, tag v0.1 |
 
@@ -150,7 +230,7 @@ once the pilot gets traction: stars, issues, or tool authors engaging. Ways to f
 ## Definition of done (v0.1)
 
 - [ ] 5 tasks, all validated in CI
-- [ ] 60 runs recorded with complete usage. Total cost ≤ $30, or run on a subscription
+- [ ] 60 runs recorded with complete usage. API-equivalent total ≤ $30
 - [ ] Every price used marked `verified = true`
 - [ ] Leaderboard live with CIs, the noop noise floor, and the mode label
 - [ ] Raw data and the exact versions published

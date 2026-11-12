@@ -55,3 +55,28 @@ def cost_breakdown(usage: Usage, price: Price) -> dict[str, float]:
     parts = {t: getattr(usage, t) * getattr(price, t) / 1_000_000 for t in TOKEN_TYPES}
     parts["total"] = sum(parts.values())
     return parts
+
+
+def usage_from_api(raw: dict) -> Usage:
+    """Build a Usage from an Anthropic API / Claude Code `usage` object.
+
+    Cache writes are split by TTL when `cache_creation` gives the breakdown;
+    otherwise they are all counted as 5-minute writes.
+    """
+    split = raw.get("cache_creation") or {}
+    w5 = split.get("ephemeral_5m_input_tokens")
+    w1 = split.get("ephemeral_1h_input_tokens")
+    total_write = int(raw.get("cache_creation_input_tokens") or 0)
+    if w5 is None and w1 is None:
+        w5, w1 = total_write, 0
+    return Usage(
+        input=int(raw.get("input_tokens") or 0),
+        cache_write_5m=int(w5 or 0),
+        cache_write_1h=int(w1 or 0),
+        cache_read=int(raw.get("cache_read_input_tokens") or 0),
+        output=int(raw.get("output_tokens") or 0),
+    )
+
+
+def add_usage(a: Usage, b: Usage) -> Usage:
+    return Usage(**{t: getattr(a, t) + getattr(b, t) for t in TOKEN_TYPES})
