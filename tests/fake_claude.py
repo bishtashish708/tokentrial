@@ -1,7 +1,7 @@
 """Stand-in for the `claude` CLI used by tests. Never calls a model.
 
 Behaviour is chosen by environment variables:
-  FAKE_SCENARIO   solve | nothing | usage_limit | expensive
+  FAKE_SCENARIO   solve | nothing | usage_limit | expensive | auth_fail | api_error
   FAKE_SOLUTION   directory copied into cwd for the "solve" scenario
   FAKE_COUNTER    file counting invocations; with FAKE_LIMIT_AFTER=N the
                   N+1th and later sessions report a usage limit
@@ -48,6 +48,50 @@ def main():
             "claude_code_version": "0.0.0",
         }
     )
+    if scenario == "auth_fail":
+        # Shape observed from real Claude Code 2.1.252 on an expired session.
+        emit(
+            {
+                "type": "assistant",
+                "error": "authentication_failed",
+                "is_api_error_message": True,
+                "message": {
+                    "id": "x",
+                    "model": "<synthetic>",
+                    "usage": {"input_tokens": 0},
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Failed to authenticate: "
+                            "OAuth session expired and could not be refreshed",
+                        }
+                    ],
+                },
+            }
+        )
+        emit(
+            {
+                "type": "result",
+                "subtype": "success",
+                "is_error": True,
+                "terminal_reason": "api_error",
+                "api_error_status": None,
+                "result": "Failed to authenticate: OAuth session expired",
+            }
+        )
+        return
+    if scenario == "api_error":
+        emit(
+            {
+                "type": "result",
+                "subtype": "success",
+                "is_error": True,
+                "terminal_reason": "api_error",
+                "api_error_status": 500,
+                "result": "API Error: 500 internal",
+            }
+        )
+        return
     if scenario == "usage_limit":
         emit(
             {

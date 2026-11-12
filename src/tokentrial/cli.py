@@ -28,6 +28,7 @@ app = typer.Typer(
 EXIT_NOT_READY = 2
 EXIT_USAGE_LIMIT = 3
 EXIT_BUDGET = 4
+EXIT_FATAL = 5
 
 
 class Mode(StrEnum):
@@ -59,7 +60,7 @@ def _preflight(mode: Mode, claude_bin: list[str]) -> list[str]:
     if not shutil.which(claude_bin[0]):
         return [f"`{claude_bin[0]}` not found on PATH. Install Claude Code first."]
     problems = []
-    status = auth_status(claude_bin)
+    status = auth_status(claude_bin, mode.value)
     if mode is Mode.subscription:
         if not status.get("loggedIn"):
             problems.append("Claude Code is not logged in. Run: claude auth login")
@@ -83,7 +84,7 @@ def doctor(
     if shutil.which(cmd[0]):
         ver = subprocess.run([*cmd, "--version"], capture_output=True, text=True).stdout.strip()
         typer.echo(f"claude: {ver}")
-        status = auth_status(cmd)
+        status = auth_status(cmd, mode.value)
         typer.echo(
             f"auth: loggedIn={status.get('loggedIn')} method={status.get('authMethod')} "
             f"plan={status.get('subscriptionType')}"
@@ -237,6 +238,13 @@ def run(
             f"  tokentrial run --resume --out {out}"
         )
         raise typer.Exit(code=EXIT_USAGE_LIMIT)
+    if outcome.stopped_reason == "fatal":
+        typer.echo(
+            f"Stopped: {outcome.message}\nIf this is an auth error, run `claude auth login` in a "
+            f"terminal, then: tokentrial run --resume --out {out}",
+            err=True,
+        )
+        raise typer.Exit(code=EXIT_FATAL)
     if outcome.stopped_reason == "budget":
         typer.echo(f"Stopped: total budget ${config.max_usd} reached. Results so far are saved.")
         raise typer.Exit(code=EXIT_BUDGET)

@@ -17,12 +17,26 @@ ALLOWED_TOOLS = "Read,Edit,Write,Glob,Grep,Bash"
 # of the logged-in subscription.
 API_CREDENTIAL_VARS = ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN")
 
+# Host variables kept in the agent's environment. Every other CLAUDE*/ANTHROPIC*
+# variable is dropped: when tokentrial itself runs inside a Claude Code session
+# (terminal, IDE, desktop app), inherited variables such as ANTHROPIC_BASE_URL or
+# CLAUDE_CODE_SDK_HAS_HOST_AUTH_REFRESH make the nested agent use the host's
+# proxy and auth path, which fails, and would make arms depend on the host.
+KEEP_HOST_VARS = ("CLAUDE_CONFIG_DIR",)
+
+# Variables set for every agent run.
+AGENT_ENV = {"CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1"}
+
 _LIMIT_RE = re.compile(
     r"usage limit|rate[ _-]?limit|hit your limit|limit reached|limit will reset|"
     r"\b429\b|overloaded",
     re.IGNORECASE,
 )
 _RESET_EPOCH_RE = re.compile(r"\|(\d{10})\b")
+
+
+class AgentFatalError(RuntimeError):
+    """An error no retry will fix (e.g. authentication); stop the experiment."""
 
 
 class UsageLimitReached(RuntimeError):
@@ -59,6 +73,8 @@ def build_command(claude_bin: list[str], model: str) -> list[str]:
         model,
         "--permission-mode",
         "dontAsk",
+        "--tools",
+        ALLOWED_TOOLS,
         "--allowedTools",
         ALLOWED_TOOLS,
         "--setting-sources",
@@ -70,17 +86,30 @@ def build_command(claude_bin: list[str], model: str) -> list[str]:
 
 
 def child_env(mode: str) -> dict[str, str]:
-    env = dict(os.environ)
-    if mode == "subscription":
-        for var in API_CREDENTIAL_VARS:
-            env.pop(var, None)
+    keep = set(KEEP_HOST_VARS)
+    if mode == "api":
+        keep.add("ANTHROPIC_API_KEY")
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k in keep or not (k.startswith("CLAUDE") or k.startswith("ANTHROPIC"))
+    }
+    env.update(AGENT_ENV)
     return env
 
 
-def auth_status(claude_bin: list[str]) -> dict:
-    """`claude auth status --json`. Makes no model call."""
+def _is_auth_failure(text: str, error: str | None = None) -> bool:
+    return error == "authentication_failed" or "failed to authenticate" in (text or "").lower()
+
+
+def auth_status(claude_bin: list[str], mode: str = "subscription") -> dict:
+    """`claude auth status --json` in the agent's environment. Makes no model call."""
     out = subprocess.run(
-        [*claude_bin, "auth", "status", "--json"], capture_output=True, text=True, timeout=30
+        [*claude_bin, "auth", "status", "--json"],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env=child_env(mode),
     )
     try:
         return json.loads(out.stdout)
@@ -140,21 +169,28 @@ class StreamParser:
         elif etype == "assistant":
             msg = event.get("message") or {}
             mid, raw = msg.get("id"), msg.get("usage")
-            if mid and raw:
+            if event.get("error") or event.get("is_api_error_message"):
+                text = _assistant_text(msg)
+                if looks_like_usage_limit(text):
+                    raise UsageLimitReached(text[:300], parse_reset_epoch(text))
+                if _is_auth_failure(text, event.get("error")):
+                    raise AgentFatalError(text[:300])
+                return 0.0
+            if mid and raw and msg.get("model") != "<synthetic>":
                 usage = usage_from_api(raw)
                 self.state.calls[mid] = usage
                 new = cost_breakdown(usage, self.price)["total"]
                 delta = new - self._cost_by_id.get(mid, 0.0)
                 self._cost_by_id[mid] = new
                 return max(delta, 0.0)
-            text = _assistant_text(msg)
-            if event.get("error") and looks_like_usage_limit(text):
-                raise UsageLimitReached(text[:300], parse_reset_epoch(text))
         elif etype == "result":
             self.state.result = event
             text = str(event.get("result") or "")
-            if event.get("is_error") and looks_like_usage_limit(text):
-                raise UsageLimitReached(text[:300], parse_reset_epoch(text))
+            if event.get("is_error"):
+                if event.get("api_error_status") == 429 or looks_like_usage_limit(text):
+                    raise UsageLimitReached(text[:300], parse_reset_epoch(text))
+                if _is_auth_failure(text):
+                    raise AgentFatalError(text[:300])
         return 0.0
 
 

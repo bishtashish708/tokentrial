@@ -104,3 +104,25 @@ def test_total_cap_stops_experiment(fake_env, tmp_path):
     outcome = run_experiment(cfg, TASKS, PRICE, ck, FAKE, log=lambda *_: None)
     assert outcome.stopped_reason == "budget"
     assert len(_records(tmp_path / "exp")) == 1
+
+
+def test_auth_failure_stops_without_recording(fake_env, tmp_path):
+    fake_env.setenv("FAKE_SCENARIO", "auth_fail")
+    cfg, ck = _config(), Checkpoint(tmp_path / "exp")
+    ck.create(cfg)
+    outcome = run_experiment(cfg, TASKS, PRICE, ck, FAKE, log=lambda *_: None)
+    assert outcome.stopped_reason == "fatal"
+    assert not (tmp_path / "exp" / "records.jsonl").exists()
+
+
+def test_api_error_is_recorded_as_retryable_error(fake_env, tmp_path):
+    fake_env.setenv("FAKE_SCENARIO", "api_error")
+    cfg, ck = _config(arms=["baseline"], repeats=1), Checkpoint(tmp_path / "exp")
+    ck.create(cfg)
+    run_experiment(cfg, TASKS, PRICE, ck, FAKE, log=lambda *_: None)
+    assert _records(tmp_path / "exp")[0]["status"] == "error"
+    fake_env.setenv("FAKE_SCENARIO", "solve")
+    again = run_experiment(
+        cfg, TASKS, PRICE, Checkpoint(tmp_path / "exp"), FAKE, log=lambda *_: None
+    )
+    assert again.finished == 1  # the errored run was retried

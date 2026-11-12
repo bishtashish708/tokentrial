@@ -16,6 +16,7 @@ from pathlib import Path
 from tokentrial.arms import setup_arm
 from tokentrial.budget import Budget, BudgetExceeded
 from tokentrial.claude_code import (
+    AgentFatalError,
     StreamParser,
     UsageLimitReached,
     build_command,
@@ -103,8 +104,9 @@ class Checkpoint:
 class Outcome:
     finished: int = 0
     skipped: int = 0
-    stopped_reason: str | None = None  # "usage_limit" | "budget" | None
+    stopped_reason: str | None = None  # "usage_limit" | "budget" | "fatal" | None
     reset_epoch: int | None = None
+    message: str | None = None
 
 
 def run_experiment(
@@ -132,6 +134,10 @@ def run_experiment(
         except UsageLimitReached as e:
             outcome.stopped_reason, outcome.reset_epoch = "usage_limit", e.reset_epoch
             log(f"usage limit reached: {e}")
+            return outcome
+        except AgentFatalError as e:
+            outcome.stopped_reason, outcome.message = "fatal", str(e)
+            log(f"fatal agent error: {e}")
             return outcome
         ckpt.append(record)
         outcome.finished += 1
@@ -209,6 +215,10 @@ def _run_one(
                 status, error = "timeout", f"killed after {task.timeout_s}s"
             elif result is None:
                 status, error = "error", (stderr.strip() or "no result event")[:500]
+            elif result.get("is_error") and result.get("terminal_reason") == "api_error":
+                # The API call failed (not the agent): retry this run on --resume.
+                status = "error"
+                error = str(result.get("result") or "api_error")[:500]
             else:
                 status = "solved" if run_check(task, workspace) else "unsolved"
                 if result.get("is_error"):

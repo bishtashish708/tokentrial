@@ -107,3 +107,65 @@ def test_subscription_env_drops_api_credentials(monkeypatch):
     monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
     assert "ANTHROPIC_API_KEY" not in child_env("subscription")
     assert child_env("api")["ANTHROPIC_API_KEY"] == "x"
+
+
+def test_auth_failure_is_fatal():
+    from tokentrial.claude_code import AgentFatalError
+
+    p = StreamParser(PRICE)
+    event = {
+        "type": "assistant",
+        "error": "authentication_failed",
+        "is_api_error_message": True,
+        "message": {
+            "id": "x",
+            "model": "<synthetic>",
+            "content": [{"type": "text", "text": "Failed to authenticate"}],
+        },
+    }
+    with pytest.raises(AgentFatalError):
+        p.feed(json.dumps(event))
+
+
+def test_synthetic_messages_are_not_counted_as_api_calls():
+    p = StreamParser(PRICE)
+    p.feed(
+        json.dumps(
+            {
+                "type": "assistant",
+                "message": {"id": "s", "model": "<synthetic>", "usage": {"input_tokens": 0}},
+            }
+        )
+    )
+    assert p.state.calls == {}
+
+
+def test_http_429_result_is_a_usage_limit():
+    p = StreamParser(PRICE)
+    with pytest.raises(UsageLimitReached):
+        p.feed(
+            json.dumps(
+                {"type": "result", "is_error": True, "api_error_status": 429, "result": "API Error"}
+            )
+        )
+
+
+def test_host_claude_session_vars_are_not_inherited(monkeypatch):
+    for var in (
+        "CLAUDECODE",
+        "ANTHROPIC_BASE_URL",
+        "CLAUDE_CODE_SDK_HAS_HOST_AUTH_REFRESH",
+        "CLAUDE_CODE_SIMPLE",
+    ):
+        monkeypatch.setenv(var, "1")
+    monkeypatch.setenv("CLAUDE_CONFIG_DIR", "/tmp/cfg")
+    env = child_env("subscription")
+    assert not [k for k in env if k.startswith("ANTHROPIC") or k == "CLAUDECODE"]
+    assert "CLAUDE_CODE_SIMPLE" not in env
+    assert env["CLAUDE_CONFIG_DIR"] == "/tmp/cfg"
+    assert env["CLAUDE_CODE_DISABLE_AUTO_MEMORY"] == "1"
+
+
+def test_available_tools_are_restricted_not_just_permitted():
+    cmd = build_command(["claude"], "m")
+    assert cmd[cmd.index("--tools") + 1] == cmd[cmd.index("--allowedTools") + 1]
