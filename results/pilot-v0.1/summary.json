@@ -243,6 +243,7 @@
     "repeats": 3,
     "seed": 0,
     "max_usd": 30.0,
-    "max_usd_per_run": 1.0
+    "max_usd_per_run": 1.0,
+    "name": "pilot-v0.1"
   }
 }

@@ -189,7 +189,7 @@ def to_markdown(summary: dict, manifest: dict) -> str:
     ]
     order += [a for a in arms if a not in order]
     out = [
-        "# TokenTrial pilot results",
+        f"# TokenTrial results: {manifest.get('name') or 'experiment'}",
         "",
         f"Model `{manifest['model']}`, mode `{manifest['mode']}` (API-equivalent cost), "
         f"{len(manifest['task_ids'])} tasks × {len(manifest['arms'])} arms × "

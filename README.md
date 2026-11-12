@@ -8,13 +8,18 @@ TokenTrial is an open benchmark for the token-saving tools that coding agents us
 It runs the same coding tasks with and without each tool and reports the number that matters:
 **dollars per correctly solved task**.
 
-> **Pilot v0.1 results (2026-11-12):** neither rtk nor caveman showed a saving distinguishable
-> from the no-op control, on Haiku 5.5 with 5 small tasks. caveman's apparent −29% came mostly
-> from Claude Code skipping a background call when its plugin is loaded. Details:
+> **v0.2 results (2026-11-12, 400 runs, Haiku 5.5, verified prices):**
+> - **rtk** v1.1.0 *raised* cost per solved task by **36%** (95% CI +17% to +53%). Compressed test
+>   and git output led the agent to re-run commands and take extra turns.
+> - **caveman** v4.0.1 had **no measurable effect** (−0%, CI −10% to +11%) against a control that
+>   reproduces a Claude Code side effect it triggers.
+> - A do-nothing arm alone moved cost by +11%.
+>
+> Details: [`results/v0.2/FINDINGS.md`](results/v0.2/FINDINGS.md). Pilot:
 > [`results/pilot-v0.1/FINDINGS.md`](results/pilot-v0.1/FINDINGS.md).
 
-> Status: pre-alpha. The runner, the arms and `report` work, and the pilot has run. Prices are
-> unverified and there is no leaderboard yet. See [docs/PLAN.md](docs/PLAN.md).
+> Status: alpha. The runner, the arms, verified prices and `report` work. v0.1 and v0.2 have run.
+> There is no leaderboard site yet. See [docs/PLAN.md](docs/PLAN.md).
 
 ## Why
 
@@ -95,9 +100,11 @@ Results will be published as a static site on GitHub Pages from this repository.
   `rtk`, `caveman`) × 3 repeats, so 60 runs on Claude Haiku 5.5. API-equivalent cost, budget caps,
   `--resume` across usage limits, bootstrap CIs, and a static leaderboard. See
   [docs/PLAN.md](docs/PLAN.md).
-- **v0.2 scale-up:** 20 tasks, headroom added, 5 repeats, so 500 runs on Sonnet 5.5. Funded by
-  cloud or API credit programs once the pilot gets traction.
-- **v0.3:** more tools (context-mode, CLAUDE.md variants), more agents and models, effort-level
+- **v0.2 (done):** 10 tasks, including 5 with large pytest and git output, × 5 arms (adding a
+  `noop-hook` control) × 8 repeats = 400 runs on a subscription, with verified prices.
+- **v0.3:** frontier-hard tasks (so solve rates differ), more tasks rather than more repeats, newer
+  tool versions, Sonnet 5.5, headroom. Funded by credit programs if needed.
+- **Later:** more tools (context-mode, CLAUDE.md variants), more agents and models, effort-level
   sweeps, and a template so tool authors can submit their own arm.
 - **Later:** a CI job that reruns the leaderboard when a tool releases a new version, and
   cost-versus-latency plots.

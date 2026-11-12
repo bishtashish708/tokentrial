@@ -1,4 +1,4 @@
-# TokenTrial pilot results
+# TokenTrial results: pilot-v0.1
 
 Model `claude-haiku-5-5`, mode `subscription` (API-equivalent cost), 5 tasks × 4 arms × 3 repeats = 60 runs. 95% CIs from a 10,000-resample hierarchical bootstrap (tasks, then runs).
 

@@ -1,0 +1,28 @@
+{
+  "mode": "subscription",
+  "provider": "anthropic",
+  "model": "claude-haiku-5-5",
+  "arms": [
+    "baseline",
+    "noop",
+    "noop-hook",
+    "rtk",
+    "caveman"
+  ],
+  "task_ids": [
+    "git-config-forensics",
+    "git-regression-hunt",
+    "js-chunk-remainder",
+    "log-link-failure",
+    "py-cron-next",
+    "py-cron-tz",
+    "py-duration-spec",
+    "py-ledger-parens",
+    "py-pytest-cart-pricing",
+    "read-audit-writer"
+  ],
+  "repeats": 8,
+  "seed": 2,
+  "max_usd": 15.0,
+  "max_usd_per_run": 1.0
+}

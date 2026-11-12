@@ -20,6 +20,7 @@ at API rates, so results are comparable. API-key mode is kept as an option for l
 | Arm activation check | ✅ 2026-11-12, `js-chunk-remainder` × 4 arms: 4 of 4 solved, $0.013 in total. rtk's hook fired and rewrote commands. caveman's SessionStart and UserPromptSubmit hooks injected caveman mode. Ready for the pilot, pending the go-ahead |
 | `report` and bootstrap | ✅ `tokentrial report [--export-raw]`. Task-then-run hierarchical bootstrap, paired by task, with the noop noise floor |
 | Pilot run | ✅ 2026-11-12: 60 of 60 runs solved, $0.28 API-equivalent, no usage limit hit. See [`results/pilot-v0.1/FINDINGS.md`](../results/pilot-v0.1/FINDINGS.md) |
+| v0.2 run | ✅ 2026-11-12: 10 tasks × 5 arms × 8 repeats = 400 runs, 396 solved, $2.87 API-equivalent, all prices verified. See [`results/v0.2/FINDINGS.md`](../results/v0.2/FINDINGS.md) |
 | Leaderboard | Pending |
 | Checked against real Claude Code output | ✅ Smoke runs on 2026-11-12: recorded usage matches Claude Code's totals exactly (findings below) |
 

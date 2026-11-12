@@ -312,6 +312,7 @@ def report(
         typer.echo(f"no records in {runs}/", err=True)
         raise typer.Exit(code=EXIT_NOT_READY)
     manifest = json.loads((runs / "manifest.json").read_text())
+    manifest.setdefault("name", runs.name)
     records = load_records(runs)
     summary = summarize(records, n_boot=resamples, seed=seed)
     expected = len(manifest["task_ids"]) * len(manifest["arms"]) * manifest["repeats"]
