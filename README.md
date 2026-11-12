@@ -13,8 +13,8 @@ It runs the same coding tasks with and without each tool and reports the number 
 > from Claude Code skipping a background call when its plugin is loaded. Details:
 > [`results/pilot-v0.1/FINDINGS.md`](results/pilot-v0.1/FINDINGS.md).
 
-> Status: pre-alpha. The CLI is a stub and nothing has been measured yet. See
-> [docs/PLAN.md](docs/PLAN.md) for the first version.
+> Status: pre-alpha. The runner, the arms and `report` work, and the pilot has run. Prices are
+> unverified and there is no leaderboard yet. See [docs/PLAN.md](docs/PLAN.md).
 
 ## Why
 
@@ -81,8 +81,9 @@ per run (API-equivalent). Subscription usage limits make runs slower. When one i
 saves progress, prints when to come back, and exits with code 3. `--resume` continues without
 repeating finished runs.
 
-`run` works for the `baseline` and `noop` arms. The `rtk` and `caveman` adapters and `report`
-are still in progress.
+Install the pinned tool arms once with `uv run tokentrial install-arms`. Then
+`uv run tokentrial report --runs runs/<exp> --export-raw` writes `summary.md`, `summary.json` and
+scrubbed raw data to `results/<exp>/`.
 
 ## Leaderboard
 
