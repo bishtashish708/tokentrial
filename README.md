@@ -38,10 +38,11 @@ TokenTrial makes this kind of check repeatable, public, and applicable to any to
    - `baseline`: the unmodified agent.
    - `noop`: a control arm. It goes through the same install and wiring steps as a tool but
      changes nothing. Any difference between `noop` and `baseline` is noise.
-   - One arm per tool, installed at a pinned version with its documented setup.
+   - One arm per tool, installed at a pinned version with its documented setup. The v0.1
+     pilot tests `rtk` and `caveman`.
 3. **Same conditions.** Same model, agent version, prompt, task snapshot and limits for
    every arm. Arms run interleaved, not in blocks, so API-side drift affects them all equally.
-   Each (task, arm) pair runs N times (default 5).
+   Each (task, arm) pair runs N times (default 3 in the pilot).
 4. **Full token accounting.** Usage is taken from API responses for every call in a run and
    split into fresh input, cache write (5 min / 1 h), cache read and output. It's then priced
    from a versioned table ([`pricing.toml`](src/tokentrial/data/pricing.toml)) for Anthropic
@@ -59,10 +60,15 @@ TokenTrial makes this kind of check repeatable, public, and applicable to any to
 ```bash
 uv sync
 uv run tokentrial --help
-uv run tokentrial run --dry-run            # show the planned run matrix
-uv run tokentrial run --arm baseline --arm rtk --repeats 5
-uv run tokentrial report                   # aggregate runs and build the leaderboard
+uv run tokentrial run --dry-run                      # show the planned run matrix
+uv run tokentrial run --max-usd 10 --max-usd-per-run 0.5   # API key, hard spending caps
+uv run tokentrial run --mode subscription            # Claude Code login, API-equivalent cost
+uv run tokentrial report                             # aggregate runs and build the leaderboard
 ```
+
+Defaults are set for a low-cost pilot: Claude Haiku 5.5, 3 repeats, a $30 total cap and a $1 cap
+per run. If a cap is exceeded, the run or experiment stops. Subscription mode needs no API key.
+It prices Claude Code's reported usage at API rates. It's slower because usage limits apply.
 
 `run` and `report` only print a plan for now. Real execution comes in v0.1.
 
@@ -72,13 +78,13 @@ Results will be published as a static site on GitHub Pages from this repository.
 
 ## Roadmap
 
-- **v0.1 (2 weeks):** 20 tasks, a baseline, a `noop` control and 3 tool arms, on one agent
-  (Claude Code) and one model. Anthropic and Bedrock pricing, bootstrap CIs, and a static
-  leaderboard. See [docs/PLAN.md](docs/PLAN.md).
-- **v0.2:** more tools (context-mode, CLAUDE.md variants) and a template so tool authors can
-  submit their own arm.
-- **v0.3:** more agents and models, effort-level sweeps, and a larger task set built from
-  real-repo bug fixes.
+- **v0.1 pilot (2 weeks, about $10–30 or less):** 5 tasks × 4 arms (`baseline`, `noop`, `rtk`,
+  `caveman`) × 3 repeats, so 60 runs on Claude Haiku 5.5. Budget caps, a subscription mode, bootstrap
+  CIs, and a static leaderboard. See [docs/PLAN.md](docs/PLAN.md).
+- **v0.2 scale-up:** 20 tasks, headroom added, 5 repeats, so 500 runs on Sonnet 5.5. Funded by
+  cloud or API credit programs once the pilot gets traction.
+- **v0.3:** more tools (context-mode, CLAUDE.md variants), more agents and models, effort-level
+  sweeps, and a template so tool authors can submit their own arm.
 - **Later:** a CI job that reruns the leaderboard when a tool releases a new version, and
   cost-versus-latency plots.
 

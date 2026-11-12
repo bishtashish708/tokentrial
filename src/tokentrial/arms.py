@@ -44,4 +44,5 @@ ARMS: dict[str, Arm] = {
     ]
 }
 
-V1_ARMS = ("baseline", "noop", "rtk", "caveman", "headroom")
+# v0.1 pilot arms. headroom is defined but joins in the v0.2 scale-up.
+PILOT_ARMS = ("baseline", "noop", "rtk", "caveman")
