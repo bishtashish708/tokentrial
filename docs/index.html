@@ -21,15 +21,17 @@ body { margin:0; background:var(--bg); color:var(--fg);
   font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
 main { max-width:1040px; margin:0 auto; padding:40px 20px 64px; }
 h1 { font-size:28px; margin:0 0 4px; letter-spacing:-.01em; }
-h2 { font-size:18px; margin:40px 0 12px; }
+h2 { font-size:19px; margin:44px 0 12px; }
+h3 { font-size:16px; margin:36px 0 10px; }
 .sub { color:var(--muted); margin:0 0 24px; }
 a { color:var(--accent); }
 code { font:13px ui-monospace,SFMono-Regular,Menlo,monospace; }
+code.ctl { color:var(--muted); font-size:12px; }
 .facts { display:flex; flex-wrap:wrap; gap:8px 24px; padding:14px 16px; border:1px solid var(--line);
-  border-radius:8px; background:var(--card); font-size:14px; }
+  border-radius:8px; background:var(--card); font-size:14px; margin-bottom:12px; }
 .facts b { font-weight:600; }
 .scroll { overflow-x:auto; border:1px solid var(--line); border-radius:8px; background:var(--card); }
-table { border-collapse:collapse; width:100%; min-width:820px; font-size:14px; }
+table { border-collapse:collapse; width:100%; min-width:860px; font-size:14px; }
 th, td { padding:10px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
 thead th { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); font-weight:600; }
 tbody tr:last-child th, tbody tr:last-child td { border-bottom:0; }
@@ -40,7 +42,7 @@ tbody th { min-width:200px; }
 .muted { color:var(--muted); }
 tr.tool th code { color:var(--tool); font-weight:600; }
 .verdict { font-size:13px; }
-.forest { width:100%; max-width:680px; height:auto; display:block; }
+.forest { width:100%; max-width:680px; height:auto; display:block; margin-top:8px; }
 .forest .band { fill:var(--band); }
 .forest .grid { stroke:var(--line); }
 .forest .zero { stroke:var(--muted); stroke-dasharray:3 3; }
@@ -59,38 +61,192 @@ footer { margin-top:48px; color:var(--muted); font-size:13px; border-top:1px sol
 <main>
 <h1>TokenTrial leaderboard</h1>
 <p class="sub">Does a token-saving tool lower what a coding agent costs per <em>correctly solved</em> task?
-Results for run <code>v0.2</code>.</p>
+Each tool is compared with baseline and with a <em>matched control</em> that reproduces its side
+effects on Claude Code without the tool itself. Write-up: <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.3/FINDINGS.md">v0.3 FINDINGS</a>.</p>
 
+<h2>v0.3 in brief</h2>
+<ul>
+<li><b>No tool saved money beyond the noise floor</b> on either model.</li>
+<li><b>caveman v4.1.0 cost 25% more on Sonnet 5.5</b> (95% CI +12% to +44%) than its control. Its
+SessionStart hook adds about 1,850 tokens of instructions to every session, and Sonnet's output, already
+short, didn't get shorter. On Haiku 5.5, where output fell about 17%, it was −8% (CI −19% to +5%).</li>
+<li><b>rtk's penalty replicated where rtk does the most work.</b> Averaged over 18 tasks it's +4–5%
+(inconclusive), but on the four Bash-heavy tasks identified in v0.2 it was +38% for v1.1.0 on Haiku
+(CI +9% to +81%) and +36% for v1.2.0 on Sonnet (CI +5% to +114%).</li>
+<li><b>headroom had no measurable effect</b> against a pass-through proxy (Haiku −6%, Sonnet −2%). It
+compressed requests in every run but removed only about 2% of input tokens.</li>
+<li><b>Claude Code updated itself mid-run</b> (2.1.252 → 2.1.322) after 447 of the 810 Haiku runs; all
+Sonnet runs used 2.1.322. 2.1.322 no longer makes the background title call that skewed caveman's pilot result.
+See FINDINGS for the version-split analysis.</li>
+</ul>
+
+
+<section id="v03-sonnet">
+<h2><code>v0.3-sonnet</code>: <code>claude-sonnet-5-5</code></h2>
+<div class="facts">
+  <span><b>Date</b> 2026-11-13</span>
+  <span><b>Agent</b> Claude Code 2.1.322, headless</span>
+  <span><b>Design</b> 18 tasks × 7 arms × 3 repeats = 378 runs</span>
+  <span><b>Solved</b> 373/378</span>
+  <span><b>Total cost</b> $17.76 API-equivalent</span>
+</div>
+<div class="scroll">
+<table>
+<thead><tr><th>Arm</th><th>Solved</th><th>Cost per solved task (95% CI)</th>
+<th>vs <code>baseline</code></th><th>vs matched control</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr class="reference"><th scope="row"><code>baseline</code><div class="desc">Unmodified Claude Code</div></th><td class="num">53/54</td><td class="num">$0.0461 <span class="ci">($0.0362–$0.0582)</span></td><td class="num muted">—</td><td class="num muted">—</td><td class="verdict">reference</td></tr>
+<tr class="control"><th scope="row"><code>noop</code><div class="desc">Control: same install steps, changes nothing</div></th><td class="num">54/54</td><td class="num">$0.0459 <span class="ci">($0.0356–$0.0586)</span></td><td class="num">−1% <span class="ci">(−8% to +6%)</span></td><td class="num muted">—</td><td class="verdict">control</td></tr>
+<tr class="control"><th scope="row"><code>noop-hook</code><div class="desc">Control: a do-nothing SessionStart hook</div></th><td class="num">53/54</td><td class="num">$0.0451 <span class="ci">($0.0359–$0.0566)</span></td><td class="num">−2% <span class="ci">(−13% to +9%)</span></td><td class="num muted">—</td><td class="verdict">control</td></tr>
+<tr class="control"><th scope="row"><code>headroom-passthrough</code><div class="desc">Control: headroom proxy with optimization off</div></th><td class="num">54/54</td><td class="num">$0.0462 <span class="ci">($0.0363–$0.0585)</span></td><td class="num">±0% <span class="ci">(−7% to +7%)</span></td><td class="num muted">—</td><td class="verdict">control</td></tr>
+<tr class="tool"><th scope="row"><code>rtk-v1.2.0</code><div class="desc">rtk v1.2.0: compresses shell command output</div></th><td class="num">53/54</td><td class="num">$0.0483 <span class="ci">($0.0380–$0.0612)</span></td><td class="num">+5% <span class="ci">(−8% to +21%)</span></td><td class="num"><code class="ctl">baseline</code> +5% <span class="ci">(−8% to +21%)</span></td><td class="verdict">inconclusive (CI includes no change or overlaps the noise floor)</td></tr>
+<tr class="tool"><th scope="row"><code>caveman-v4.1.0</code><div class="desc">caveman v4.1.0: terse-answer plugin</div></th><td class="num">52/54</td><td class="num">$0.0565 <span class="ci">($0.0445–$0.0716)</span></td><td class="num">+22% <span class="ci">(+13% to +32%)</span></td><td class="num"><code class="ctl">noop-hook</code> +25% <span class="ci">(+12% to +44%)</span></td><td class="verdict">more expensive than baseline, beyond the noise floor</td></tr>
+<tr class="tool"><th scope="row"><code>headroom</code><div class="desc">headroom 0.42.0: context-compression proxy</div></th><td class="num">54/54</td><td class="num">$0.0454 <span class="ci">($0.0372–$0.0549)</span></td><td class="num">−1% <span class="ci">(−10% to +8%)</span></td><td class="num"><code class="ctl">headroom-passthrough</code> −2% <span class="ci">(−9% to +7%)</span></td><td class="verdict">inconclusive (CI includes no change or overlaps the noise floor)</td></tr>
+</tbody>
+</table>
+</div>
+<p class="note">Noise floor (<code>noop</code> vs <code>baseline</code>): −1%
+(−8% to +6%).</p>
+<svg viewBox="0 0 640 262" role="img" aria-labelledby="fp-v03-sonnet" class="forest">
+<title id="fp-v03-sonnet">Cost per solved task relative to baseline, with 95% confidence intervals</title>
+<rect x="259.4" y="20" width="64.7" height="208" class="band"><title>Noise floor: noop vs baseline CI</title></rect>
+<line x1="110.0" x2="110.0" y1="18" y2="240" class="grid"/>
+<text x="110.0" y="256" class="tick">−40%</text>
+<line x1="202.7" x2="202.7" y1="18" y2="240" class="grid"/>
+<text x="202.7" y="256" class="tick">−20%</text>
+<line x1="295.5" x2="295.5" y1="18" y2="240" class="zero"/>
+<text x="295.5" y="256" class="tick">±0%</text>
+<line x1="388.2" x2="388.2" y1="18" y2="240" class="grid"/>
+<text x="388.2" y="256" class="tick">+20%</text>
+<line x1="480.9" x2="480.9" y1="18" y2="240" class="grid"/>
+<text x="480.9" y="256" class="tick">+40%</text>
+<line x1="573.6" x2="573.6" y1="18" y2="240" class="grid"/>
+<text x="573.6" y="256" class="tick">+60%</text>
+<text x="98" y="43.0" class="label">noop</text>
+<line x1="259.4" x2="324.1" y1="39.0" y2="39.0" class="ci control"/>
+<circle cx="292.7" cy="39.0" r="5" class="pt control"><title>noop: −1% (−8% to +6%)</title></circle>
+<text x="98" y="77.0" class="label">noop-hook</text>
+<line x1="233.0" x2="335.1" y1="73.0" y2="73.0" class="ci control"/>
+<circle cx="285.5" cy="73.0" r="5" class="pt control"><title>noop-hook: −2% (−13% to +9%)</title></circle>
+<text x="98" y="111.0" class="label">headroom-passthrough</text>
+<line x1="261.1" x2="329.7" y1="107.0" y2="107.0" class="ci control"/>
+<circle cx="296.3" cy="107.0" r="5" class="pt control"><title>headroom-passthrough: ±0% (−7% to +7%)</title></circle>
+<text x="98" y="145.0" class="label">rtk-v1.2.0</text>
+<line x1="258.9" x2="393.5" y1="141.0" y2="141.0" class="ci tool"/>
+<circle cx="317.1" cy="141.0" r="5" class="pt tool"><title>rtk-v1.2.0: +5% (−8% to +21%)</title></circle>
+<text x="98" y="179.0" class="label">caveman-v4.1.0</text>
+<line x1="356.8" x2="444.9" y1="175.0" y2="175.0" class="ci tool"/>
+<circle cx="399.7" cy="175.0" r="5" class="pt tool"><title>caveman-v4.1.0: +22% (+13% to +32%)</title></circle>
+<text x="98" y="213.0" class="label">headroom</text>
+<line x1="246.9" x2="331.7" y1="209.0" y2="209.0" class="ci tool"/>
+<circle cx="288.6" cy="209.0" r="5" class="pt tool"><title>headroom: −1% (−10% to +8%)</title></circle>
+</svg>
+<p class="note">Relative to baseline. Dots are point estimates, lines 95% CIs, the shaded band the noise floor.
+Data: <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.3-sonnet/summary.md">summary.md</a> · <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.3-sonnet/summary.json">summary.json</a> ·
+<a href="https://github.com/bishtashish708/tokentrial/tree/main/results/v0.3-sonnet/raw">raw records and transcripts</a> (home path and username scrubbed).</p>
+</section>
+
+<h2>Earlier and per-model results</h2>
+
+<section id="v03-haiku">
+<h3><code>v0.3-haiku</code>: <code>claude-haiku-5-5</code></h3>
+<div class="facts">
+  <span><b>Date</b> 2026-11-12, 2026-11-13</span>
+  <span><b>Agent</b> Claude Code 2.1.252, 2.1.322, headless</span>
+  <span><b>Design</b> 18 tasks × 9 arms × 5 repeats = 810 runs</span>
+  <span><b>Solved</b> 806/810</span>
+  <span><b>Total cost</b> $7.85 API-equivalent</span>
+</div>
+<div class="scroll">
+<table>
+<thead><tr><th>Arm</th><th>Solved</th><th>Cost per solved task (95% CI)</th>
+<th>vs <code>baseline</code></th><th>vs matched control</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr class="reference"><th scope="row"><code>baseline</code><div class="desc">Unmodified Claude Code</div></th><td class="num">90/90</td><td class="num">$0.0097 <span class="ci">($0.0067–$0.0133)</span></td><td class="num muted">—</td><td class="num muted">—</td><td class="verdict">reference</td></tr>
+<tr class="control"><th scope="row"><code>noop</code><div class="desc">Control: same install steps, changes nothing</div></th><td class="num">89/90</td><td class="num">$0.0099 <span class="ci">($0.0069–$0.0137)</span></td><td class="num">+3% <span class="ci">(−9% to +16%)</span></td><td class="num muted">—</td><td class="verdict">control</td></tr>
+<tr class="control"><th scope="row"><code>noop-hook</code><div class="desc">Control: a do-nothing SessionStart hook</div></th><td class="num">89/90</td><td class="num">$0.0094 <span class="ci">($0.0061–$0.0136)</span></td><td class="num">−3% <span class="ci">(−17% to +12%)</span></td><td class="num muted">—</td><td class="verdict">control</td></tr>
+<tr class="control"><th scope="row"><code>headroom-passthrough</code><div class="desc">Control: headroom proxy with optimization off</div></th><td class="num">90/90</td><td class="num">$0.0109 <span class="ci">($0.0071–$0.0158)</span></td><td class="num">+13% <span class="ci">(−4% to +29%)</span></td><td class="num muted">—</td><td class="verdict">control</td></tr>
+<tr class="tool"><th scope="row"><code>rtk</code><div class="desc">rtk v1.1.0: compresses shell command output</div></th><td class="num">90/90</td><td class="num">$0.0101 <span class="ci">($0.0072–$0.0133)</span></td><td class="num">+4% <span class="ci">(−10% to +22%)</span></td><td class="num"><code class="ctl">baseline</code> +4% <span class="ci">(−10% to +22%)</span></td><td class="verdict">inconclusive (CI includes no change or overlaps the noise floor)</td></tr>
+<tr class="tool"><th scope="row"><code>rtk-v1.2.0</code><div class="desc">rtk v1.2.0: compresses shell command output</div></th><td class="num">90/90</td><td class="num">$0.0101 <span class="ci">($0.0072–$0.0134)</span></td><td class="num">+5% <span class="ci">(−6% to +18%)</span></td><td class="num"><code class="ctl">baseline</code> +5% <span class="ci">(−6% to +18%)</span></td><td class="verdict">inconclusive (CI includes no change or overlaps the noise floor)</td></tr>
+<tr class="tool"><th scope="row"><code>caveman</code><div class="desc">caveman v4.0.1: terse-answer plugin</div></th><td class="num">89/90</td><td class="num">$0.0085 <span class="ci">($0.0056–$0.0121)</span></td><td class="num">−12% <span class="ci">(−22% to −2%)</span></td><td class="num"><code class="ctl">noop-hook</code> −10% <span class="ci">(−21% to +4%)</span></td><td class="verdict">cheaper than baseline, beyond the noise floor</td></tr>
+<tr class="tool"><th scope="row"><code>caveman-v4.1.0</code><div class="desc">caveman v4.1.0: terse-answer plugin</div></th><td class="num">90/90</td><td class="num">$0.0086 <span class="ci">($0.0058–$0.0122)</span></td><td class="num">−11% <span class="ci">(−20% to ±0%)</span></td><td class="num"><code class="ctl">noop-hook</code> −8% <span class="ci">(−19% to +5%)</span></td><td class="verdict">cheaper than baseline, beyond the noise floor</td></tr>
+<tr class="tool"><th scope="row"><code>headroom</code><div class="desc">headroom 0.42.0: context-compression proxy</div></th><td class="num">89/90</td><td class="num">$0.0103 <span class="ci">($0.0066–$0.0147)</span></td><td class="num">+6% <span class="ci">(−9% to +23%)</span></td><td class="num"><code class="ctl">headroom-passthrough</code> −6% <span class="ci">(−19% to +8%)</span></td><td class="verdict">inconclusive (CI includes no change or overlaps the noise floor)</td></tr>
+</tbody>
+</table>
+</div>
+<p class="note">Noise floor (<code>noop</code> vs <code>baseline</code>): +3%
+(−9% to +16%).</p>
+<svg viewBox="0 0 640 330" role="img" aria-labelledby="fp-v03-haiku" class="forest">
+<title id="fp-v03-haiku">Cost per solved task relative to baseline, with 95% confidence intervals</title>
+<rect x="253.1" y="20" width="115.1" height="276" class="band"><title>Noise floor: noop vs baseline CI</title></rect>
+<line x1="110.0" x2="110.0" y1="18" y2="308" class="grid"/>
+<text x="110.0" y="324" class="tick">−40%</text>
+<line x1="202.7" x2="202.7" y1="18" y2="308" class="grid"/>
+<text x="202.7" y="324" class="tick">−20%</text>
+<line x1="295.5" x2="295.5" y1="18" y2="308" class="zero"/>
+<text x="295.5" y="324" class="tick">±0%</text>
+<line x1="388.2" x2="388.2" y1="18" y2="308" class="grid"/>
+<text x="388.2" y="324" class="tick">+20%</text>
+<line x1="480.9" x2="480.9" y1="18" y2="308" class="grid"/>
+<text x="480.9" y="324" class="tick">+40%</text>
+<line x1="573.6" x2="573.6" y1="18" y2="308" class="grid"/>
+<text x="573.6" y="324" class="tick">+60%</text>
+<text x="98" y="43.0" class="label">noop</text>
+<line x1="253.1" x2="368.2" y1="39.0" y2="39.0" class="ci control"/>
+<circle cx="307.2" cy="39.0" r="5" class="pt control"><title>noop: +3% (−9% to +16%)</title></circle>
+<text x="98" y="77.0" class="label">noop-hook</text>
+<line x1="216.0" x2="349.3" y1="73.0" y2="73.0" class="ci control"/>
+<circle cx="280.5" cy="73.0" r="5" class="pt control"><title>noop-hook: −3% (−17% to +12%)</title></circle>
+<text x="98" y="111.0" class="label">headroom-passthrough</text>
+<line x1="276.8" x2="430.4" y1="107.0" y2="107.0" class="ci control"/>
+<circle cx="354.9" cy="107.0" r="5" class="pt control"><title>headroom-passthrough: +13% (−4% to +29%)</title></circle>
+<text x="98" y="145.0" class="label">rtk</text>
+<line x1="248.2" x2="395.6" y1="141.0" y2="141.0" class="ci tool"/>
+<circle cx="312.9" cy="141.0" r="5" class="pt tool"><title>rtk: +4% (−10% to +22%)</title></circle>
+<text x="98" y="179.0" class="label">rtk-v1.2.0</text>
+<line x1="266.2" x2="379.0" y1="175.0" y2="175.0" class="ci tool"/>
+<circle cx="316.7" cy="175.0" r="5" class="pt tool"><title>rtk-v1.2.0: +5% (−6% to +18%)</title></circle>
+<text x="98" y="213.0" class="label">caveman</text>
+<line x1="195.5" x2="285.6" y1="209.0" y2="209.0" class="ci tool"/>
+<circle cx="237.8" cy="209.0" r="5" class="pt tool"><title>caveman: −12% (−22% to −2%)</title></circle>
+<text x="98" y="247.0" class="label">caveman-v4.1.0</text>
+<line x1="202.0" x2="294.0" y1="243.0" y2="243.0" class="ci tool"/>
+<circle cx="245.1" cy="243.0" r="5" class="pt tool"><title>caveman-v4.1.0: −11% (−20% to ±0%)</title></circle>
+<text x="98" y="281.0" class="label">headroom</text>
+<line x1="254.2" x2="404.3" y1="277.0" y2="277.0" class="ci tool"/>
+<circle cx="323.6" cy="277.0" r="5" class="pt tool"><title>headroom: +6% (−9% to +23%)</title></circle>
+</svg>
+<p class="note">Relative to baseline. Dots are point estimates, lines 95% CIs, the shaded band the noise floor.
+Data: <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.3-haiku/summary.md">summary.md</a> · <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.3-haiku/summary.json">summary.json</a> ·
+<a href="https://github.com/bishtashish708/tokentrial/tree/main/results/v0.3-haiku/raw">raw records and transcripts</a> (home path and username scrubbed).</p>
+</section>
+
+<section id="v02">
+<h3><code>v0.2</code>: <code>claude-haiku-5-5</code></h3>
 <div class="facts">
   <span><b>Date</b> 2026-11-12</span>
   <span><b>Agent</b> Claude Code 2.1.252, headless</span>
-  <span><b>Model</b> <code>claude-haiku-5-5</code></span>
   <span><b>Design</b> 10 tasks × 5 arms × 8 repeats = 400 runs</span>
   <span><b>Solved</b> 396/400</span>
-  <span><b>Total cost</b> $2.87 API-equivalent (verified list prices)</span>
+  <span><b>Total cost</b> $2.87 API-equivalent</span>
 </div>
-
-<h2>Cost per solved task</h2>
 <div class="scroll">
 <table>
-<thead><tr><th>Arm</th><th>Version</th><th>Solved</th><th>Cost per solved task (95% CI)</th>
-<th>vs <code>baseline</code></th><th>vs <code>noop-hook</code></th><th>Verdict</th></tr></thead>
+<thead><tr><th>Arm</th><th>Solved</th><th>Cost per solved task (95% CI)</th>
+<th>vs <code>baseline</code></th><th>vs matched control</th><th>Verdict</th></tr></thead>
 <tbody>
-<tr class="reference"><th scope="row"><code>baseline</code><div class="desc">Unmodified Claude Code</div></th><td class="num">—</td><td class="num">80/80</td><td class="num">$0.0068 <span class="ci">($0.0045–$0.0100)</span></td><td class="num muted">—</td><td class="num muted">—</td><td class="verdict">reference</td></tr>
-<tr class="control"><th scope="row"><code>noop</code><div class="desc">Control: same install steps, changes nothing</div></th><td class="num">—</td><td class="num">80/80</td><td class="num">$0.0076 <span class="ci">($0.0047–$0.0116)</span></td><td class="num">+11% <span class="ci">(−2% to +24%)</span></td><td class="num muted">—</td><td class="verdict">control</td></tr>
-<tr class="control"><th scope="row"><code>noop-hook</code><div class="desc">Control: a do-nothing SessionStart hook</div></th><td class="num">—</td><td class="num">79/80</td><td class="num">$0.0062 <span class="ci">($0.0035–$0.0103)</span></td><td class="num">−9% <span class="ci">(−24% to +7%)</span></td><td class="num muted">—</td><td class="verdict">control</td></tr>
-<tr class="tool"><th scope="row"><code>rtk</code><div class="desc">rtk: compresses shell command output</div></th><td class="num">v1.1.0</td><td class="num">80/80</td><td class="num">$0.0093 <span class="ci">($0.0057–$0.0138)</span></td><td class="num">+36% <span class="ci">(+17% to +53%)</span></td><td class="num">+49% <span class="ci">(+26% to +81%)</span></td><td class="verdict">more expensive than baseline, beyond the noise floor</td></tr>
-<tr class="tool"><th scope="row"><code>caveman</code><div class="desc">caveman: terse-answer plugin</div></th><td class="num">v4.0.1</td><td class="num">77/80</td><td class="num">$0.0062 <span class="ci">($0.0036–$0.0101)</span></td><td class="num">−9% <span class="ci">(−21% to +5%)</span></td><td class="num">±0% <span class="ci">(−10% to +11%)</span></td><td class="verdict">inconclusive (CI includes no change or overlaps the noise floor)</td></tr>
+<tr class="reference"><th scope="row"><code>baseline</code><div class="desc">Unmodified Claude Code</div></th><td class="num">80/80</td><td class="num">$0.0068 <span class="ci">($0.0045–$0.0100)</span></td><td class="num muted">—</td><td class="num muted">—</td><td class="verdict">reference</td></tr>
+<tr class="control"><th scope="row"><code>noop</code><div class="desc">Control: same install steps, changes nothing</div></th><td class="num">80/80</td><td class="num">$0.0076 <span class="ci">($0.0047–$0.0116)</span></td><td class="num">+11% <span class="ci">(−2% to +24%)</span></td><td class="num muted">—</td><td class="verdict">control</td></tr>
+<tr class="control"><th scope="row"><code>noop-hook</code><div class="desc">Control: a do-nothing SessionStart hook</div></th><td class="num">79/80</td><td class="num">$0.0062 <span class="ci">($0.0035–$0.0103)</span></td><td class="num">−9% <span class="ci">(−24% to +7%)</span></td><td class="num muted">—</td><td class="verdict">control</td></tr>
+<tr class="tool"><th scope="row"><code>rtk</code><div class="desc">rtk v1.1.0: compresses shell command output</div></th><td class="num">80/80</td><td class="num">$0.0093 <span class="ci">($0.0057–$0.0138)</span></td><td class="num">+36% <span class="ci">(+17% to +53%)</span></td><td class="num muted">—</td><td class="verdict">more expensive than baseline, beyond the noise floor</td></tr>
+<tr class="tool"><th scope="row"><code>caveman</code><div class="desc">caveman v4.0.1: terse-answer plugin</div></th><td class="num">77/80</td><td class="num">$0.0062 <span class="ci">($0.0036–$0.0101)</span></td><td class="num">−9% <span class="ci">(−21% to +5%)</span></td><td class="num muted">—</td><td class="verdict">inconclusive (CI includes no change or overlaps the noise floor)</td></tr>
 </tbody>
 </table>
 </div>
 <p class="note">Noise floor (<code>noop</code> vs <code>baseline</code>): +11%
-(−2% to +24%). A tool counts as saving money only if its interval
-excludes zero and its point estimate lies outside the noise floor.</p>
-
-<h2>Relative to baseline</h2>
-<svg viewBox="0 0 640 194" role="img" aria-labelledby="fp-title" class="forest">
-<title id="fp-title">Cost per solved task relative to baseline, with 95% confidence intervals</title>
+(−2% to +24%).</p>
+<svg viewBox="0 0 640 194" role="img" aria-labelledby="fp-v02" class="forest">
+<title id="fp-v02">Cost per solved task relative to baseline, with 95% confidence intervals</title>
 <rect x="287.4" y="20" width="120.6" height="140" class="band"><title>Noise floor: noop vs baseline CI</title></rect>
 <line x1="110.0" x2="110.0" y1="18" y2="172" class="grid"/>
 <text x="110.0" y="188" class="tick">−40%</text>
@@ -117,40 +273,31 @@ excludes zero and its point estimate lies outside the noise floor.</p>
 <line x1="198.6" x2="318.6" y1="141.0" y2="141.0" class="ci tool"/>
 <circle cx="253.7" cy="141.0" r="5" class="pt tool"><title>caveman: −9% (−21% to +5%)</title></circle>
 </svg>
-<p class="note">Dots are point estimates; lines are 95% CIs. The shaded band is the noise floor.</p>
-
-<h2>What is behind the numbers</h2>
-<ul>
-<li><b>rtk</b> compressed pytest and git output. On the tasks where it compressed the most, the agent
-re-ran commands with <code>rtk bypass</code> and took more turns, and each extra turn re-reads the
-cached context. See <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/FINDINGS.md#why-rtk-cost-more">FINDINGS</a>.</li>
-<li><b>caveman</b>: Claude Code 2.1.252 skips a small background title-generation call whenever
-<em>any</em> SessionStart hook is configured. caveman registers one, which explains its apparent
-saving in the pilot. The <code>noop-hook</code> arm reproduces that side effect; against it caveman's
-effect is about zero. See <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/FINDINGS.md#why-cavemans-pilot-saving-disappeared">FINDINGS</a>.</li>
-</ul>
+<p class="note">Relative to baseline. Dots are point estimates, lines 95% CIs, the shaded band the noise floor.
+Data: <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/summary.md">summary.md</a> · <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/summary.json">summary.json</a> ·
+<a href="https://github.com/bishtashish708/tokentrial/tree/main/results/v0.2/raw">raw records and transcripts</a> (home path and username scrubbed).</p>
+</section>
 
 <h2>Limitations</h2>
 <ul>
-<li>One model (Haiku 5.5) and one Claude Code version, which does not recognize this model ID. That is the same for every arm.</li>
-<li>Small-to-medium synthetic tasks. Haiku solved nearly all of them, so the comparison rests on cost, not solve rate.</li>
-<li>Pinned tool versions (rtk v1.1.0, caveman v4.0.1); newer releases were not tested.</li>
-<li>Costs are API-equivalent: runs used a Claude Code subscription and usage was priced at list prices.</li>
+<li>Synthetic small-to-medium tasks; both models solved nearly all of them, so the comparison rests on cost.</li>
+<li>Claude Code changed version during the Haiku run; arms were affected roughly equally (36–45 of each arm's 90 runs on 2.1.322).</li>
+<li>Default tool configurations and pinned versions; one agent (Claude Code).</li>
+<li>Costs are API-equivalent: runs used a Claude Code subscription, priced at verified list prices
+(<a href="https://github.com/bishtashish708/tokentrial/blob/main/src/tokentrial/data/pricing.toml">price table</a>).</li>
 </ul>
 
-<h2>Data and method</h2>
+<h2>Method and reproduction</h2>
 <ul>
-<li><a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/FINDINGS.md">Findings write-up</a> ·
-<a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/summary.md">summary.md</a> · <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/summary.json">summary.json</a></li>
-<li><a href="https://github.com/bishtashish708/tokentrial/tree/main/results/v0.2/raw">Raw data</a>: <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/raw/records.jsonl">records.jsonl</a> (one line per run),
-<a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/raw/manifest.json">manifest.json</a>, <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/raw/logs.tar.gz">logs.tar.gz</a> (agent transcripts; home path and username scrubbed)</li>
-<li><a href="https://github.com/bishtashish708/tokentrial/blob/main/src/tokentrial/data/pricing.toml">Price table</a> with source URLs and check dates</li>
-<li>CIs: tasks, then runs within task bootstrap, 10,000 resamples, paired by task.</li>
-<li>Reproduce: <code>uv sync &amp;&amp; uv run tokentrial install-arms &amp;&amp; uv run tokentrial run --repeats 8 --seed 2 --out runs/v0.2 --arm baseline --arm noop --arm noop-hook --arm rtk --arm caveman</code>
-then <code>uv run tokentrial report --runs runs/v0.2</code>.</li>
+<li>CIs: task-then-run hierarchical bootstrap, 10,000 resamples, paired by task.</li>
+<li>Reproduce v0.3 (after <code>uv sync &amp;&amp; uv run tokentrial install-arms</code>):<br>
+Haiku: <code>uv run tokentrial run --model claude-haiku-5-5 --repeats 5 --seed 3 --out runs/v0.3-haiku --arm baseline --arm noop --arm noop-hook --arm headroom-passthrough --arm rtk --arm rtk-v1.2.0 --arm caveman --arm caveman-v4.1.0 --arm headroom</code><br>
+Sonnet: <code>uv run tokentrial run --model claude-sonnet-5-5 --repeats 3 --seed 3 --out runs/v0.3-sonnet --arm baseline --arm noop --arm noop-hook --arm headroom-passthrough --arm rtk-v1.2.0 --arm caveman-v4.1.0 --arm headroom</code><br>
+then <code>uv run tokentrial report --runs runs/v0.3-haiku</code> (and the same for <code>runs/v0.3-sonnet</code>).</li>
+<li>v0.2 write-up: <a href="https://github.com/bishtashish708/tokentrial/blob/main/results/v0.2/FINDINGS.md">FINDINGS</a>.</li>
 </ul>
 
-<footer>Generated by <code>scripts/make_site.py</code> from <code>results/v0.2/summary.json</code>.
+<footer>Generated by <code>scripts/make_site.py</code> from <code>results/v0.3-sonnet/summary.json</code>, <code>results/v0.3-haiku/summary.json</code>, <code>results/v0.2/summary.json</code>.
 <a href="https://github.com/bishtashish708/tokentrial">Source on GitHub</a> · MIT license.</footer>
 </main>
 </body>

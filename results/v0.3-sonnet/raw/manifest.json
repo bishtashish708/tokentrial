@@ -1,0 +1,39 @@
+{
+  "mode": "subscription",
+  "provider": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "arms": [
+    "baseline",
+    "noop",
+    "noop-hook",
+    "headroom-passthrough",
+    "rtk-v1.2.0",
+    "caveman-v4.1.0",
+    "headroom"
+  ],
+  "task_ids": [
+    "c-ring-buffer",
+    "git-config-forensics",
+    "git-regression-hunt",
+    "js-chunk-remainder",
+    "js-csv-quoted-fields",
+    "js-lru-ttl-cache",
+    "log-link-failure",
+    "py-cli-json-output",
+    "py-cron-next",
+    "py-cron-tz",
+    "py-duration-spec",
+    "py-ledger-parens",
+    "py-perf-dedupe",
+    "py-pytest-cart-pricing",
+    "read-audit-writer",
+    "read-config-precedence",
+    "sh-backup-rotate",
+    "sql-monthly-revenue"
+  ],
+  "repeats": 3,
+  "seed": 3,
+  "max_usd": 40.0,
+  "max_usd_per_run": 2.0,
+  "pause_at_utilization": 0.6
+}

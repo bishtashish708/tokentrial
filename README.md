@@ -8,20 +8,24 @@ TokenTrial is an open benchmark for the token-saving tools that coding agents us
 It runs the same coding tasks with and without each tool and reports the number that matters:
 **dollars per correctly solved task**.
 
-> **v0.2 results (2026-11-12, 400 runs, Haiku 5.5, verified prices):**
-> - **rtk** v1.1.0 *raised* cost per solved task by **36%** (95% CI +17% to +53%). Compressed test
->   and git output led the agent to re-run commands and take extra turns.
-> - **caveman** v4.0.1 had **no measurable effect** (−0%, CI −10% to +11%) against a control that
->   reproduces a Claude Code side effect it triggers.
-> - A do-nothing arm alone moved cost by +11%.
+> **v0.3 results (2026-11-13, 1,188 runs, Haiku 5.5 and Sonnet 5.5, 18 tasks):**
+> - **No tool saved money beyond the noise floor** on either model.
+> - **caveman** v4.1.0 made Sonnet runs **25% more expensive** (95% CI +12% to +44%) than its
+>   control: its instructions add about 1,850 tokens to every session, and Sonnet's output didn't get
+>   shorter. On Haiku it was −8% (CI −19% to +5%).
+> - **rtk**'s v0.2 penalty replicated on the Bash-heavy tasks where it does the most work: +38% for
+>   v1.1.0 on Haiku and +36% for v1.2.0 on Sonnet. Averaged over all 18 tasks it was +4–5%
+>   (inconclusive).
+> - **headroom** 0.42.0 had no measurable effect against a pass-through proxy (−6% Haiku, −2% Sonnet).
 >
 > Leaderboard: https://bishtashish708.github.io/tokentrial/ · Details:
-> [`results/v0.2/FINDINGS.md`](results/v0.2/FINDINGS.md). Pilot:
-> [`results/pilot-v0.1/FINDINGS.md`](results/pilot-v0.1/FINDINGS.md).
+> [`results/v0.3/FINDINGS.md`](results/v0.3/FINDINGS.md) ·
+> [v0.2](results/v0.2/FINDINGS.md) (rtk +36%, caveman ±0%, 400 runs) ·
+> [pilot](results/pilot-v0.1/FINDINGS.md).
 
-> Status: alpha. The runner, the arms, verified prices and `report` work. v0.1 and v0.2 have run.
-> A static leaderboard is generated from `results/v0.2/summary.json` by `scripts/make_site.py`
-> into `docs/`. See [docs/PLAN.md](docs/PLAN.md).
+> Status: alpha. The runner, the arms, verified prices and `report` work. v0.1, v0.2 and v0.3 have
+> run. A static leaderboard is generated from the `results/*/summary.json` files by
+> `scripts/make_site.py` into `docs/`. See [docs/PLAN.md](docs/PLAN.md).
 
 ## Why
 
@@ -95,7 +99,7 @@ scrubbed raw data to `results/<exp>/`.
 ## Leaderboard
 
 Published on GitHub Pages from `docs/`: https://bishtashish708.github.io/tokentrial/. Regenerate
-it with `uv run python scripts/make_site.py results/<exp> docs/index.html`.
+it with `uv run python scripts/make_site.py docs/index.html results/<featured-exp> [results/<more> ...]`.
 
 ## Roadmap
 
@@ -105,9 +109,11 @@ it with `uv run python scripts/make_site.py results/<exp> docs/index.html`.
   [docs/PLAN.md](docs/PLAN.md).
 - **v0.2 (done):** 10 tasks, including 5 with large pytest and git output, × 5 arms (adding a
   `noop-hook` control) × 8 repeats = 400 runs on a subscription, with verified prices.
-- **v0.3 (prepared, not run):** 18 tasks across Python, Node, C, SQL and bash; rtk v1.2.0 and
-  caveman v4.1.0 next to the v0.2 pins; headroom with a proxy-only control; Haiku 5.5 and
-  Sonnet 5.5. See the [v0.3 plan](docs/PLAN.md#v03-plan-proposed-not-started).
+- **v0.3 (done):** 18 tasks across Python, Node, C, SQL and bash; rtk v1.2.0 and caveman v4.1.0
+  next to the v0.2 pins; headroom with a pass-through control; Haiku 5.5 (810 runs) and Sonnet 5.5
+  (378 runs). See [results/v0.3/FINDINGS.md](results/v0.3/FINDINGS.md).
+- **Next:** pin the agent version (no auto-updates mid-run), larger tasks where compression tools
+  have more to work with, and per-task reporting of where each tool acts.
 - **Later:** more tools (context-mode, CLAUDE.md variants), more agents and models, effort-level
   sweeps, and a template so tool authors can submit their own arm.
 - **Later:** a CI job that reruns the leaderboard when a tool releases a new version, and

@@ -1,0 +1,575 @@
+{
+  "n_records": 378,
+  "bootstrap": {
+    "resamples": 10000,
+    "seed": 0,
+    "method": "tasks, then runs within task"
+  },
+  "noise_floor_noop_vs_baseline": {
+    "point": -0.005866760302169816,
+    "ci95": [
+      -0.0777466609433803,
+      0.06169825712013548
+    ]
+  },
+  "arms": {
+    "baseline": {
+      "runs": 54,
+      "solved": 53,
+      "solve_rate": 0.9814814814814815,
+      "solved_by_task": {
+        "c-ring-buffer": 3,
+        "git-config-forensics": 3,
+        "git-regression-hunt": 3,
+        "js-chunk-remainder": 3,
+        "js-csv-quoted-fields": 3,
+        "js-lru-ttl-cache": 3,
+        "log-link-failure": 3,
+        "py-cli-json-output": 3,
+        "py-cron-next": 3,
+        "py-cron-tz": 3,
+        "py-duration-spec": 3,
+        "py-ledger-parens": 3,
+        "py-perf-dedupe": 3,
+        "py-pytest-cart-pricing": 3,
+        "read-audit-writer": 3,
+        "read-config-precedence": 3,
+        "sh-backup-rotate": 2,
+        "sql-monthly-revenue": 3
+      },
+      "cost_per_solved": 0.046127390566037735,
+      "cost_per_solved_ci95": [
+        0.03620205592068484,
+        0.0582157708625337
+      ],
+      "mean_cost_per_run": 0.04527317962962963,
+      "mean_cost_by_type": {
+        "input": 1.6e-05,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.024439777777777776,
+        "cache_read": 0.00346555,
+        "output": 0.01735185185185185
+      },
+      "mean_tokens_by_type": {
+        "input": 8.0,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 6109.944444444444,
+        "cache_read": 34655.5,
+        "output": 1735.1851851851852
+      },
+      "mean_background_cost": 0.0,
+      "runs_with_background_calls": 0,
+      "main_model_cost_per_solved": 0.046127390566037735,
+      "main_model_cost_per_solved_ci95": [
+        0.03620205592068484,
+        0.0582157708625337
+      ],
+      "mean_turns": 4.481481481481482,
+      "mean_duration_s": 18.23037037037037
+    },
+    "caveman-v4.1.0": {
+      "runs": 54,
+      "solved": 52,
+      "solve_rate": 0.9629629629629629,
+      "solved_by_task": {
+        "c-ring-buffer": 3,
+        "git-config-forensics": 3,
+        "git-regression-hunt": 3,
+        "js-chunk-remainder": 3,
+        "js-csv-quoted-fields": 3,
+        "js-lru-ttl-cache": 3,
+        "log-link-failure": 3,
+        "py-cli-json-output": 3,
+        "py-cron-next": 3,
+        "py-cron-tz": 2,
+        "py-duration-spec": 3,
+        "py-ledger-parens": 3,
+        "py-perf-dedupe": 3,
+        "py-pytest-cart-pricing": 3,
+        "read-audit-writer": 3,
+        "read-config-precedence": 3,
+        "sh-backup-rotate": 2,
+        "sql-monthly-revenue": 3
+      },
+      "cost_per_solved": 0.05650367692307692,
+      "cost_per_solved_ci95": [
+        0.04451171692085954,
+        0.07164912062764728
+      ],
+      "mean_cost_per_run": 0.05441094814814815,
+      "mean_cost_by_type": {
+        "input": 1.637037037037037e-05,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.03259192592592593,
+        "cache_read": 0.004188762962962963,
+        "output": 0.01761388888888889
+      },
+      "mean_tokens_by_type": {
+        "input": 8.185185185185185,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 8147.981481481482,
+        "cache_read": 41887.62962962963,
+        "output": 1761.388888888889
+      },
+      "mean_background_cost": 0.0,
+      "runs_with_background_calls": 0,
+      "main_model_cost_per_solved": 0.05650367692307692,
+      "main_model_cost_per_solved_ci95": [
+        0.04451171692085954,
+        0.07164912062764728
+      ],
+      "mean_turns": 4.62962962962963,
+      "mean_duration_s": 18.275925925925925,
+      "vs_baseline": {
+        "point": 0.22494847919446248,
+        "ci95": [
+          0.1323461449373646,
+          0.3223291304448508
+        ]
+      },
+      "main_model_vs_baseline": {
+        "point": 0.22494847919446248,
+        "ci95": [
+          0.1323461449373646,
+          0.3223291304448508
+        ]
+      },
+      "vs_noop_hook": {
+        "point": 0.2517252169093318,
+        "ci95": [
+          0.12402066611452135,
+          0.4369809112219561
+        ]
+      },
+      "matched_control": "noop-hook",
+      "vs_matched_control": {
+        "point": 0.2517252169093318,
+        "ci95": [
+          0.12402066611452135,
+          0.4369809112219561
+        ]
+      },
+      "verdict": "more expensive than baseline, beyond the noise floor"
+    },
+    "headroom": {
+      "runs": 54,
+      "solved": 54,
+      "solve_rate": 1.0,
+      "solved_by_task": {
+        "c-ring-buffer": 3,
+        "git-config-forensics": 3,
+        "git-regression-hunt": 3,
+        "js-chunk-remainder": 3,
+        "js-csv-quoted-fields": 3,
+        "js-lru-ttl-cache": 3,
+        "log-link-failure": 3,
+        "py-cli-json-output": 3,
+        "py-cron-next": 3,
+        "py-cron-tz": 3,
+        "py-duration-spec": 3,
+        "py-ledger-parens": 3,
+        "py-perf-dedupe": 3,
+        "py-pytest-cart-pricing": 3,
+        "read-audit-writer": 3,
+        "read-config-precedence": 3,
+        "sh-backup-rotate": 3,
+        "sql-monthly-revenue": 3
+      },
+      "cost_per_solved": 0.04544960000000001,
+      "cost_per_solved_ci95": [
+        0.037220572083333334,
+        0.05491963092592592
+      ],
+      "mean_cost_per_run": 0.04544960000000001,
+      "mean_cost_by_type": {
+        "input": 1.674074074074074e-05,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.02454459259259259,
+        "cache_read": 0.003613451851851852,
+        "output": 0.017274814814814816
+      },
+      "mean_tokens_by_type": {
+        "input": 8.37037037037037,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 6136.148148148148,
+        "cache_read": 36134.51851851852,
+        "output": 1727.4814814814815
+      },
+      "mean_background_cost": 0.0,
+      "runs_with_background_calls": 0,
+      "main_model_cost_per_solved": 0.04544960000000001,
+      "main_model_cost_per_solved_ci95": [
+        0.037220572083333334,
+        0.05491963092592592
+      ],
+      "mean_turns": 4.851851851851852,
+      "mean_duration_s": 24.668333333333333,
+      "vs_baseline": {
+        "point": -0.014693884863644646,
+        "ci95": [
+          -0.10481223389332413,
+          0.07824630644896854
+        ]
+      },
+      "main_model_vs_baseline": {
+        "point": -0.014693884863644646,
+        "ci95": [
+          -0.10481223389332413,
+          0.07824630644896854
+        ]
+      },
+      "vs_noop_hook": {
+        "point": 0.00684439520443858,
+        "ci95": [
+          -0.0876070984063575,
+          0.14144494279090428
+        ]
+      },
+      "matched_control": "headroom-passthrough",
+      "vs_matched_control": {
+        "point": -0.01649050926828488,
+        "ci95": [
+          -0.09089507786609329,
+          0.07450160407670771
+        ]
+      },
+      "verdict": "inconclusive (CI includes no change or overlaps the noise floor)"
+    },
+    "headroom-passthrough": {
+      "runs": 54,
+      "solved": 54,
+      "solve_rate": 1.0,
+      "solved_by_task": {
+        "c-ring-buffer": 3,
+        "git-config-forensics": 3,
+        "git-regression-hunt": 3,
+        "js-chunk-remainder": 3,
+        "js-csv-quoted-fields": 3,
+        "js-lru-ttl-cache": 3,
+        "log-link-failure": 3,
+        "py-cli-json-output": 3,
+        "py-cron-next": 3,
+        "py-cron-tz": 3,
+        "py-duration-spec": 3,
+        "py-ledger-parens": 3,
+        "py-perf-dedupe": 3,
+        "py-pytest-cart-pricing": 3,
+        "read-audit-writer": 3,
+        "read-config-precedence": 3,
+        "sh-backup-rotate": 3,
+        "sql-monthly-revenue": 3
+      },
+      "cost_per_solved": 0.046211653703703705,
+      "cost_per_solved_ci95": [
+        0.036329282407407404,
+        0.05845872425925925
+      ],
+      "mean_cost_per_run": 0.046211653703703705,
+      "mean_cost_by_type": {
+        "input": 1.6666666666666667e-05,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.024774888888888888,
+        "cache_read": 0.0037450981481481484,
+        "output": 0.017675
+      },
+      "mean_tokens_by_type": {
+        "input": 8.333333333333334,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 6193.722222222223,
+        "cache_read": 37450.98148148148,
+        "output": 1767.5
+      },
+      "mean_background_cost": 0.0,
+      "runs_with_background_calls": 0,
+      "main_model_cost_per_solved": 0.046211653703703705,
+      "main_model_cost_per_solved_ci95": [
+        0.036329282407407404,
+        0.05845872425925925
+      ],
+      "mean_turns": 4.7407407407407405,
+      "mean_duration_s": 23.417777777777776,
+      "vs_baseline": {
+        "point": 0.0018267484163305703,
+        "ci95": [
+          -0.07411996829788607,
+          0.07392938730351407
+        ]
+      },
+      "main_model_vs_baseline": {
+        "point": 0.0018267484163305703,
+        "ci95": [
+          -0.07411996829788607,
+          0.07392938730351407
+        ]
+      },
+      "vs_noop_hook": {
+        "point": 0.023726160949766317,
+        "ci95": [
+          -0.07728760249592585,
+          0.14736866749251776
+        ]
+      }
+    },
+    "noop": {
+      "runs": 54,
+      "solved": 54,
+      "solve_rate": 1.0,
+      "solved_by_task": {
+        "c-ring-buffer": 3,
+        "git-config-forensics": 3,
+        "git-regression-hunt": 3,
+        "js-chunk-remainder": 3,
+        "js-csv-quoted-fields": 3,
+        "js-lru-ttl-cache": 3,
+        "log-link-failure": 3,
+        "py-cli-json-output": 3,
+        "py-cron-next": 3,
+        "py-cron-tz": 3,
+        "py-duration-spec": 3,
+        "py-ledger-parens": 3,
+        "py-perf-dedupe": 3,
+        "py-pytest-cart-pricing": 3,
+        "read-audit-writer": 3,
+        "read-config-precedence": 3,
+        "sh-backup-rotate": 3,
+        "sql-monthly-revenue": 3
+      },
+      "cost_per_solved": 0.045856772222222224,
+      "cost_per_solved_ci95": [
+        0.03561898041666667,
+        0.05857980800925926
+      ],
+      "mean_cost_per_run": 0.045856772222222224,
+      "mean_cost_by_type": {
+        "input": 1.7111111111111112e-05,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.024388148148148145,
+        "cache_read": 0.0038376240740740745,
+        "output": 0.01761388888888889
+      },
+      "mean_tokens_by_type": {
+        "input": 8.555555555555555,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 6097.037037037037,
+        "cache_read": 38376.24074074074,
+        "output": 1761.388888888889
+      },
+      "mean_background_cost": 0.0,
+      "runs_with_background_calls": 0,
+      "main_model_cost_per_solved": 0.045856772222222224,
+      "main_model_cost_per_solved_ci95": [
+        0.03561898041666667,
+        0.05857980800925926
+      ],
+      "mean_turns": 4.666666666666667,
+      "mean_duration_s": 18.54388888888889,
+      "vs_baseline": {
+        "point": -0.005866760302169816,
+        "ci95": [
+          -0.0777466609433803,
+          0.06169825712013548
+        ]
+      },
+      "main_model_vs_baseline": {
+        "point": -0.005866760302169816,
+        "ci95": [
+          -0.0777466609433803,
+          0.06169825712013548
+        ]
+      }
+    },
+    "noop-hook": {
+      "runs": 54,
+      "solved": 53,
+      "solve_rate": 0.9814814814814815,
+      "solved_by_task": {
+        "c-ring-buffer": 3,
+        "git-config-forensics": 3,
+        "git-regression-hunt": 3,
+        "js-chunk-remainder": 3,
+        "js-csv-quoted-fields": 3,
+        "js-lru-ttl-cache": 3,
+        "log-link-failure": 3,
+        "py-cli-json-output": 3,
+        "py-cron-next": 3,
+        "py-cron-tz": 3,
+        "py-duration-spec": 3,
+        "py-ledger-parens": 3,
+        "py-perf-dedupe": 3,
+        "py-pytest-cart-pricing": 3,
+        "read-audit-writer": 3,
+        "read-config-precedence": 3,
+        "sh-backup-rotate": 3,
+        "sql-monthly-revenue": 2
+      },
+      "cost_per_solved": 0.04514063962264151,
+      "cost_per_solved_ci95": [
+        0.035882663301886795,
+        0.05661555022405661
+      ],
+      "mean_cost_per_run": 0.044304701851851855,
+      "mean_cost_by_type": {
+        "input": 1.6518518518518517e-05,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.02373837037037037,
+        "cache_read": 0.003582405555555556,
+        "output": 0.016967407407407407
+      },
+      "mean_tokens_by_type": {
+        "input": 8.25925925925926,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 5934.592592592592,
+        "cache_read": 35824.055555555555,
+        "output": 1696.7407407407406
+      },
+      "mean_background_cost": 0.0,
+      "runs_with_background_calls": 0,
+      "main_model_cost_per_solved": 0.04514063962264151,
+      "main_model_cost_per_solved_ci95": [
+        0.035882663301886795,
+        0.05661555022405661
+      ],
+      "mean_turns": 4.722222222222222,
+      "mean_duration_s": 31.727592592592593,
+      "vs_baseline": {
+        "point": -0.021391865685173594,
+        "ci95": [
+          -0.13465805352676868,
+          0.08559102173298827
+        ]
+      },
+      "main_model_vs_baseline": {
+        "point": -0.021391865685173594,
+        "ci95": [
+          -0.13465805352676868,
+          0.08559102173298827
+        ]
+      }
+    },
+    "rtk-v1.2.0": {
+      "runs": 54,
+      "solved": 53,
+      "solve_rate": 0.9814814814814815,
+      "solved_by_task": {
+        "c-ring-buffer": 3,
+        "git-config-forensics": 3,
+        "git-regression-hunt": 3,
+        "js-chunk-remainder": 3,
+        "js-csv-quoted-fields": 3,
+        "js-lru-ttl-cache": 3,
+        "log-link-failure": 3,
+        "py-cli-json-output": 3,
+        "py-cron-next": 3,
+        "py-cron-tz": 2,
+        "py-duration-spec": 3,
+        "py-ledger-parens": 3,
+        "py-perf-dedupe": 3,
+        "py-pytest-cart-pricing": 3,
+        "read-audit-writer": 3,
+        "read-config-precedence": 3,
+        "sh-backup-rotate": 3,
+        "sql-monthly-revenue": 3
+      },
+      "cost_per_solved": 0.04827737547169811,
+      "cost_per_solved_ci95": [
+        0.03799308148148148,
+        0.06117688637755102
+      ],
+      "mean_cost_per_run": 0.04738335,
+      "mean_cost_by_type": {
+        "input": 1.7555555555555556e-05,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 0.02555362962962963,
+        "cache_read": 0.0040123500000000005,
+        "output": 0.017799814814814813
+      },
+      "mean_tokens_by_type": {
+        "input": 8.777777777777779,
+        "cache_write_5m": 0.0,
+        "cache_write_1h": 6388.407407407408,
+        "cache_read": 40123.5,
+        "output": 1779.9814814814815
+      },
+      "mean_background_cost": 0.0,
+      "runs_with_background_calls": 0,
+      "main_model_cost_per_solved": 0.04827737547169811,
+      "main_model_cost_per_solved_ci95": [
+        0.03799308148148148,
+        0.06117688637755102
+      ],
+      "mean_turns": 4.944444444444445,
+      "mean_duration_s": 22.19,
+      "vs_baseline": {
+        "point": 0.046609723187839514,
+        "ci95": [
+          -0.07879835285800076,
+          0.21154603690831408
+        ]
+      },
+      "main_model_vs_baseline": {
+        "point": 0.046609723187839514,
+        "ci95": [
+          -0.07879835285800076,
+          0.21154603690831408
+        ]
+      },
+      "vs_noop_hook": {
+        "point": 0.06948806829673893,
+        "ci95": [
+          -0.06908815931617829,
+          0.3202005680093982
+        ]
+      },
+      "matched_control": "baseline",
+      "vs_matched_control": {
+        "point": 0.046609723187839514,
+        "ci95": [
+          -0.07879835285800076,
+          0.21154603690831408
+        ]
+      },
+      "verdict": "inconclusive (CI includes no change or overlaps the noise floor)"
+    }
+  },
+  "complete": true,
+  "manifest": {
+    "mode": "subscription",
+    "provider": "anthropic",
+    "model": "claude-sonnet-5-5",
+    "arms": [
+      "baseline",
+      "noop",
+      "noop-hook",
+      "headroom-passthrough",
+      "rtk-v1.2.0",
+      "caveman-v4.1.0",
+      "headroom"
+    ],
+    "task_ids": [
+      "c-ring-buffer",
+      "git-config-forensics",
+      "git-regression-hunt",
+      "js-chunk-remainder",
+      "js-csv-quoted-fields",
+      "js-lru-ttl-cache",
+      "log-link-failure",
+      "py-cli-json-output",
+      "py-cron-next",
+      "py-cron-tz",
+      "py-duration-spec",
+      "py-ledger-parens",
+      "py-perf-dedupe",
+      "py-pytest-cart-pricing",
+      "read-audit-writer",
+      "read-config-precedence",
+      "sh-backup-rotate",
+      "sql-monthly-revenue"
+    ],
+    "repeats": 3,
+    "seed": 3,
+    "max_usd": 40.0,
+    "max_usd_per_run": 2.0,
+    "pause_at_utilization": 0.6,
+    "name": "v0.3-sonnet"
+  }
+}
