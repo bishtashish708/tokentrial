@@ -369,7 +369,9 @@ def export_raw(exp_dir: Path, dest: Path) -> list[Path]:
     import tarfile
 
     home = str(Path.home())
-    user = re.compile(rf"\b{re.escape(getpass.getuser())}\b")
+    # Not preceded by a word character, except as the start of a JSON escape such as the
+    # "\\n" before a `ps` line ("\\nalice  123 ..."), where `\\b` finds no boundary.
+    user = re.compile(rf"(?:(?<=\\[ntr])|(?<!\w)){re.escape(getpass.getuser())}(?!\w)")
 
     def scrub(text: str) -> str:
         # Home path first (-> ~), then the bare username (e.g. file owners in `ls -l`).

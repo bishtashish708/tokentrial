@@ -72,7 +72,8 @@ def test_export_raw_scrubs_home_path(tmp_path, monkeypatch):
 
     me = getpass.getuser()
     (exp / "logs" / "a.jsonl").write_text(
-        f'{{"path": "{home}/.claude/projects/y", "ls": "-rw-r--r--  1 {me}  staff  29"}}\n'
+        f'{{"path": "{home}/.claude/projects/y", "ls": "-rw-r--r--  1 {me}  staff  29", '
+        f'"ps": "3\\n{me}  84061  2.0  python3"}}\n'
     )
     out = export_raw(exp, tmp_path / "raw")
     assert home not in (tmp_path / "raw" / "records.jsonl").read_text()
@@ -80,6 +81,7 @@ def test_export_raw_scrubs_home_path(tmp_path, monkeypatch):
         text = tar.extractfile("logs/a.jsonl").read().decode()
     assert home not in text and "~/.claude/projects/y" in text
     assert me not in text and "1 user  staff" in text
+    assert "3\\nuser  84061" in text
 
 
 def test_tools_compared_with_noop_hook_control():
