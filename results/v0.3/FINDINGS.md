@@ -5,7 +5,7 @@ API-equivalent at verified list prices (`src/tokentrial/data/pricing.toml`). 18 
 
 | Phase | Model | Design | Runs solved | API-equivalent cost | Claude Code |
 |---|---|---|---|---|---|
-| A | `claude-haiku-5-5` | 18 tasks × 9 arms × 5 repeats = 810 | 805 | $7.85 | 2.1.252 (447 runs), then 2.1.322 (363 runs) |
+| A | `claude-haiku-5-5` | 18 tasks × 9 arms × 5 repeats = 810 | 806 | $7.85 | 2.1.252 (447 runs), then 2.1.322 (363 runs) |
 | B | `claude-sonnet-5-5` | 18 tasks × 7 arms × 3 repeats = 378 | 373 | $17.76 | 2.1.322 |
 
 - Generated tables: [`../v0.3-haiku/summary.md`](../v0.3-haiku/summary.md) and
@@ -145,7 +145,7 @@ title call, so headroom's effect on it comes from routing through a local proxy.
 
 ## Solve rates
 
-1,178 of 1,188 runs solved. The 10 failures are spread across arms, with at most 2 for any arm:
+1,179 of 1,188 runs solved. The 9 failures are spread across arms, with at most 2 for any arm:
 
 - **Haiku:** `py-cron-tz` (headroom, caveman v4.0.1), `git-regression-hunt` (noop-hook) and
   `c-ring-buffer` (noop).

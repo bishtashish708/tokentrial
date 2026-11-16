@@ -215,6 +215,7 @@ h3 { font-size:16px; margin:36px 0 10px; }
 a { color:var(--accent); }
 code { font:13px ui-monospace,SFMono-Regular,Menlo,monospace; }
 code.ctl { color:var(--muted); font-size:12px; }
+pre { overflow-x:auto; padding:12px 14px; border:1px solid var(--line); border-radius:8px; background:var(--card); margin:0 0 12px; }
 .facts { display:flex; flex-wrap:wrap; gap:8px 24px; padding:14px 16px; border:1px solid var(--line);
   border-radius:8px; background:var(--card); font-size:14px; margin-bottom:12px; }
 .facts b { font-weight:600; }
@@ -282,6 +283,11 @@ compressed requests in every run but removed only about 2% of input tokens.</li>
 Sonnet runs used 2.1.322. 2.1.322 no longer makes the background title call that skewed caveman's pilot result.
 See FINDINGS for the version-split analysis.</li>
 </ul>
+<p><b>Try it</b> on your own Claude Code subscription (needs <a href="https://docs.astral.sh/uv/">uv</a>;
+72 Haiku runs, about $0.70 API-equivalent):</p>
+<pre><code>git clone {REPO} &amp;&amp; cd tokentrial &amp;&amp; uv sync &amp;&amp; uv run tokentrial install-arms &amp;&amp; uv run tokentrial run --repeats 1 --out runs/mine &amp;&amp; uv run tokentrial report --runs runs/mine</code></pre>
+<p class="sub">Only the pinned tool versions named below were tested. If an arm is set up wrong,
+<a href="{REPO}/issues">open an issue</a>; it will be rerun and published either way.</p>
 
 {sections}
 

@@ -23,6 +23,17 @@ It runs the same coding tasks with and without each tool and reports the number 
 > [v0.2](results/v0.2/FINDINGS.md) (rtk +36%, caveman ±0%, 400 runs) ·
 > [pilot](results/pilot-v0.1/FINDINGS.md).
 
+**Try it** on your own Claude Code subscription (needs [uv](https://docs.astral.sh/uv/); a 72-run
+Haiku check of `rtk` and `caveman` against `baseline` and a do-nothing arm, about $0.70 API-equivalent):
+
+```bash
+git clone https://github.com/bishtashish708/tokentrial && cd tokentrial && uv sync && uv run tokentrial install-arms && uv run tokentrial run --repeats 1 --out runs/mine && uv run tokentrial report --runs runs/mine
+```
+
+Only the pinned tool versions listed in [`results/v0.3/FINDINGS.md`](results/v0.3/FINDINGS.md) have
+been tested. Tool authors: if an arm is set up wrong, [open an issue](https://github.com/bishtashish708/tokentrial/issues)
+and it will be rerun and published either way.
+
 > Status: alpha. The runner, the arms, verified prices and `report` work. v0.1, v0.2 and v0.3 have
 > run. A static leaderboard is generated from the `results/*/summary.json` files by
 > `scripts/make_site.py` into `docs/`. See [docs/PLAN.md](docs/PLAN.md).
@@ -45,7 +56,7 @@ turns or fails more tasks. [Quesma's analysis of RTK](https://quesma.com/blog/do
 is one example: it questioned whether a headline saving of 89% turned into a lower total cost.
 TokenTrial makes this kind of check repeatable, public, and applicable to any tool.
 
-## Methodology (planned)
+## Methodology
 
 1. **Tasks with checkable answers.** Each task is a small repo plus a hidden check script
    (tests or an exact output). A run is "solved" only if the check passes. Agents don't grade
@@ -54,11 +65,12 @@ TokenTrial makes this kind of check repeatable, public, and applicable to any to
    - `baseline`: the unmodified agent.
    - `noop`: a control arm. It goes through the same install and wiring steps as a tool but
      changes nothing. Any difference between `noop` and `baseline` is noise.
-   - One arm per tool, installed at a pinned version with its documented setup. The v0.1
-     pilot tests `rtk` and `caveman`.
+   - `noop-hook` and `headroom-passthrough`: matched controls that reproduce a tool's side
+     effects on Claude Code (a SessionStart hook, a local proxy) without the tool itself.
+   - One arm per tool, installed at a pinned version with its documented setup.
 3. **Same conditions.** Same model, agent version, prompt, task snapshot and limits for
    every arm. Arms run interleaved, not in blocks, so API-side drift affects them all equally.
-   Each (task, arm) pair runs N times (default 3 in the pilot).
+   Each (task, arm) pair runs N times (default 3).
 4. **Full token accounting.** Usage is taken from API responses for every call in a run and
    split into fresh input, cache write (5 min / 1 h), cache read and output. It's then priced
    from a versioned table ([`pricing.toml`](src/tokentrial/data/pricing.toml)) for Anthropic
@@ -84,11 +96,11 @@ uv run tokentrial run --dry-run                   # show the planned run matrix
 uv run tokentrial run --arm baseline --arm noop   # run on the subscription
 uv run tokentrial run --resume --out runs/pilot   # continue after a usage limit
 uv run tokentrial run --mode api                  # optional: bill ANTHROPIC_API_KEY instead
-uv run tokentrial report                          # aggregate runs and build the leaderboard (coming soon)
+uv run tokentrial report --runs runs/pilot       # cost per solved task with bootstrap CIs
 ```
 
-Defaults are set for a low-cost pilot: Claude Haiku 5.5, 3 repeats, and caps of $30 total and $1
-per run (API-equivalent). Subscription usage limits make runs slower. When one is hit, TokenTrial
+Defaults are set for a low-cost run: Claude Haiku 5.5, 18 tasks, the `baseline`, `noop`, `rtk`
+and `caveman` arms, 3 repeats, and caps of $30 total and $1 per run (API-equivalent). Subscription usage limits make runs slower. When one is hit, TokenTrial
 saves progress, prints when to come back, and exits with code 3. `--resume` continues without
 repeating finished runs.
 

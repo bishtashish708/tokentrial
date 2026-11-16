@@ -23,7 +23,7 @@ at API rates, so results are comparable. API-key mode is kept as an option for l
 | v0.2 run | ✅ 2026-11-12: 10 tasks × 5 arms × 8 repeats = 400 runs, 396 solved, $2.87 API-equivalent, all prices verified. See [`results/v0.2/FINDINGS.md`](../results/v0.2/FINDINGS.md) |
 | Leaderboard | ✅ Static page from the v0.3 and v0.2 `summary.json` files: https://bishtashish708.github.io/tokentrial/ |
 | v0.3 prep | ✅ 2026-11-12: 18 tasks, new arms (rtk v1.2.0, caveman v4.1.0, headroom 0.42.0 and two controls), `--model` repeatable, `--pause-at-utilization`. Activation-checked on Haiku. See [v0.3 plan](#v03-plan) |
-| v0.3 run | ✅ 2026-11-12/13: Haiku 18 × 9 × 5 = 810 runs (805 solved, $7.85) and Sonnet 18 × 7 × 3 = 378 runs (373 solved, $17.76). One 10-minute pause at 60% of the five-hour window. Claude Code auto-updated 2.1.252 → 2.1.322 after 447 Haiku runs. See [`results/v0.3/FINDINGS.md`](../results/v0.3/FINDINGS.md) |
+| v0.3 run | ✅ 2026-11-12/13: Haiku 18 × 9 × 5 = 810 runs (806 solved, $7.85) and Sonnet 18 × 7 × 3 = 378 runs (373 solved, $17.76). One 10-minute pause at 60% of the five-hour window. Claude Code auto-updated 2.1.252 → 2.1.322 after 447 Haiku runs. See [`results/v0.3/FINDINGS.md`](../results/v0.3/FINDINGS.md) |
 | Next: pin the agent | Set `DISABLE_AUTOUPDATER=1` for the agent and stop a run if the Claude Code version changes |
 | Checked against real Claude Code output | ✅ Smoke runs on 2026-11-12: recorded usage matches Claude Code's totals exactly (findings below) |
 
